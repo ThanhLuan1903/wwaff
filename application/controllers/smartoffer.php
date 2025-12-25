@@ -229,6 +229,22 @@ class Smartoffer extends CI_Controller
             $this->db->empty_table($uri4);
         }
     }
+
+    private function renderAffsub($template, $pubid, $clickid)
+    {
+        $tpl = (string)$template;
+
+        $hasClickToken = (strpos($tpl, '#clickid#') !== false);      
+        $tpl = str_replace('#pubid#', $pubid, $tpl);
+        $tpl = str_replace('#clickid#', $clickid, $tpl);
+
+        if (!$hasClickToken) {
+            if (preg_match('/=$/', $tpl)) {
+                $tpl .= $clickid;
+            }
+        }
+        return $tpl;
+    }
 }
 
 /* End of file welcome.php */
