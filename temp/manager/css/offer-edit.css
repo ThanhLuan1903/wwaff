@@ -1,0 +1,73 @@
+   .catscroll {
+       height: 200px;
+       overflow: scroll;
+       padding: 15px;
+       border: 1px solid #ddd;
+   }
+
+   .catscroll p {
+       margin: 1px;
+       float: left
+   }
+
+   .pppp p {
+       width: 49%
+   }
+
+   .geocontent p {
+       margin-right: 30px
+   }
+
+   .point_ct {
+       display: inline-block;
+       width: 80px;
+   }
+
+   .title_keycode {
+       width: 25px;
+       display: inline-block;
+   }
+
+   .col-md-3 {
+       padding-bottom: 15px;
+   }
+
+   .landingLabel {
+       padding-top: 10px;
+   }
+
+   .request-container {
+       display: flex;
+       flex-direction: column;
+       gap: 5px;
+   }
+
+   .request-row {
+       display: grid;
+       grid-template-columns: repeat(5, 1fr);
+       gap: 15px;
+   }
+
+   .request-item label {
+       display: block;
+       margin-bottom: 5px;
+       font-weight: 600;
+       color: #555;
+   }
+
+   .request-controls {
+       display: flex;
+       align-items: center;
+   }
+
+   .info-btn {
+       margin-left: 10px;
+       padding: 2px 8px;
+       border-radius: 3px;
+       background-color: #f0f0f0;
+       border: 1px solid #ddd;
+   }
+
+   .bootstrap-select .dropdown-toggle {
+       margin-left: 10px !important;
+   }

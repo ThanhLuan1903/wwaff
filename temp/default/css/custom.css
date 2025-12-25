@@ -1,0 +1,399 @@
+body {
+	/* We need to assaign this CSS Custom property to the body instead of :root, because of CSS Specificity and codepen stylesheet placement before loaded CKE5 content. */
+	--ck-z-default: 100;
+	--ck-z-modal: calc( var(--ck-z-default) + 999 );
+}
+
+.status {
+  border-radius: 5px;
+  padding: 0.35em 0.65em;
+  font-size: 1em;
+  font-weight: bold;
+}
+.status.pending {
+  background: #ffc107;
+  color: #000;
+}
+
+.status.unsuccessful {
+  background: var(--bs-danger);
+  color: #fff;
+}
+
+.status.succeeded {
+  background: var(--bs-success);
+  color: #fff;
+}
+.table-center tr {
+  vertical-align: middle;
+}
+.table-center thead tr th {
+  color: #1d1d22;
+  font-size: 1em;
+  white-space: nowrap;
+  font-weight: 500;
+}
+.image-preview {
+  width: 100px;
+  height: 100px;
+  display: none;
+  object-fit: cover;
+}
+.btn-cus:disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}
+.btn-cus {
+  background-color: #3d76b9;
+  color: #fff;
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  height: 33px;
+  outline: 0;
+  border: 0;
+  border-radius: 2px;
+  vertical-align: middle;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+.btn-cus .btn-icon {
+  background-color: #35669f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 33px;
+  height: 33px;
+}
+.btn-cus.close {
+  background-color: #6c757d;
+}
+.btn-cus .btn-text {
+  position: relative;
+  z-index: 2;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  text-decoration: none;
+  line-height: 34px;
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.page-link {
+  color: #3d76b9;
+}
+.page-item.active .page-link {
+  background-color: #3d76b9;
+  border-color: #3d76b9;
+}
+.img-thumbnail.product-img{
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+.ck-editor__main .ck-content {
+  min-height: 100px;
+}
+.conversation {
+  width: 100%;
+  background: var(--ck-color-image-caption-background);
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+.comment {
+  width: 100%;
+}
+.comment .ck.ck-editor {
+  width: 100%;
+}
+.total-comment {
+  width: 100%;
+  padding: 16px 0;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.total-comment span {
+  padding-top: 8px;
+}
+.comment_views--list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  cursor: default;
+  transition: all .3s ease;
+  padding-left: 10px;
+}
+.comment_tile--block {
+  flex-direction: column;
+  display: flex;
+  width: 100%;
+  padding-bottom: 16px;
+  box-shadow: inset 0 -1px 0 0 #e6e6e6;
+  min-width: 0;
+}
+.comment_tile--msg {
+  margin-top: 4px;
+  color: rgba(0, 0, 0, .8);
+  /* white-space: pre-wrap; */
+  word-break: break-word;
+  cursor: text;
+  font-size: 13px;
+}
+.comment_tile--author {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 32px;
+}
+.comment_tile--author__name {
+  color: var(--color-text, rgba(0, 0, 0, .8));
+  font-weight: 600;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  line-height: 24px;
+  letter-spacing: calc(-.003px + var(--text-tracking-pos, 0)*13px);
+}
+.comment_tile--author__time {
+  margin-left: 4px;
+  color: var(--color-text-secondary, rgba(0, 0, 0, .3));
+  white-space: nowrap;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: calc(.005px + var(--text-tracking-pos, 0)*11px);
+}
+.comment_tile--author__email {
+  margin-left: 4px;
+  color: var(--color-text-secondary, rgba(0, 0, 0, .3));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: calc(.005px + var(--text-tracking-pos, 0)*11px)
+}
+.conversation_author {
+  padding: 10px 0;
+}
+.conversation_author--name{
+  color: var(--color-text, rgba(0, 0, 0, .8));
+  font-weight: 600;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 18px;
+  letter-spacing: calc(-.003px + var(--text-tracking-pos, 0)*13px);
+}
+.conversation_author--email {
+  margin-left: 4px;
+  color: var(--color-text-secondary, rgba(0, 0, 0, .3));
+  white-space: nowrap;
+  font-size: 13px;
+  letter-spacing: calc(.005px + var(--text-tracking-pos, 0)*11px);
+}
+
+/* Notification */
+
+.tickets-container .tickets-list .ticket-item .ticket-state i {
+  font-size: 13px;
+  color: #fff;
+  line-height: 20px;
+}
+
+.tickets-container .tickets-list .ticket-item .ticket-state {
+  position: absolute;
+  top: 13px;
+  right: -12px;
+  height: 24px;
+  width: 24px;
+  -webkit-border-radius: 50%;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 50%;
+  -moz-background-clip: padding;
+  border-radius: 50%;
+  background-clip: padding-box;
+  background-color: #e5e5e5;
+  text-align: center;
+  -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, .2);
+  -moz-box-shadow: 0 0 3px rgba(0, 0, 0, .2);
+  box-shadow: 0 0 3px rgba(0, 0, 0, .2);
+  border: 2px solid #fff;
+}
+
+.bg-palegreen {
+  background-color: #a0d468 !important;
+}
+
+.tickets-container .tickets-list .ticket-item .ticket-type .type {
+  color: #999;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.tickets-container .tickets-list .ticket-item .ticket-type {
+  line-height: 30px;
+  height: 50px;
+  padding: 10px;
+}
+
+.tickets-container .tickets-list .ticket-item .ticket-time i {
+  color: #ccc;
+  width: 50px;
+}
+
+.tickets-container .tickets-list .ticket-item .divider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 50px;
+  width: 1px;
+  background-color: #eee;
+  display: inline-block;
+}
+
+.tickets-container .tickets-list .ticket-item .ticket-time {
+  line-height: 30px;
+  height: 50px;
+  padding: 10px;
+}
+
+.tickets-container .tickets-list .ticket-item .ticket-user .user-company {
+  margin-left: 2px;
+  color: #999;
+}
+
+.tickets-container .tickets-list .ticket-item .ticket-user .user-at {
+  margin-left: 2px;
+  color: #ccc;
+  font-size: 13px;
+}
+
+.tickets-container .tickets-list .ticket-item .ticket-user .user-name {
+  margin-left: 5px;
+  font-size: 13px;
+}
+
+.tickets-container .tickets-list .ticket-item .ticket-user .user-avatar {
+  width: 30px;
+  height: 30px;
+  -webkit-border-radius: 3px;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 3px;
+  -moz-background-clip: padding;
+  border-radius: 3px;
+  background-clip: padding-box;
+}
+
+.tickets-container .tickets-list .ticket-item .ticket-user {
+  height: 50px;
+  padding: 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.widget-main.no-padding {
+  padding: 0;
+}
+
+.widget-main {
+  padding: 12px;
+}
+
+.no-padding {
+  padding: 0 !important;
+}
+
+.widget-body {
+  background-color: #fbfbfb;
+  -webkit-box-shadow: 1px 0 10px 1px rgba(0, 0, 0, .3);
+  -moz-box-shadow: 1px 0 10px 1px rgba(0, 0, 0, .3);
+  box-shadow: 1px 0 10px 1px rgba(0, 0, 0, .3);
+}
+
+.widget-header>.widget-caption {
+  line-height: 33px;
+  padding: 0;
+  margin: 0;
+  float: left;
+  text-align: left;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.widget-header .widget-icon {
+  display: block;
+  width: 30px;
+  height: 32px;
+  position: relative;
+  float: left;
+  font-size: 111%;
+  line-height: 32px;
+  text-align: center;
+  margin-left: -10px;
+}
+
+.themesecondary {
+  color: #5bc0de !important;
+}
+
+.widget-header.bordered-bottom {
+  border-bottom: 3px solid #fff;
+}
+
+.widget-header {
+  position: relative;
+  min-height: 35px;
+  background: #fff;
+  -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, .3);
+  -moz-box-shadow: 0 0 4px rgba(0, 0, 0, .3);
+  box-shadow: 0 0 4px rgba(0, 0, 0, .3);
+  color: #555;
+  padding-left: 12px;
+  text-align: right;
+}
+
+.bordered-themesecondary {
+  border-color: #5bc0de !important;
+}
+
+.widget-box {
+  padding: 0;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  margin: 3px 0 30px 0;
+}
+
+.bell-number[data-count]:after {
+  position: absolute;
+  right: 0%;
+  top: 1%;
+  content: attr(data-count);
+  font-size: 30%;
+  padding: .6em;
+  border-radius: 999px;
+  line-height: .75em;
+  color: white;
+  background: rgba(255, 0, 0, .85);
+  text-align: center;
+  min-width: 2em;
+  font-weight: bold;
+  width: none !important;
+  height: none;
+}

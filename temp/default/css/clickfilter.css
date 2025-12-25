@@ -1,0 +1,218 @@
+.daterangepicker {
+    border: 1px solid #e0e6ed;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.daterangepicker .calendar-table {
+    border: none;
+}
+
+.daterangepicker .calendar-table th,
+.daterangepicker .calendar-table td {
+    border: none;
+    padding: 8px;
+}
+
+.daterangepicker .ranges li {
+    padding: 8px 16px;
+    margin: 2px 0;
+    transition: all 0.2s ease;
+}
+
+.daterangepicker .ranges li:hover {
+    background: #f8fafc;
+}
+
+.daterangepicker .ranges li.active {
+    background: #3b82f6;
+    color: white;
+}
+
+.card {
+    border: 1px solid #e0e6ed;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.card-body {
+    padding: 24px;
+}
+
+.card-offers-stitle {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.card-offers-sboxs {
+    max-width: 320px;
+    position: relative;
+}
+
+.card-offers-sboxs::before {
+    content: '📅';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.card-offers-sinput {
+    width: 320px;
+    min-width: 320px;
+    max-width: 320px;
+    padding: 12px 16px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    background: #fff;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    font-weight: 500;
+    color: #374151;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    resize: none;
+}
+
+.card-offers-sinput:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+.card-offers-sinput::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
+}
+
+.form-label {
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 8px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-control {
+    width: 90%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    resize: none;
+    height: 45px !important;
+    background: #fff;
+    font-weight: 400;
+    color: #374151;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+.form-control::placeholder {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+.tttesst {
+    padding-right: 8px;
+}
+
+.col-4:last-child {
+    padding-right: 15px;
+}
+
+.btn {
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0 4px;
+}
+
+.btn-success {
+    background: #10b981;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: #6b7280;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #4b5563;
+    transform: translateY(-1px);
+}
+
+.border-top {
+    border-top: 1px solid #e5e7eb !important;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+.card-offers-sresult {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.menu_sort {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.row {
+    margin-left: -8px;
+    margin-right: -8px;
+}
+
+.row>[class*="col-"] {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+@media (max-width: 768px) {
+    .card-body {
+        padding: 16px;
+    }
+
+    .menu_sort {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn {
+        margin: 2px 0;
+        width: 100%;
+    }
+}

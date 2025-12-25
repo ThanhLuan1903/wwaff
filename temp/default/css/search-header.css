@@ -1,0 +1,10 @@
+.none-padding {
+    padding: 0 !important;
+}
+.search-container {
+    display: flex;
+    align-items: center;
+}
+.color_blue_nice {
+    background:#2c91cb;
+  }

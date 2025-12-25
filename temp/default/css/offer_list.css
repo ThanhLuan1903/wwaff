@@ -1,0 +1,104 @@
+.flag_icon_country {
+    border-right: 1px solid #cacaca;
+    padding: 0 5px;
+}
+
+.enditem {
+    border-right: 0px !important;
+}
+
+.select2-selection--multiple:before {
+    content: "";
+    position: absolute;
+    right: 7px;
+    top: 42%;
+    border-top: 5px solid #888;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+}
+
+.select2-selection {
+    border-radius: 4px;
+    background: transparent;
+}
+
+.select2-search__field {
+    background: transparent;
+}
+
+.select2-selection {
+    background: transparent;
+}
+
+.smlinks {
+    border: 1px solid #cacaca;
+    width: 150px;
+    height: 32px;
+    line-height: 32px;
+    margin: 0 5px;
+    border-radius: 4px;
+}
+
+.smlinks:hover {
+    border-color: #56bf85;
+}
+
+.smlinks a {
+    padding: 0 !important
+}
+
+.card-footer {
+    background-color: #ffffff;
+    border-top: none;
+}
+
+.show-detail:hover {
+    cursor: pointer;
+}
+
+.order_wrap_list_items {
+    width: 100%;
+}
+
+.custom-modal {
+    margin: 0 !important;
+}
+
+.heart-icon {
+    display: flex;
+    align-items: center;
+}
+
+.heart-icon:hover {
+    color: red;
+    cursor: pointer;
+}
+
+.heart-icon .fill {
+    color: red;
+}
+
+.ranking-icon__text {
+    font-size: 1.55em;
+    color: #d7a942;
+}
+
+.full-width {
+    display: flex;
+    justify-content: space-between;
+}
+
+.custom-container {
+    width: 70%;
+}
+
+.sticky-banners {
+    padding-top: 40px;
+    height: 300px;
+    width: 200px;
+    top: 50px;
+}
+
+.custom-container {
+    width: 70%;
+}

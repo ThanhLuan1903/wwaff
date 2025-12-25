@@ -1,0 +1,17 @@
+node_modules/
+application/logs
+application/config/config.php
+application/config/database.php
+upload
+git-webhook.log
+git-webhook.php
+temp/default/home_page/image_home
+temp/pulisher/caprequest/
+temp/pulisher/trafficrequest/
+uploads/
+setting_file/
+Dockerfile
+start-services.sh
+.DS_Store
+.env
+.htaccess
