@@ -208,7 +208,7 @@
                             </td>
                             <td>
                                 Click/View identifier/reference specified by the Publisher.
-                                <span class="text-warning">(Use to get publisher's source id)</span>
+                                <span class="text-warning">(Use to get wwaff's publisher ID)</span>
                             </td>
                         </tr>
                         <tr>
@@ -278,15 +278,7 @@
                                 Ad click locations are tracked using URL format
                             </td>
                         </tr>
-                        <tr>
-                            <td>
-                                {pub_id}
-                            </td>
-                            <td>
-                                The Publisher ID associated to the transaction send via Postback <span
-                                    class="text-warning">(Use to get wwaff's publisher ID)</span>
-                            </td>
-                        </tr>
+
                         <tr>
                             <td>
                                 {lead_Geo}
@@ -364,7 +356,8 @@
                         <tr>
                             <td colspan="2">
                                 <label class="form-label">Postback Name</label>
-                                <input name="title" data-name="vpb" class="form-control form-control-sm" type="text" required="">
+                                <input name="title" data-name="vpb" class="form-control form-control-sm" type="text"
+                                    required="">
                             </td>
                         </tr>
                         <tr>
@@ -378,8 +371,8 @@
                                     type="text" readonly="">
                             </td>
                             <td>
-                                <input name="pb_value[clickid][]" data-name="vpb" class="form-control form-control-sm" type="text"
-                                    placeholder="Ex: {clickid}">
+                                <input name="pb_value[clickid][]" data-name="vpb" class="form-control form-control-sm"
+                                    type="text" placeholder="Ex: {clickid}">
                             </td>
                         </tr>
 
@@ -389,8 +382,8 @@
                                     class="form-control form-control-sm" type="text" readonly="">
                             </td>
                             <td>
-                                <input name="pb_value[commission][]" data-name="vpb" class="form-control form-control-sm" type="text"
-                                    placeholder="Ex: {commission}">
+                                <input name="pb_value[commission][]" data-name="vpb"
+                                    class="form-control form-control-sm" type="text" placeholder="Ex: {commission}">
                             </td>
                         </tr>
 
@@ -400,8 +393,8 @@
                                     class="form-control form-control-sm" type="text" readonly="">
                             </td>
                             <td>
-                                <input name="pb_value[sale_amount][]" data-name="vpb" class="form-control form-control-sm" type="text"
-                                    placeholder="Ex: {sale_amount}">
+                                <input name="pb_value[sale_amount][]" data-name="vpb"
+                                    class="form-control form-control-sm" type="text" placeholder="Ex: {sale_amount}">
                             </td>
                         </tr>
 
@@ -411,8 +404,8 @@
                                     type="text" readonly="">
                             </td>
                             <td>
-                                <input name="pb_value[pub_id][]" data-name="vpb" class="form-control form-control-sm" type="text"
-                                    placeholder="Ex: {pub_id}">
+                                <input name="pb_value[pub_id][]" data-name="vpb" class="form-control form-control-sm"
+                                    type="text" placeholder="Ex: {pub_id}">
                                 <input name="pb_id" data-name="vpb" class="form-control form-control-sm" type="hidden">
                             </td>
                         </tr>
@@ -429,34 +422,55 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-        var elContainer = '#postback_container'
-        var saveButton = '#save_data'
-        var elListpostback = '#listPostback'
-        var listPostbackData;
-        getListPostback()
+$(document).ready(function() {
+    var elContainer = '#postback_container'
+    var saveButton = '#save_data'
+    var elListpostback = '#listPostback'
+    var listPostbackData;
+    getListPostback()
 
-        function getListPostback() {
-            $.ajax({
-                    method: "POST",
-                    url: "<?php echo base_url('v2/postback/getListAdvPostback'); ?>"
-                })
-                .done(function(data) {
-                    listPostbackData = data.listPostback
-                    $(elListpostback).find('tbody').html(data.tableList)
-                    $('#postbackId').html(data.selectbox)
-                })
-                .fail(function(data) {
+    function getListPostback() {
+        $.ajax({
+                method: "POST",
+                url: "<?php echo base_url('v2/postback/getListAdvPostback'); ?>"
+            })
+            .done(function(data) {
+                listPostbackData = data.listPostback
+                $(elListpostback).find('tbody').html(data.tableList)
+                $('#postbackId').html(data.selectbox)
+            })
+            .fail(function(data) {
 
-                })
-        }
-        $(document).on('click', elListpostback + ' button[data-action="edit"]', function() {
-            var td = $(this).closest('td')
-            var postback_id = td.data('postback_id')
-            var qr = td.data('item')
-        })
-        $(document).on('click', elListpostback + ' button[data-action="delete"]', function() {
-            var postback_id = $(this).closest('td').data('postback_id')
+            })
+    }
+    $(document).on('click', elListpostback + ' button[data-action="edit"]', function() {
+        var td = $(this).closest('td')
+        var postback_id = td.data('postback_id')
+        var qr = td.data('item')
+    })
+    $(document).on('click', elListpostback + ' button[data-action="delete"]', function(e) {
+        e.preventDefault();
+
+        var btn = $(this);
+        var postback_id = btn.closest('td').data('postback_id');
+
+        Swal.fire({
+            title: 'Confirm!',
+            text: 'Do you want to delete this postback?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            cancelButtonText: 'Close',
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: 'btn btn-primary',
+                cancelButton: 'btn btn-secondary ms-2'
+            }
+        }).then(function(result) {
+            if (!result.isConfirmed) return;
+
+            btn.prop('disabled', true);
+
             $.ajax({
                     method: "POST",
                     url: "<?php echo base_url('v2/postback/advDelPostback'); ?>",
@@ -465,119 +479,129 @@
                     }
                 })
                 .done(function(data) {
-                    if (data.status = 'success') {
-                        var mess =
-                            `<div class="alert alert-danger" role="alert">
-                    ${data.messenger}
-                </div>`
-                        $('#messenger').html(mess)
-                        getListPostback();
-                    } else {
-                        Swal.fire({
-                            title: 'Error!',
-                            text: data.messenger ?? 'Error',
-                            icon: 'error',
-                            confirmButtonText: 'Cool'
-                        })
-                    }
-                })
-                .fail(function(data) {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Do you want to continue',
-                        icon: 'error',
-                        confirmButtonText: 'Cool'
-                    })
-                })
-        })
-        $(saveButton).click(function() {
-            var button = $(this)
-            $(button).prop('disabled', true)
-            var title = $(elContainer).find('input[name="title"]').val()
-            if (!title) {
-                alert('Please enter network name!')
-                $(button).prop('disabled', false)
-                return;
-            }
-
-            var formData = $('#postbackData').find('input').serialize();
-
-            addSaveData(button, formData)
-
-        })
-
-        function addSaveData(button, formData, modal = '') {
-            $.ajax({
-                    method: "POST",
-                    url: "<?php echo base_url('v2/postback/advAddPostback'); ?>",
-                    data: formData
-                })
-                .done(function(data) {
-                    if (data.status = 'success') {
+                    if (data.status == 'success') {
                         var mess =
                             `<div class="alert alert-success" role="alert">
-                    ${data.messenger}
-                </div>`
-                        $('#messenger').html(mess)
+                        ${data.messenger}
+                    </div>`;
+                        $('#messenger').html(mess);
                         getListPostback();
                     } else {
                         Swal.fire({
                             title: 'Error!',
-                            text: data.messenger ?? 'Error',
+                            text: (data && data.messenger) ? data.messenger :
+                                'Error',
                             icon: 'error',
-                            confirmButtonText: 'Cool'
-                        })
+                            confirmButtonText: 'OK'
+                        });
                     }
                 })
-                .fail(function(data) {
+                .fail(function() {
                     Swal.fire({
                         title: 'Error!',
-                        text: 'Do you want to continue',
+                        text: 'Delete request failed.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                })
+                .always(function() {
+                    btn.prop('disabled', false);
+                });
+        });
+    });
+
+    $(saveButton).click(function() {
+        var button = $(this)
+        $(button).prop('disabled', true)
+        var title = $(elContainer).find('input[name="title"]').val()
+        if (!title) {
+            alert('Please enter network name!')
+            $(button).prop('disabled', false)
+            return;
+        }
+
+        var formData = $('#postbackData').find('input').serialize();
+
+        addSaveData(button, formData)
+
+    })
+
+    function addSaveData(button, formData, modal = '') {
+        $.ajax({
+                method: "POST",
+                url: "<?php echo base_url('v2/postback/advAddPostback'); ?>",
+                data: formData
+            })
+            .done(function(data) {
+                if (data.status = 'success') {
+                    var mess =
+                        `<div class="alert alert-success" role="alert">
+                    ${data.messenger}
+                </div>`
+                    $('#messenger').html(mess)
+                    getListPostback();
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: data.messenger ?? 'Error',
                         icon: 'error',
                         confirmButtonText: 'Cool'
                     })
+                }
+            })
+            .fail(function(data) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Do you want to continue',
+                    icon: 'error',
+                    confirmButtonText: 'Cool'
                 })
-                .always(function() {
-                    if (modal) $(modal).modal('hide')
-                    $(button).prop('disabled', false)
-                });
-        }
-        //edit network
-        $(document).on('click', 'button[data-action="edit"]', function() {
-            var postback_id = $(this).closest('td').data('postback_id')
-            var listInput = $('.modal-edit-postback')
-            listInput.find('input[data-name="vpb"]').val('');
-            var pbValue = listPostbackData[postback_id]
-            if (pbValue != undefined) {
-                $(listInput).find('input[data-name="vpb"][name="pb_id"]').val(postback_id)
-                $(listInput).find('input[data-name="vpb"][name="title"]').val(pbValue.name)
-                $(listInput).find('input[data-name="vpb"][name="pb_value[clickid][]"]').val(pbValue.clickid[1])
-                $(listInput).find('input[data-name="vpb"][name="pb_value[commission][]"]').val(pbValue.commission[1])
-                $(listInput).find('input[data-name="vpb"][name="pb_value[sale_amount][]"]').val(pbValue.sale_amount[1])
-                $(listInput).find('input[data-name="vpb"][name="pb_value[pub_id][]"]').val(pbValue.pub_id[1])
-            }
-            $('#editPostback').modal('show')
-        })
-        $(document).on('click', '#editPostback button[data-action="save-edit-Postback"]', function() {
-            var button = $(this)
-            $(button).prop('disabled', true)
-            var title = $('.modal-edit-postback').find('input[name="title"]').val()
-            if (!title) {
-                alert('Please enter network name!')
+            })
+            .always(function() {
+                if (modal) $(modal).modal('hide')
                 $(button).prop('disabled', false)
-                return;
-            }
-
-            var formData = $('.modal-edit-postback').find('input').serialize();
-            addSaveData(button, formData, '#editPostback')
-        })
-        //offer test
-        $('#testOfferUrl').on('change', function() {
-            var offerLink = encodeURIComponent($(this).val());
-            var base_url = "<?php echo base_url('tracktest/advPostbackTest?adv=' . $this->member->id); ?>"
-            var postbackId = parseInt($('#postbackId').val())
-            $('#testTrackLink').val(base_url + '&postback_id=' + postbackId + '&offerurl=' + offerLink)
-        })
-
+            });
+    }
+    //edit network
+    $(document).on('click', 'button[data-action="edit"]', function() {
+        var postback_id = $(this).closest('td').data('postback_id')
+        var listInput = $('.modal-edit-postback')
+        listInput.find('input[data-name="vpb"]').val('');
+        var pbValue = listPostbackData[postback_id]
+        if (pbValue != undefined) {
+            $(listInput).find('input[data-name="vpb"][name="pb_id"]').val(postback_id)
+            $(listInput).find('input[data-name="vpb"][name="title"]').val(pbValue.name)
+            $(listInput).find('input[data-name="vpb"][name="pb_value[clickid][]"]').val(pbValue.clickid[
+                1])
+            $(listInput).find('input[data-name="vpb"][name="pb_value[commission][]"]').val(pbValue
+                .commission[1])
+            $(listInput).find('input[data-name="vpb"][name="pb_value[sale_amount][]"]').val(pbValue
+                .sale_amount[1])
+            $(listInput).find('input[data-name="vpb"][name="pb_value[pub_id][]"]').val(pbValue.pub_id[
+                1])
+        }
+        $('#editPostback').modal('show')
     })
+    $(document).on('click', '#editPostback button[data-action="save-edit-Postback"]', function() {
+        var button = $(this)
+        $(button).prop('disabled', true)
+        var title = $('.modal-edit-postback').find('input[name="title"]').val()
+        if (!title) {
+            alert('Please enter network name!')
+            $(button).prop('disabled', false)
+            return;
+        }
+
+        var formData = $('.modal-edit-postback').find('input').serialize();
+        addSaveData(button, formData, '#editPostback')
+    })
+    //offer test
+    $('#testOfferUrl').on('change', function() {
+        var offerLink = encodeURIComponent($(this).val());
+        var base_url = "<?php echo base_url('tracktest/advPostbackTest?adv=' . $this->member->id); ?>"
+        var postbackId = parseInt($('#postbackId').val())
+        $('#testTrackLink').val(base_url + '&postback_id=' + postbackId + '&offerurl=' + offerLink)
+    })
+
+})
 </script>

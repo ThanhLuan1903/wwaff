@@ -435,8 +435,12 @@ class Click extends CI_Controller
                     $cr_helper->syncCrData($cr_key, $this->redis);
                 }
 
-                $url = $clickData->url . $clickData->subid . $tracklink;
-                $url = str_replace('#pubid#', $pid, $url);
+                // $url = $clickData->url . $clickData->subid . $tracklink;
+                // $url = str_replace('#pubid#', $pid, $url);
+                $affsub = $this->renderAffsub($clickData->subid, $pid, $tracklink);
+
+                // Build final URL
+                $url = $clickData->url . $affsub;
 
                 if (!empty($s4)) {
                     $url = str_replace('#s4#', $s4, $url);
@@ -676,4 +680,21 @@ class Click extends CI_Controller
             log_message('error', 'update_unknowBrowser: ' . $e->getMessage());
         }
     }
+    
+    private function renderAffsub($template, $pubid, $clickid)
+    {
+        $tpl = (string)$template;
+
+        $hasClickToken = (strpos($tpl, '#clickid#') !== false);      
+        $tpl = str_replace('#pubid#', $pubid, $tpl);
+        $tpl = str_replace('#clickid#', $clickid, $tpl);
+
+        if (!$hasClickToken) {
+            if (preg_match('/=$/', $tpl)) {
+                $tpl .= $clickid;
+            }
+        }
+        return $tpl;
+    }
+
 }

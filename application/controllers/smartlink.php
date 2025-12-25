@@ -38,6 +38,22 @@ class Smartlink extends CI_Controller
         $result = curl_exec($ch);  
         curl_close($ch);
     }
+    private function renderAffsub($template, $pubid, $clickid)
+    {
+        $tpl = (string)$template;
+
+        $hasClickToken = (strpos($tpl, '#clickid#') !== false);      
+        $tpl = str_replace('#pubid#', $pubid, $tpl);
+        $tpl = str_replace('#clickid#', $clickid, $tpl);
+
+        if (!$hasClickToken) {
+            if (preg_match('/=$/', $tpl)) {
+                $tpl .= $clickid;
+            }
+        }
+        return $tpl;
+    }
+
 
     public function index()
     { 
@@ -121,8 +137,11 @@ class Smartlink extends CI_Controller
                 $tracklink = $this->db->insert_id();
 
 
-                $url = $smartlink->url . $net->subid . $tracklink;
-                $url = str_replace('#pubid#', $pid, $url);
+                // $url = $smartlink->url . $net->subid . $tracklink;
+                // $url = str_replace('#pubid#', $pid, $url);
+                $affsub = $this->renderAffsub($net->subid, $pid, $tracklink);
+                $url = $smartlink->url . $affsub;
+
                 if (!empty($s4)) {
                     $url = str_replace('#s4#', $s4, $url);
                 }
@@ -234,8 +253,10 @@ class Smartlink extends CI_Controller
                 $this->db->where('id', $off->id);
                 $this->db->set('click', "click +1", FALSE);
                 $this->db->update('offer');
-                $url = $off->url . $off->subid . $tracklink; 
-                $url = str_replace('#pubid#', $pid, $url);
+                // $url = $off->url . $off->subid . $tracklink; 
+                // $url = str_replace('#pubid#', $pid, $url);
+                $affsub = $this->renderAffsub($off->subid, $pid, $tracklink);
+                $url = $off->url . $affsub;
                 if (!empty($s4)) {
                     $url = str_replace('#s4#', $s4, $url);
                 }
