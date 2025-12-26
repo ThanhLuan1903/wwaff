@@ -36,7 +36,7 @@ class Auth extends CI_Controller
             $this->form_validation->set_rules('user_setting[has_affiliate_program]', 'I already have an affiliate program', 'trim|required|xss_clean');
             $this->form_validation->set_rules('user_setting[agree_with_term_1]', 'Please agree with term', 'trim|required|xss_clean');
             $this->form_validation->set_rules('user_setting[agree_with_term_2]', 'Please agree with term 2', 'trim|required|xss_clean');
-            $this->form_validation->set_rules('avatar_url', 'Avatar', 'required|regex_match[/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/]');
+            $this->form_validation->set_rules('avatar_url', 'Avatar', 'callback__validate_and_upload_avatar');
             $this->form_validation->set_rules('how_to_get_traffic', 'About your business', 'trim|required|xss_clean');
             $this->form_validation->set_rules('product_categories', 'Product Categories', 'required');
             $data = $this->security->xss_clean($_POST);
@@ -70,6 +70,8 @@ class Auth extends CI_Controller
                 echo json_encode(array('error' => true, 'data' => $errors));
                 return;
             } else {
+                $avatar_url = $this->input->post('avatar_url', true); 
+                $data['avatar_url'] = $avatar_url;
                 $is_company = $type_account == 'Company' ? 1 : 0;
                 $password = sha1(md5($_POST['password']));
                 $user_setting = serialize($_POST['user_setting']);
@@ -92,6 +94,38 @@ class Auth extends CI_Controller
         $traffic_types = $this->Custom_model->get_list_by_type(ThemeService::REGISTER_PAGE);
 
         $this->load->view('auth/signup', array('pubconfig' => $this->pub_config['termsinfo'], 'traffic_types' => $traffic_types, 'countries' => $countries, 'p_categories' => $p_categories));
+    }
+
+    function _validate_and_upload_avatar()
+    {
+        if (empty($_FILES['avatar_url']) || empty($_FILES['avatar_url']['name'])) {
+            $this->form_validation->set_message('_validate_and_upload_avatar', 'Please upload an Avatar.');
+            return false;
+        }
+
+        $uploadDir = FCPATH . 'upload/files/avatars/';
+        if (!is_dir($uploadDir)) { @mkdir($uploadDir, 0755, true); }
+
+        $config = [
+            'upload_path'   => $uploadDir,
+            'allowed_types' => 'jpg|jpeg|png',
+            'max_size'      => 2048,
+            'encrypt_name'  => true,
+        ];
+
+        $this->load->library('upload', $config);
+
+        if (!$this->upload->do_upload('avatar_url')) {
+            $this->form_validation->set_message('_validate_and_upload_avatar', $this->upload->display_errors('', ''));
+            return false;
+        }
+
+        $up = $this->upload->data();
+        $relativePath = 'upload/files/avatars/' . $up['file_name'];
+
+        $_POST['avatar_url'] = $relativePath;
+
+        return true;
     }
 
     function check_email($email)

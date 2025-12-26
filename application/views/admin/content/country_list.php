@@ -3,7 +3,9 @@
         <div class="box-header">
             <h2><i class="glyphicon glyphicon-globe"></i><span class="break"></span>Country</h2>
             <div class="box-icon">
-                <a class="btn-add" href="<?php echo base_url().$this->config->item('admin').'/route/'.$this->uri->segment(3).'/add/';?>"><i class="glyphicon glyphicon-plus"></i></a>
+                <a class="btn-add"
+                    href="<?php echo base_url().$this->config->item('admin').'/route/'.$this->uri->segment(3).'/add/';?>"><i
+                        class="glyphicon glyphicon-plus"></i></a>
                 <a class="btn-setting" href="#"><i class="glyphicon glyphicon-wrench"></i></a>
                 <a class="btn-minimize" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
                 <a class="btn-close" href="#"><i class="glyphicon glyphicon-remove"></i></a>
@@ -12,9 +14,10 @@
         <div class="box-content">
             <div class="row">
                 <div class="col-md-3">
-                    <div class="form-group form-inline filter">                                                        
-                        <select title="<?php echo $this->uri->segment(3);?>" name="show_num" size="1" class="form-control input-sm">
-                        <?php 
+                    <div class="form-group form-inline filter">
+                        <select title="<?php echo $this->uri->segment(3);?>" name="show_num" size="1"
+                            class="form-control input-sm">
+                            <?php 
                             $limit = $this->session->userdata('limit');
                             for($i=1;$i<11;$i++){
                                 echo '
@@ -26,62 +29,76 @@
                             }
                             ?>
                         </select>
-                        <label>records per page</label>                                            
+                        <label>records per page</label>
                     </div>
                 </div>
-                
+
             </div>
-               <?php $mcategory['0']->title= 'none';?>  
+            <?php $mcategory['0']->title= 'none';?>
             <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
                         <th>Id</th>
                         <th>Country</th>
                         <th>Code</th>
-                        <th style="width: 100px;">status</th>                                              
+                        <th style="width: 100px;">status</th>
                         <th style="width: 100px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                <?php if(!empty($dulieu)){
-                            foreach($dulieu as $dulieu){?>    
+                    <?php if(!empty($dulieu)){
+                            foreach($dulieu as $dulieu){?>
                     <tr>
                         <td><?php echo $dulieu->id;?></td>
-                        <td><?php echo $dulieu->country;?></td>
+                        <td>
+                            <?php
+                                $cc = strtolower(trim($dulieu->keycode));
+                                $countryName = mb_convert_case(
+                                    mb_strtolower(trim($dulieu->country), 'UTF-8'),
+                                    MB_CASE_TITLE,
+                                    'UTF-8'
+                                );
+                            ?>
+                            <span class="fi fi-<?= htmlspecialchars($cc) ?> me-2"></span>
+                            <?= htmlspecialchars($countryName) ?>
+                        </td>
                         <td><?php echo $dulieu->keycode;?></td>
-                         <td>
+                        <td>
                             <?php 
                             if($dulieu->show==0){echo '<span data="id='.$dulieu->id.'&field=show&change=ShowHide" class="label label-warning ajaxst">Hide</span>';}
                             if($dulieu->show==1){echo '<span data="id='.$dulieu->id.'&field=show&change=ShowHide" class="label label-success ajaxst">Show</span>';}
                                                       
-                            ?> 
+                            ?>
                         </td>
                         <td>
-                           
+
                             <!--edit>>>-->
-                            <a href="<?php echo base_url().$this->config->item('admin').'/route/'.$this->uri->segment(3).'/edit/'.$dulieu->id;?>" class="btn btn-info btn-xs">
-                            <i class="glyphicon glyphicon-edit glyphicon glyphicon-white"></i>                                            
+                            <a href="<?php echo base_url().$this->config->item('admin').'/route/'.$this->uri->segment(3).'/edit/'.$dulieu->id;?>"
+                                class="btn btn-info btn-xs">
+                                <i class="glyphicon glyphicon-edit glyphicon glyphicon-white"></i>
                             </a>
                             <!--delete>>>-->
-                            <a href="<?php echo base_url().$this->config->item('admin').'/route/'.$this->uri->segment(3).'/delete/'.$dulieu->id;?>" class="btn btn-danger btn-xs">
-                            <i class="glyphicon glyphicon-trash glyphicon glyphicon-white"></i> 
+                            <a href="<?php echo base_url().$this->config->item('admin').'/route/'.$this->uri->segment(3).'/delete/'.$dulieu->id;?>"
+                                class="btn btn-danger btn-xs">
+                                <i class="glyphicon glyphicon-trash glyphicon glyphicon-white"></i>
                             </a>
                         </td>
                     </tr>
                     <?php    }
                         }
                         ?>
-                    
+
                 </tbody>
             </table>
             <div class="row">
                 <!--div class="col-md-12">
                     Showing 1 to 10 of 32 entries
                 </div--->
-                
+
                 <div class="col-md-6">
                     <div style="margin:20px 0;float:left" class="form-group form-inline filter">
-                        <select title="<?php echo $this->uri->segment(3);?>" name="filter_cat" size="1" class="form-control input-sm">
+                        <select title="<?php echo $this->uri->segment(3);?>" name="filter_cat" size="1"
+                            class="form-control input-sm">
                             <option value="0">all</option>
                             <?php 
                                 if(!empty($category)){
@@ -99,12 +116,12 @@
                                 }
                                 ?>
                         </select>
-                        <label></label>                                            
+                        <label></label>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <ul class=" pagination">                       
-                        <?php echo $this->pagination->create_links();?>     
+                    <ul class=" pagination">
+                        <?php echo $this->pagination->create_links();?>
                     </ul>
                 </div>
             </div>
@@ -112,3 +129,4 @@
     </div>
     <!--/span-->
 </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons/css/flag-icons.min.css">

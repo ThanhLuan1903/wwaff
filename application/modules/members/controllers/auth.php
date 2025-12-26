@@ -227,7 +227,7 @@ class Auth extends CI_Controller
                 $loi .= 'Please enter a valid <strong>IM Name.</strong><br/>';
             }
 
-            $data['mailling']['aff_type']  = join(',', $data['aff_type']);
+            $data['mailling']['aff_type'] = isset($data['aff_type']) ? join(',', (array)$data['aff_type']) : '';
             if (($this->form_validation->run() == FALSE)) {
                 if ($loi && $data) {
                     $dt = $loi;
@@ -236,7 +236,7 @@ class Auth extends CI_Controller
                 if (form_error('password')) $dt .=  form_error('password') . '<br/>';
                 if (form_error('phone')) $dt .=  form_error('phone') . '<br/>';
                 if (form_error('mailling[website]')) $dt .=  form_error('mailling[website]') . '<br/>';
-                if (form_error('mailling[avartar]')) $dt .=  form_error('mailling[avartar]') . '<br/>';
+                if (form_error('avatar_url')) $dt .= form_error('avatar_url') . '<br/>';
                 if (form_error('product_category')) $dt .=  form_error('product_category') . '<br/>';
                 if (form_error('product_geo')) $dt .=  form_error('product_geo') . '<br/>';
                 if (form_error('mailling[hear_about]')) $dt .=  form_error('mailling[hear_about]') . '<br/>';
@@ -273,7 +273,10 @@ class Auth extends CI_Controller
 
                 $this->load->helper('string');
                 $mangaunhien = random_string('alnum', 16);
-
+                $data['mailling']['avartar'] =
+                    isset($this->mailling['avartar'])
+                        ? $this->mailling['avartar']
+                        : (isset($data['mailling']['avartar']) ? $data['mailling']['avartar'] : '');
                 $idata['mailling'] = serialize($data['mailling']);
                 $idata['manager'] = $managerid;
                 $idata['phone'] = $data['phone'];
@@ -429,21 +432,67 @@ class Auth extends CI_Controller
         $this->form_validation->set_rules('phone', 'Phone', 'required|trim|regex_match[/^(\+)?[0-9]{9,12}$/]|xss_clean');
         $this->form_validation->set_rules('product_category', 'Product Category', 'required');
         $this->form_validation->set_rules('product_geo', 'Product Geo', 'required');
-        $this->form_validation->set_rules('mailling[avartar]', 'Avatar', 'required');
+        // $this->form_validation->set_rules('mailling[avartar]', 'Avatar', 'required');
         $this->form_validation->set_rules('mailling[hear_about]', 'About your business', 'required');
         $this->form_validation->set_rules('conversion_flow', 'Product Type', 'required');
         $this->form_validation->set_rules('mailling[volume]', 'Volume', 'required');
         $this->form_validation->set_rules('traffic_device', 'Traffic Device', 'required');
         $this->form_validation->set_rules('mailling[ad]', 'Address', 'required');
+        $this->form_validation->set_rules('avatar_url', 'Avatar', 'callback__validate_and_upload_avatar');
 
-        if (!empty($this->input->post('mailling')['avartar'])) {
-            $this->form_validation->set_rules('mailling[avartar]', 'Avatar', 'regex_match[/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/]');
-        }
+        // if (!empty($this->input->post('mailling')['avartar'])) {
+        //     $this->form_validation->set_rules('mailling[avartar]', 'Avatar', 'regex_match[/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/]');
+        // }
 
         if ($registerType == 'Company') {
             $this->form_validation->set_rules("mailling[website]", 'Website', 'required|regex_match[/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/]');
         }
     }
+
+    public function _validate_and_upload_avatar()
+{
+    // Nếu không có file
+    if (empty($_FILES['avatar_url']) || empty($_FILES['avatar_url']['name'])) {
+        $this->form_validation->set_message('_validate_and_upload_avatar', 'Please upload an <strong>Avatar</strong>.');
+        return false;
+    }
+
+    // Ensure folder exists: /upload/files/avatars
+    $uploadDir = FCPATH . 'upload/files/avatars/';
+    if (!is_dir($uploadDir)) {
+        @mkdir($uploadDir, 0755, true);
+    }
+
+    $config = [];
+    $config['upload_path']   = $uploadDir;
+    $config['allowed_types'] = 'jpg|jpeg|png';
+    $config['max_size']      = 2048; // KB = 2MB
+    $config['encrypt_name']  = true;
+
+    $this->load->library('upload', $config);
+
+    if (!$this->upload->do_upload('avatar_url')) {
+        $this->form_validation->set_message('_validate_and_upload_avatar', $this->upload->display_errors('', ''));
+        return false;
+    }
+
+    $up = $this->upload->data();
+
+    // Lưu đường dẫn relative để dùng base_url() render
+    $relativePath = 'upload/files/avatars/' . $up['file_name'];
+
+    // IMPORTANT: đưa vào mailling để register() serialize xuống DB
+    if (!isset($this->mailling) || !is_array($this->mailling)) {
+        $this->mailling = [];
+    }
+    $this->mailling['avartar'] = $relativePath;
+
+    // Đồng bộ vào POST data để phía dưới bạn serialize($data['mailling']) ra đúng
+    $_POST['mailling']['avartar'] = $relativePath;
+
+    return true;
+}
+
 
     public function valid_password($password)
     {
