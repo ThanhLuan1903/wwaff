@@ -38,32 +38,74 @@ trait Advertiser_ProfileTrait {
       echo show_error('Incorrect Password');
     }
   }
+private function update_profile() {
+  $errors = '';
 
-  private function update_profile() {
+  $this->form_validation->set_rules('email', 'Email', 'trim|valid_email|xss_clean|callback_check_email');
+  $this->form_validation->set_rules('username', 'Username', 'trim|xss_clean|callback_check_username');
+  $this->form_validation->set_rules('social_network', 'Skype ID/Linkedin', 'trim|required|max_length[255]|xss_clean');
+  $this->form_validation->set_rules("website", 'Website', 'required|regex_match[/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/]');
+  $this->form_validation->set_rules('phone', 'Phone', 'required|trim|regex_match[/^(\+)?[0-9]{9,12}$/]|xss_clean');
+  $this->form_validation->set_rules('avatar_file', 'Avatar', 'callback__validate_and_upload_avatar_profile');
+
+  if (!$this->form_validation->run()) {
+    if(form_error('email')) $errors .= form_error('email').'<br/>';
+    if(form_error('username')) $errors .= form_error('username').'<br/>';
+    if(form_error('social_network')) $errors .= form_error('social_network').'<br/>';
+    if(form_error('website')) $errors .= form_error('website').'<br/>';
+    if(form_error('phone')) $errors .= form_error('phone').'<br/>';
+    if(form_error('avatar_file')) $errors .= form_error('avatar_file').'<br/>';
+    echo $errors;
+    return;
+  }
+
     $data = $this->input->post();
-    $errors = '';
     unset($data['action']);
 
-    $this->form_validation->set_rules('email', 'Email', 'trim|valid_email|xss_clean|callback_check_email');     
-    $this->form_validation->set_rules('username', 'Username', 'trim|xss_clean|callback_check_username');       
-    $this->form_validation->set_rules('social_network', 'Skype ID/Linkedin', 'trim|required|max_length[255]|xss_clean');
-    $this->form_validation->set_rules("website", 'Website', 'required|regex_match[/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/]');
-    $this->form_validation->set_rules('phone', 'Phone', 'required|trim|regex_match[/^(\+)?[0-9]{9,12}$/]|xss_clean');
+    $ok = $this->Advertiser_model->update_profile($data);
 
-    if (!$this->form_validation->run()) {
-      if(form_error('email')) $errors .= form_error('email').'<br/>';
-      if(form_error('username')) $errors .= form_error('username').'<br/>';
-      if(form_error('social_network')) $errors .= form_error('social_network').'<br/>';
-      if(form_error('website')) $errors .= form_error('website').'<br/>';
-      if(form_error('phone')) $errors .= form_error('phone').'<br/>';
-
-      echo $errors;
-      return;
+    // update session
+    $user = $this->session->userdata('user');
+    if ($user && !empty($data['avatar_url'])) {
+      $user->avatar_url = $data['avatar_url'];
+      $this->session->set_userdata('user', $user);
     }
 
-    $this->Advertiser_model->update_profile($data);
-    echo 'Update Profile Successfully';
-  }
+  echo $ok ? 'Update Profile Successfully' : 'Update Profile Failed';
+}
+
+  
+  function _validate_and_upload_avatar_profile()
+    {
+      if (empty($_FILES['avatar_file']) || empty($_FILES['avatar_file']['name'])) {
+        return true;
+      }
+
+      $uploadDir = FCPATH . 'upload/files/avatars/';
+      if (!is_dir($uploadDir)) { @mkdir($uploadDir, 0755, true); }
+
+      $config = [
+        'upload_path'   => $uploadDir,
+        'allowed_types' => 'jpg|jpeg|png',
+        'max_size'      => 2048,
+        'encrypt_name'  => true,
+      ];
+
+      $this->load->library('upload', $config);
+
+      if (!$this->upload->do_upload('avatar_file')) {
+        $this->form_validation->set_message('_validate_and_upload_avatar_profile', $this->upload->display_errors('', ''));
+        return false;
+      }
+
+      $up = $this->upload->data();
+      $relativePath = 'upload/files/avatars/' . $up['file_name'];
+
+      $_POST['avatar_url'] = $relativePath;
+
+      return true;
+    }
+
 
   function check_email($email ){
     if ($this->session->userdata('user')->email == $email) {

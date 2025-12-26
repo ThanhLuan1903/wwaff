@@ -13,13 +13,13 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
 
 ?>
 <style>
-    .bootstrap-select {
-        width: 100% !important;
-    }
+.bootstrap-select {
+    width: 100% !important;
+}
 
-    .filter-option-inner {
-        font-size: 14px !important
-    }
+.filter-option-inner {
+    font-size: 14px !important
+}
 </style>
 <div class="mt-5 mb-4">
 
@@ -50,7 +50,7 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
 
             <!---content tab-->
             <div class="_3vMlZCRTDMcko6fQUVb1Uf css-1qvl0ud css-y2hsyn tabcontent profile">
-                <form class="sc-jQMNup hiJcSc" id="formProfile">
+                <form class="sc-jQMNup hiJcSc" id="formProfile" enctype="multipart/form-data">
                     <div class="sc-ccLTTT cjuVOD" style="display: flex;">
                         <div class="col-6">
                             <input class="form-check-input" type="radio" name="" id=""
@@ -72,7 +72,8 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-1vr8bhw">
                             <input name="email" placeholder="Email" type="text"
                                 class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c"
-                                value="<?php echo $userData->email; ?>" <?= !empty($userData->email) ? 'readonly' : '' ?>>
+                                value="<?php echo $userData->email; ?>"
+                                <?= !empty($userData->email) ? 'readonly' : '' ?>>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
@@ -112,18 +113,32 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
                             </svg>
                         </div>
                     </div>
-
                     <div class="sc-ccLTTT cjuVOD">
                         <p class="sc-hARARD cKOZpE">Avatar (Please use image with 3x4 size)</p>
-                        <div class="_3WCfA5WYRlXEJAXoSGLCJM css-1vr8bhw">
-                            <input name="avartar" maxlength="255" placeholder="Avatar" type="text"
-                                class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c"
-                                value="<?php if (!empty($acc['avartar'])) echo $acc['avartar']; ?>">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
-                                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                            </svg>
+
+                        <?php
+                          $avatarSrc = !empty($profile->avatar_url)
+                            ? base_url($profile->avatar_url)
+                            : base_url('temp/default/images/avt_unknow.jpeg');
+                        ?>
+
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <img id="avatarPreview" src="<?= $avatarSrc ?>" alt="avatar"
+                                style="width:70px;height:90px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;" />
+
+                            <div style="flex:1;">
+                                <!-- FILE INPUT: KHÔNG được đặt name avatar_url -->
+                                <input type="file" id="avatar_file" name="avatar_file"
+                                    accept="image/png,image/jpeg,image/jpg" style="width:100%;" />
+
+                                <small style="display:block;margin-top:6px;opacity:.75">
+                                    Allowed: JPG/PNG. Max 2MB.
+                                </small>
+
+                                <!-- HIDDEN PATH: cái này mới update vào DB -->
+                                <input type="hidden" name="avatar_url" id="avatar_url_hidden"
+                                    value="<?= !empty($profile->avatar_url) ? htmlspecialchars($profile->avatar_url) : '' ?>">
+                            </div>
                         </div>
                     </div>
                     <div class="sc-ccLTTT cjuVOD">
@@ -193,9 +208,9 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
                             <?php $traffic_devices = $this->Home_model->get_data('device', ['show' => 1]); ?>
                             <select name="traffic_device" class="selectpicker" aria-label="size 3 select example">
                                 <?php foreach ($traffic_devices as $traffic_device): ?>
-                                    <option value="<?= $traffic_device->id ?>"
-                                        <?= $traffic_device->id == $userData->traffic_device ? 'selected' : '' ?>>
-                                        <?= $traffic_device->device ?></option>
+                                <option value="<?= $traffic_device->id ?>"
+                                    <?= $traffic_device->id == $userData->traffic_device ? 'selected' : '' ?>>
+                                    <?= $traffic_device->device ?></option>
                                 <?php endforeach ?>
                             </select>
                             <!-- <input name="traffic_device" placeholder="Traffic Device" type="text" class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c" value="<?= $userData->traffic_device ?>"> -->
@@ -230,9 +245,9 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
                             <?php $aff_types =  unserialize($acc['aff_type']); ?>
                             <select name="aff_type[]" class="selectpicker" multiple aria-label="size 3 select example">
                                 <?php foreach ($trafficTypes as $type): ?>
-                                    <option value="<?= $type->content ?>"
-                                        <?= in_array($type->content, $aff_types) ? 'selected' : '' ?>><?= $type->content ?>
-                                    </option>
+                                <option value="<?= $type->content ?>"
+                                    <?= in_array($type->content, $aff_types) ? 'selected' : '' ?>><?= $type->content ?>
+                                </option>
                                 <?php endforeach ?>
                             </select>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -251,7 +266,7 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
                                 <?php $flow_ids =  explode(',', $userData->product_categories); ?>
                                 <?php foreach ($conversion_flows as $flow): ?>
                                     <option value="<?= $flow->id ?>" <?= in_array($flow->id, $flow_ids) ? 'selected' : '' ?>>
-                                        <?= $flow->offercat ?></option>
+                                    <?= $flow->offercat ?></option>
                                 <?php endforeach ?>
                             </select>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -269,9 +284,9 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
                                 aria-label="size 3 select example">
                                 <?php $product_geo_ids =  explode(',', $userData->product_geos); ?>
                                 <?php foreach ($product_geos as $geo): ?>
-                                    <option value="<?= $geo->id ?>"
-                                        <?= in_array($geo->id, $product_geo_ids) ? 'selected' : '' ?>><?= $geo->country ?>
-                                    </option>
+                                <option value="<?= $geo->id ?>"
+                                    <?= in_array($geo->id, $product_geo_ids) ? 'selected' : '' ?>><?= $geo->country ?>
+                                </option>
                                 <?php endforeach ?>
                             </select>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -289,9 +304,9 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
                                 aria-label="size 3 select example">
                                 <?php $product_types_ids =  explode(',', $userData->conversion_flow); ?>
                                 <?php foreach ($offer_types as $type): ?>
-                                    <option value="<?= $type->id ?>"
-                                        <?= in_array($type->id, $product_types_ids) ? 'selected' : '' ?>><?= $type->type ?>
-                                    </option>
+                                <option value="<?= $type->id ?>"
+                                    <?= in_array($type->id, $product_types_ids) ? 'selected' : '' ?>><?= $type->type ?>
+                                </option>
                                 <?php endforeach ?>
                             </select>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -302,7 +317,7 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
                             </svg>
                         </div>
                     </div>
-                    
+
                     <div>
                         <p class="sc-bJHhxl gXRQqD">Tel.</p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-gd4v6g">
@@ -377,106 +392,103 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
 </div>
 
 <script>
-    $(document).ready(function() {
+$(document).ready(function() {
+    $('.tabcontent').hide();
+    $('.tab_header').removeClass('tab_header_active');
+
+    var segments = $(location).attr('href').split("/").splice(0, 7).join("/").split('/');
+    var curentTab = segments[5];
+    $('.' + curentTab).show();
+    $('#' + curentTab).addClass('tab_header_active');
+
+    $('.tab_header').on('click', function(e) {
+        curentTab = $(this).attr('id');
         $('.tabcontent').hide();
         $('.tab_header').removeClass('tab_header_active');
-
-        var segments = $(location).attr('href').split("/").splice(0, 7).join("/").split('/');
-        var curentTab = segments[5];
         $('.' + curentTab).show();
         $('#' + curentTab).addClass('tab_header_active');
-
-        $('.tab_header').on('click', function(e) {
-            curentTab = $(this).attr('id');
-            $('.tabcontent').hide(); 
-            $('.tab_header').removeClass('tab_header_active');
-            $('.' + curentTab).show(); 
-            $('#' + curentTab).addClass('tab_header_active'); 
-            e.preventDefault();
-        })
-
-        $('.btn_del_postBack').on('click', function(e) {
-            e.preventDefault();
-            var form = $(this).closest('form');
-            ajurl = "<?php echo base_url('v2/profile/postbacks'); ?>";
-            $.ajax({
-                type: "POST",
-                url: ajurl,
-                data: form.serialize(),
-                success: ajaxSuccPb,
-                error: ajaxErr
-            });
-
-        });
-        
-        $('.data_save2').on('click', function(e) {
-            e.preventDefault();
-            var form = $(this).closest('form');
-            ajurl = "<?php echo base_url('v2/profile/postbacks'); ?>";
-            $.ajax({
-                type: "POST",
-                url: ajurl,
-                data: form.serialize(),
-                success: ajaxSuccPb, 
-                error: ajaxErr
-            });
-
-        });
-   
-        $('.data_save').on('click', function(e) {
-            e.preventDefault();
-            var form = $(this).closest('form');
-            ajurl = "<?php echo base_url('v2/profile/profile'); ?>";
-            $.ajax({
-                type: "POST",
-                url: ajurl,
-                data: form.serialize(),
-                success: ajaxSuccess,
-                error: ajaxErr
-            });
-
-        });
-
-        $('#resetApikey').on('click', function(e) {
-            e.preventDefault();
-            var form = $(this).closest('form');
-            ajurl = "<?php echo base_url('v2/profile/resetApi'); ?>";
-            $.ajax({
-                type: "POST",
-                url: ajurl,
-                data: 'resetApikey',
-                success: function(apikey) {
-                    $('#Api-Key').val(apikey);
-                },
-                error: ajaxErr
-            });
-
-        });
-
+        e.preventDefault();
     })
-    
-    function ajaxSuccPb(data) {
-        if (data == 1) {
-            window.location.replace("<?php echo base_url('v2/profile/postbacks'); ?>");
-        } else {
-            alert('Error!');
-        }
-    }
 
-    function ajaxSuccess(data) {
-        $('#toastContent').html(data);
-        var myAlert = document.getElementById('thongBao'); 
-        var bsAlert = new bootstrap.Toast(myAlert, option); 
-        bsAlert.show(); 
-    }
+    $('.btn_del_postBack').on('click', function(e) {
+        e.preventDefault();
+        var form = $(this).closest('form');
+        ajurl = "<?php echo base_url('v2/profile/postbacks'); ?>";
+        $.ajax({
+            type: "POST",
+            url: ajurl,
+            data: form.serialize(),
+            success: ajaxSuccPb,
+            error: ajaxErr
+        });
 
-    function ajaxErr() {
-        alert('Update Error!');
+    });
+
+    $('#avatar_file').on('change', function() {
+        const file = this.files && this.files[0];
+        if (!file) return;
+
+        const url = URL.createObjectURL(file);
+        $('#avatarPreview').attr('src', url);
+    });
+
+    $('.data_save').on('click', function(e) {
+        e.preventDefault();
+
+        const formEl = $('#formProfile')[0];
+        const formData = new FormData(formEl);
+
+        $.ajax({
+            type: "POST",
+            url: "<?php echo base_url('v2/profile/profile'); ?>",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: ajaxSuccess,
+            error: ajaxErr
+        });
+    });
+
+    $('#resetApikey').on('click', function(e) {
+        e.preventDefault();
+        var form = $(this).closest('form');
+        ajurl = "<?php echo base_url('v2/profile/resetApi'); ?>";
+        $.ajax({
+            type: "POST",
+            url: ajurl,
+            data: 'resetApikey',
+            success: function(apikey) {
+                $('#Api-Key').val(apikey);
+            },
+            error: ajaxErr
+        });
+
+    });
+
+})
+
+function ajaxSuccPb(data) {
+    if (data == 1) {
+        window.location.replace("<?php echo base_url('v2/profile/postbacks'); ?>");
+    } else {
+        alert('Error!');
     }
-    
-    var option = {
-        animation: true,
-        delay: 5000,
-        autohide: true
-    };
+}
+
+function ajaxSuccess(data) {
+    $('#toastContent').html(data);
+    var myAlert = document.getElementById('thongBao');
+    var bsAlert = new bootstrap.Toast(myAlert, option);
+    bsAlert.show();
+}
+
+function ajaxErr() {
+    alert('Update Error!');
+}
+
+var option = {
+    animation: true,
+    delay: 5000,
+    autohide: true
+};
 </script>

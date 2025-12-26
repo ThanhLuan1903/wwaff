@@ -446,7 +446,6 @@ class Advertiser_model extends CI_Model
         $data['product_geo_ids'] = serialize($data['product_geo_ids']);
         unset($data['traffic_source']);
         unset($data['product_categories']);
-
         // Update Profile table
         $id = $this->session->userdata('user')->id;
         $this->db->where('id', $id);
