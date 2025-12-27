@@ -15,4 +15,4 @@ start-services.sh
 .env
 .htaccess
 /upload/files/*
-!/upload/avatars/
+!/upload/files/avatars/
