@@ -79,8 +79,13 @@
 
                         <a class="nav-link dropdown-toggle fs-6" id="dropdownUser1" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
-                            <?php $avt = $this->member_info['avartar']; ?>
-                            <img src="<?php echo $avt; ?>" width="30" height="30" class="rounded-circle">
+
+                            <?php 
+                            $advertiser = $this->session->userdata('user');
+                            $avatar = (!empty($advertiser->avatar_url))
+                                ? base_url($advertiser->avatar_url)
+                                : base_url('temp/default/images/avt_unknow.jpeg');?>
+                            <img src="<?=$avatar ?>" width="30" height="30" class="rounded-circle"> 
                         </a>
                         
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser1"
