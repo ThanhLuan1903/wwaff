@@ -2,7 +2,7 @@
 /////config mini point cashout
 // return phpinfo();
 
-$config['base_url']	= 'http://localhost/wwaff';
+$config['base_url']	= 'http://localhost/';
 // $config['base_url']	= 'localhost';
 // dev
 // $config['base_url']	= 'http://beeklink.store';
