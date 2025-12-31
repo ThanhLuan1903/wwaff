@@ -267,6 +267,10 @@ class Proxy_report extends CI_Controller
     public function index($offset = 0)
     {
         $data = $this->getData($offset);
+                echo '<pre>';
+print_r($data);
+echo '</pre>';
+exit;
         // đổi múi giờ chỗ này 
         if ($this->session->userdata('timezone') == 1) {
             foreach ($data['dulieu'] as $conversion) {
