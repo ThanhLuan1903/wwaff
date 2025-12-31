@@ -7,7 +7,7 @@ class Postback extends CI_Controller
         parse_str(substr(strrchr($_SERVER['REQUEST_URI'], "?"), 1), $_GET);
         $this->base_key = $this->config->item('base_key');
         $this->redis = new Redis();
-        $this->redis->connect('127.0.0.1', 6379);
+        $this->redis->connect('redis', 6379);
         $this->load_thuvien();
     }
 

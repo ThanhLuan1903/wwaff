@@ -360,15 +360,15 @@ class Proxy_report extends CI_Controller
         if (!empty($data['fraud_score'])) {
             $where .= " AND fraud_score >" . (int)$data['fraud_score'];
         }
-        if (!empty($data['status'] && $data['status'] != 'all')) {
-            $where .= " AND tl.status =" . (int)$data['status'];
+        if (!empty($data['status']) && $data['status'] != 'all') {
+            $where .= " AND tl.status = " . (int)$data['status'];
         }
 
         if (!empty($status)) {
             $where .= " AND tl.status !=" . (int)$status;
         }
-        if (!empty($data['network'] && $data['status'] != 'all')) {
-            $where .= " AND tl.idnet =" . (int) $data['network'];
+        if (!empty($data['network']) && $data['network'] != 'all') {
+            $where .= " AND tl.idnet = " . (int)$data['network'];
         }
 
         if ($this->managerid > 1) {
