@@ -1,179 +1,185 @@
 <script src="<?php echo base_url(); ?>/temp/default/js/jquery-ui.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>/temp/default/css/jquery-ui.css" />
 <script>
-   $(function() {
-      $("#startdate").datepicker({
-         dateFormat: "yy-mm-dd"
-      });
-      $("#enddate").datepicker({
-         dateFormat: "yy-mm-dd"
-      });
-   });
+$(function() {
+    $("#startdate").datepicker({
+        dateFormat: "yy-mm-dd"
+    });
+    $("#enddate").datepicker({
+        dateFormat: "yy-mm-dd"
+    });
+});
 </script>
 <style>
-   .rp_fitter {
-      width: 640px;
-      margin: 10px auto;
-   }
+.rp_fitter {
+    width: 640px;
+    margin: 10px auto;
+}
 
-   .inputrepr label {
-      width: 80px;
-      display: inline-block;
-      font-size: small;
-      color: #151390
-   }
+.inputrepr label {
+    width: 80px;
+    display: inline-block;
+    font-size: small;
+    color: #151390
+}
 
-   .inputrepr {
-      margin-right: 50px;
-   }
+.inputrepr {
+    margin-right: 50px;
+}
 
-   .odd {
-      background: #e7e7e7;
-   }
+.odd {
+    background: #e7e7e7;
+}
 
-   .checkboxWide {
-      width: 20px;
-      height: 20px;
-   }
+.checkboxWide {
+    width: 20px;
+    height: 20px;
+}
 
-   .fixed-bottom-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      padding: 10px 0;
-      background-color: #f8f8f8;
-      border-top: 1px solid #ddd;
-      z-index: 1000;
-      background-color: #343a40;
-   }
+.fixed-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    background-color: #f8f8f8;
+    border-top: 1px solid #ddd;
+    z-index: 1000;
+    background-color: #343a40;
+}
 
-   .scroll-to-top {
-      position: absolute;
-      right: 20px;
-      bottom: 10px;
-      display: none;
-      cursor: pointer;
-   }
+.scroll-to-top {
+    position: absolute;
+    right: 20px;
+    bottom: 10px;
+    display: none;
+    cursor: pointer;
+}
 
-   .spinner-border {
-      width: 1rem;
-      height: 1rem;
-      border: 0.2em solid currentColor;
-      border-right-color: transparent;
-      border-radius: 50%;
-      display: inline-block;
-      animation: spinner-border 0.75s linear infinite;
-   }
+.spinner-border {
+    width: 1rem;
+    height: 1rem;
+    border: 0.2em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    animation: spinner-border 0.75s linear infinite;
+}
 
-   @keyframes spinner-border {
-      to {
-         transform: rotate(360deg);
-      }
-   }
+@keyframes spinner-border {
+    to {
+        transform: rotate(360deg);
+    }
+}
 
-   .table-wrapper {
-      position: relative;
-      max-height: 700px;
-      overflow-y: auto;
-   }
+.table-wrapper {
+    position: relative;
+    max-height: 700px;
+    overflow-y: auto;
+}
 
-   .table-fixed-header {
-      width: 100%;
-      position: relative;
-   }
+.table-fixed-header {
+    width: 100%;
+    position: relative;
+}
 
-   .table-fixed-header thead {
-      position: sticky;
-      top: -1px;
-      background-color: #f8f9fa;
-      z-index: 1;
-   }
+.table-fixed-header thead {
+    position: sticky;
+    top: -1px;
+    background-color: #f8f9fa;
+    z-index: 1;
+}
 
-   .table-fixed-header th {
-      background-color: #f8f9fa;
-   }
+.table-fixed-header th {
+    background-color: #f8f9fa;
+}
 </style>
 <div class="row">
 
-   <div class="box col-md-12">
-      <div data-original-title="" class="box-header">
-         <h2><i class="glyphicon glyphicon-signal"></i><span class="break"></span>Report</h2>
-         <div class="box-icon">
-            <a class="btn-setting" href="#"><i class="glyphicon glyphicon-wrench"></i></a>
-            <a class="btn-minimize" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
-            <a class="btn-close" href="#"><i class="glyphicon glyphicon-remove"></i></a>
-         </div>
-      </div>
-      <div class="box-content">
-         <div class="row">
-            <div class="col-md-12">
-               <form class="" method="post" role="form" action="">
-                  <br />
-                  <div class="form-group col-md-6">
-                     <label>Start Date</label>
-                     <input id="startdate" type="text" class="form-control" name="from" value="<?php if ($this->session->userdata('dtfrom')) {
+    <div class="box col-md-12">
+        <div data-original-title="" class="box-header">
+            <h2><i class="glyphicon glyphicon-signal"></i><span class="break"></span>Report</h2>
+            <div class="box-icon">
+                <a class="btn-setting" href="#"><i class="glyphicon glyphicon-wrench"></i></a>
+                <a class="btn-minimize" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
+                <a class="btn-close" href="#"><i class="glyphicon glyphicon-remove"></i></a>
+            </div>
+        </div>
+        <div class="box-content">
+            <div class="row">
+                <div class="col-md-12">
+                    <form class="" method="post" role="form" action="">
+                        <br />
+                        <div class="form-group col-md-6">
+                            <label>Start Date</label>
+                            <input id="startdate" type="text" class="form-control" name="from" value="<?php if ($this->session->userdata('dtfrom')) {
                                                                                                    echo $this->session->userdata('dtfrom');
                                                                                                 } ?>" />
-                  </div>
-                  <div class="form-group col-md-6">
-                     <label>End Date</label>
-                     <input id="enddate" type="text" class="form-control" name="to" value="<?php if ($this->session->userdata('dtto')) {
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>End Date</label>
+                            <input id="enddate" type="text" class="form-control" name="to" value="<?php if ($this->session->userdata('dtto')) {
                                                                                                 echo $this->session->userdata('dtto');
                                                                                              } ?>" />
-                  </div>
-                  <div class="form-group col-md-6">
-                     <input name="pubid" type="text" class="form-control" value="<?php echo $this->session->userdata('dtpubid') ?>" placeholder="Publisher Id" />
-                  </div>
-                  <div class="form-group col-md-6">
-                     <input name="oid" type="text" class="form-control" value="<?php echo $this->session->userdata('dtoid') ?>" placeholder="Offer Id" />
-                  </div>
-                  <div class="form-group col-md-12">
-                     <label for="ips">Ips</label>
-                     <textarea type="text" class="form-control" id="ips" rows="5" name="ips"><?php echo $this->session->userdata('ips') ?></textarea>
-                  </div>
-                  <div class="form-group col-md-2">
-                     <label for="ips">Duplicate IP</label>
-                     <input type="checkbox" value="1" name="dtcheckdup" <?= ($this->session->userdata('dtcheckdup') == 1) ? 'checked' : '' ?>>
-                  </div>
-                  <div class="form-group col-md-2">
-                     <label for="ips">Useragent</label>
-                     <input type="checkbox" value="1" name="useragent" <?= ($this->session->userdata('useragent') == 1) ? 'checked' : '' ?>>
-                  </div>
-                  <div class="form-group col-md-12">
-                     <button type="submit" name="submit" value="1" class="btn btn-primary btn-sm ">Submit</button>
-                     <button type="submit" name="reset" value="1" class="btn btn-warning btn-sm ">Reset</button>
-                  </div>
-                  <hr />
-               </form>
-            </div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <input name="pubid" type="text" class="form-control"
+                                value="<?php echo $this->session->userdata('dtpubid') ?>" placeholder="Publisher Id" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <input name="oid" type="text" class="form-control"
+                                value="<?php echo $this->session->userdata('dtoid') ?>" placeholder="Offer Id" />
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="ips">Ips</label>
+                            <textarea type="text" class="form-control" id="ips" rows="5"
+                                name="ips"><?php echo $this->session->userdata('ips') ?></textarea>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="ips">Duplicate IP</label>
+                            <input type="checkbox" value="1" name="dtcheckdup"
+                                <?= ($this->session->userdata('dtcheckdup') == 1) ? 'checked' : '' ?>>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="ips">Useragent</label>
+                            <input type="checkbox" value="1" name="useragent"
+                                <?= ($this->session->userdata('useragent') == 1) ? 'checked' : '' ?>>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <button type="submit" name="submit" value="1"
+                                class="btn btn-primary btn-sm ">Submit</button>
+                            <button type="submit" name="reset" value="1" class="btn btn-warning btn-sm ">Reset</button>
+                        </div>
+                        <hr />
+                    </form>
+                </div>
 
-            <div class="col-md-12">
-               <!--
+                <div class="col-md-12">
+                    <!--
                <a class="timkiem btn btn-danger" href="<?php echo base_url() . $this->config->item('admin') . '/export/' . $this->uri->segment(3) . '/' . $this->uri->segment(4) . '/' . $this->uri->segment(5); ?>" target="_blank">Export</a>
                -->
-            </div>
-            <div class="col-md-12 table-wrapper">
-               <table class="table table-bordered table-fixed-header" id="data_table">
-                  <thead>
-                     <tr class="info">
-                        <th>#</th>
-                        <th style="width:50px">Point</th>
-                        <th>SubID</th>
-                        <th>S</th>
-                        <th>Users</th>
-                        <th>OfferId</th>
-                        <th>OferName</th>
-                        <th>Ip</th>
-                        <th>Date</th>
-                        <th>Payout</th>
-                        <th style="width:200px">Device</th>
-                        <th>UserAgent / Referrer</th>
-                     </tr>
-                  </thead>
-                  <tbody>
-                     <?php
+                </div>
+                <div class="col-md-12 table-wrapper">
+                    <table class="table table-bordered table-fixed-header" id="data_table">
+                        <thead>
+                            <tr class="info">
+                                <th>#</th>
+                                <th style="width:50px">Point</th>
+                                <th>SubID</th>
+                                <th>S</th>
+                                <th>Users</th>
+                                <th>OfferId</th>
+                                <th>OferName</th>
+                                <th>Ip</th>
+                                <th>Date</th>
+                                <th>Payout</th>
+                                <th style="width:200px">Device</th>
+                                <th>UserAgent / Referrer</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
                      if (!empty($dulieu)) {
                         $class = ['odd', 'even'];
                         $currentIP = '';
@@ -187,51 +193,56 @@
                            $clll = $class[$i % 2];
 
                      ?>
-                           <tr class="<?php echo $clll; ?>">
-                              <td><?php if ($dulieu->flead != 1): ?><input type="checkbox" value="1" name="sendLead[]" class="checkboxWide"><?php endif; ?></td>
-                              <td style="width:50px"><?php if ($dulieu->flead != 1): ?><input name="amount2" style="width:50px" type="text" data-trackid="<?php echo $dulieu->id; ?>" value="<?php echo (float)$dulieu->amount2 ?: ''; ?>"><?php endif; ?></td>
-                              <td><?php echo $dulieu->id; ?></td>
-                              <td>
-                                 S1: <?php echo $dulieu->s1; ?><br />
-                                 S2: <?php echo $dulieu->s2; ?><br />
-                                 S3: <?php echo $dulieu->s3; ?><br />
-                                 S4: <?php echo $dulieu->s4; ?>
-                              </td>
-                              <td><?php echo $dulieu->userid; ?></td>
-                              <td><?php echo $dulieu->offerid; ?></td>
-                              <td><?php echo $dulieu->oname; ?></td>
-                              <td><?php echo ' <img src="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.3/flags/4x3/' . strtolower($dulieu->countries) . '.svg" style="display: inline-block; width: 1em; height: 1em; vertical-align: middle;"> ' . $dulieu->ip; ?></td>
-                              <td><?php echo $dulieu->date; ?></td>
-                              <td><?php echo $dulieu->amount2; ?></td>
-                              <td>
-                                 Language: <?php echo $dulieu->user_language; ?><br />
-                                 Os_name: <?php echo $dulieu->os_name; ?><br />
-                                 Browser: <?php echo $dulieu->browser; ?><br />
-                                 Device_type: <?php echo $dulieu->device_type; ?><br />
-                                 Device_manuf: <?php echo $dulieu->device_manuf; ?><br />
-                              </td>
-                              <td>
-                                 <?php echo $dulieu->useragent; ?><br />
-                                 <?php echo $dulieu->referrer; ?>
-                              </td>
-                           </tr>
-                     <?php
+                            <tr class="<?php echo $clll; ?>">
+                                <td><?php if ($dulieu->flead != 1): ?><input type="checkbox" value="1" name="sendLead[]"
+                                        class="checkboxWide"><?php endif; ?></td>
+                                <td style="width:50px"><?php if ($dulieu->flead != 1): ?><input name="amount2"
+                                        style="width:50px" type="text" data-trackid="<?php echo $dulieu->id; ?>"
+                                        value="<?php echo (float)$dulieu->amount2 ?: ''; ?>"><?php endif; ?></td>
+                                <td><?php echo $dulieu->id; ?></td>
+                                <td>
+                                    S1: <?php echo $dulieu->s1; ?><br />
+                                    S2: <?php echo $dulieu->s2; ?><br />
+                                    S3: <?php echo $dulieu->s3; ?><br />
+                                    S4: <?php echo $dulieu->s4; ?>
+                                </td>
+                                <td><?php echo $dulieu->userid; ?></td>
+                                <td><?php echo $dulieu->offerid; ?></td>
+                                <td><?php echo $dulieu->oname; ?></td>
+                                <td><?php echo ' <img src="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.3/flags/4x3/' . strtolower($dulieu->countries) . '.svg" style="display: inline-block; width: 1em; height: 1em; vertical-align: middle;"> ' . $dulieu->ip; ?>
+                                </td>
+                                <td><?php echo $dulieu->date; ?></td>
+                                <td><?php echo $dulieu->amount2; ?></td>
+                                <td>
+                                    Language: <?php echo $dulieu->user_language; ?><br />
+                                    Os_name: <?php echo $dulieu->os_name; ?><br />
+                                    Browser: <?php echo $dulieu->browser; ?><br />
+                                    Device_type: <?php echo $dulieu->device_type; ?><br />
+                                    Device_manuf: <?php echo $dulieu->device_manuf; ?><br />
+                                </td>
+                                <td>
+                                    <?php echo $dulieu->useragent; ?><br />
+                                    <?php echo $dulieu->referrer; ?>
+                                </td>
+                            </tr>
+                            <?php
                         }
                      }
 
                      ?>
-                  </tbody>
-               </table>
-               Total: <?php echo round(isset($total) ? $total : 0, 2); ?> $
-            </div>
+                        </tbody>
+                    </table>
+                    Total: <?php echo round(isset($total) ? $total : 0, 2); ?> $
+                </div>
 
-            <div class="row">
+                <div class="row">
 
-               <div class="col-md-6">
-                  <div style="margin:20px 0;float:left" class="form-group form-inline filter">
-                     <select title="<?php echo $this->uri->segment(3); ?>" name="filter_cat" size="1" class="form-control input-sm">
-                        <option value="0">all</option>
-                        <?php
+                    <div class="col-md-6">
+                        <div style="margin:20px 0;float:left" class="form-group form-inline filter">
+                            <select title="<?php echo $this->uri->segment(3); ?>" name="filter_cat" size="1"
+                                class="form-control input-sm">
+                                <option value="0">all</option>
+                                <?php
                         if (!empty($category)) {
                            $where = $this->session->userdata('where');
                            /** @var array|object $category */
@@ -244,104 +255,117 @@
                            }
                         }
                         ?>
-                     </select>
-                     <label></label>
-                  </div>
-               </div>
-               <div class="col-md-6">
-                  <ul class=" pagination">
-                     <?php echo $this->pagination->create_links();?>
-                  </ul>
-               </div>
+                            </select>
+                            <label></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class=" pagination">
+                            <?php echo $this->pagination->create_links();?>
+                        </ul>
+                    </div>
+                </div>
+                <?php if ($this->session->userdata('aduserid') == 1):; ?>
+                <div class="fixed-bottom-bar">
+                    <button type="button" class="btn btn-primary" id="pushconversion"
+                        data-loading-text="<i class='spinner-border'></i> Loading...">Push Conversions</button>
+                    <button type="button" class="btn btn-success scroll-to-top">
+                        <i class="glyphicon glyphicon-arrow-up"></i>
+                    </button>
+                </div>
+                <?php endif; ?>
             </div>
-            <?php if ($this->session->userdata('aduserid') == 1):; ?>
-               <div class="fixed-bottom-bar">
-                  <button type="button" class="btn btn-primary" id="pushconversion" data-loading-text="<i class='spinner-border'></i> Loading...">Push Conversions</button>
-                  <button type="button" class="btn btn-success scroll-to-top">
-                     <i class="glyphicon glyphicon-arrow-up"></i>
-                  </button>
-               </div>
-            <?php endif; ?>
-         </div>
-      </div>
-   </div>
+        </div>
+    </div>
 </div>
 
 <script>
-   $(document).ready(function() {
-      var talbeDt = '#data_table '
-      $('#pushconversion').on('click', function() {
-         var $btn = $(this);
-         $btn.data('original-text', $btn.html());
-         $btn.html('<i class="spinner-border"></i> Loading...').prop('disabled', true);
+$(document).ready(function() {
+    var talbeDt = '#data_table '
+    $('#pushconversion').on('click', function() {
+        var $btn = $(this);
+        $btn.data('original-text', $btn.html());
+        $btn.html('<i class="spinner-border"></i> Loading...').prop('disabled', true);
 
-         var checkbox = $(talbeDt + ' input[name="sendLead[]"]:checked')
-         if (checkbox.length > 0) {
+        var checkbox = $(talbeDt + ' input[name="sendLead[]"]:checked')
+        if (checkbox.length > 0) {
             sendLead(checkbox)
             $btn.html($btn.data('original-text')).prop('disabled', false);
-         } else {
+        } else {
             $btn.html($btn.data('original-text')).prop('disabled', false);
             alert('Please check checkbox')
-         }
+        }
 
-      })
+    })
 
-      function sendLead(checkbox) {
-         var postData = []
-         var hasError = false;
+    console.log(talbeDt);
+    console.log($(talbeDt + ' input[name="sendLead[]"]').length);
+    console.log($(talbeDt + ' input[name="sendLead[]"]:checked').length);
 
-         checkbox.each(function() {
+
+    function sendLead(checkbox) {
+        var postData = []
+        var hasError = false;
+
+        checkbox.each(function() {
             var tr = $(this).closest('tr')
             var cInput = tr.find('input[name="amount2"]')
             var trackId = cInput.data('trackid')
             var amount2 = cInput.val()
 
             if (!amount2 || amount2 < 0 || isNaN(amount2)) {
-               cInput.css('border', '2px solid red');
-               hasError = true;
+                cInput.css('border', '2px solid red');
+                hasError = true;
             } else {
-               cInput.css('border', '');
-               postData.push({
-                  trackId: trackId,
-                  amount2: parseFloat(amount2)
-               })
+                cInput.css('border', '');
+                postData.push({
+                    trackId: trackId,
+                    amount2: parseFloat(amount2)
+                })
             }
-         })
+        })
 
-         if (hasError) {
+        if (hasError) {
             alert('Please enter valid amount (>= 0)');
             return;
-         }
+        }
 
-         $.ajax({
+        $.ajax({
             type: "POST",
             url: "<?php echo base_url('postback/admin_add_lead'); ?>",
             data: {
-               data: postData
+                data: postData
             },
             success: function(data, status) {
-               location.reload();
+                location.reload();
+            },
+            error: function(xhr, status, error) {
+                alert("Có lỗi xảy ra, trang sẽ được tải lại.");
+                window.location.href = window.location.href;
+            },
+            complete: function() {
+                $btn.html($btn.data('original-text')).prop('disabled', false);
             }
-         });
-      }
+        });
+    }
 
-      $(document).on('focus', 'input[name="amount2"]', function() {
-         $(this).css('border', '');
-      });
+    $(document).on('focus', 'input[name="amount2"]', function() {
+        $(this).css('border', '');
+    });
 
-      $(window).scroll(function() {
-         if ($(this).scrollTop() > 200) {
+    $(window).scroll(function() {
+        if ($(this).scrollTop() > 200) {
             $('.scroll-to-top').fadeIn();
-         } else {
+        } else {
             $('.scroll-to-top').fadeOut();
-         }
-      });
+        }
+    });
 
-      $('.scroll-to-top').click(function() {
-         $('html, body').animate({
+    $('.scroll-to-top').click(function() {
+        $('html, body').animate({
             scrollTop: 0
-         }, 800);
-         return false;
-      });
-   });
+        }, 800);
+        return false;
+    });
+});
 </script>

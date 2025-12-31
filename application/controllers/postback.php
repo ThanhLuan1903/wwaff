@@ -7,7 +7,7 @@ class Postback extends CI_Controller
         parse_str(substr(strrchr($_SERVER['REQUEST_URI'], "?"), 1), $_GET);
         $this->base_key = $this->config->item('base_key');
         $this->redis = new Redis();
-        $this->redis->connect('redis', 6379);
+        $this->redis->connect('127.0.0.1', 6379);
         $this->load_thuvien();
     }
 
@@ -116,7 +116,7 @@ class Postback extends CI_Controller
                FROM cpalead_tracklink
                LEFT JOIN cpalead_users ON cpalead_users.id = cpalead_tracklink.userid
                LEFT JOIN cpalead_offer ON cpalead_offer.id = cpalead_tracklink.offerid
-               WHERE cpalead_tracklink.id = '$tracklink' AND cpalead_tracklink.flead =0 AND cpalead_tracklink.status=0
+               WHERE cpalead_tracklink.id = '$tracklink' AND cpalead_tracklink.flead =0 AND cpalead_tracklink.status=0 cpalead_tracklink.status_adv=0
             ";
 
             $track = $this->db->query($qr)->row();
@@ -139,7 +139,8 @@ class Postback extends CI_Controller
                     if ($track->amount2 > 0) {
                         $point = $track->amount2;
                     } else {
-                        $point = round($point_net * (100 - $track->offpercent) / 100, 2);
+                        // $point = round($point_net * (100 - $track->offpercent) / 100, 2);
+                        $point = round($point_net * $track->offpercent / 100, 2);
                         $dataUpdate['amount3'] = $point_net;
                     }
                 }
@@ -155,6 +156,11 @@ class Postback extends CI_Controller
                         ->set('curent', "curent +$point", FALSE)
                         ->set('balance', "balance +$point", FALSE)
                         ->update('users');
+
+                    $this->db->where('id', $track->advids)
+                        ->set('curent', "curent +$pointadv", FALSE)
+                        ->set('balance', "balance +$pointadv", FALSE)
+                        ->update('advertiser');
 
                     $this->db->where(array('id' => $track->offerid))
                         ->set('lead', 'lead+1', false)
@@ -208,14 +214,14 @@ class Postback extends CI_Controller
     private function sendPubPostback($track, $point = 0, $lead_amount = 0)
     {
         if ((float)$point == 0) {
-            $this->db->insert('postback_log', array(
+            $this->db->insert('cpalead_postback_log', array(
                 'finalurl'   => 'SKIPPED: point = 0',
                 'response'   => 'No postback sent (point is zero)',
                 'tracklink'  => $track->id,
                 'userids'    => $track->userid,
                 'campaignid' => $track->offerid
             ));
-            return;
+            // return;
         }
         $pb = $this->Home_model->get_data('postback', array('affid' => $track->userid));
         if ($pb) {
