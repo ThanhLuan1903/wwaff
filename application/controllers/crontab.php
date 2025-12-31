@@ -7,7 +7,7 @@ class Crontab extends CI_Controller
     {
         parent::__construct();
         $this->redis = new Redis();
-        $this->redis->connect('127.0.0.1', 6379);
+        $this->redis->connect('redis', 6379);
         $this->base_key = $this->config->item('base_key');
     }
 
@@ -185,7 +185,7 @@ class Crontab extends CI_Controller
     {
         try {
             $redis = new Redis();
-            $redis->connect('127.0.0.1', 6379);
+            $redis->connect('redis', 6379);
             $all_keys = $redis->keys('*offLang*');
 
             echo "<h3>Redis Keys (offLang)</h3>";

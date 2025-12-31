@@ -11,8 +11,12 @@ class Auth extends CI_Controller
     private $pindex = '';
 
     function  __construct()
-    {
-        parent::__construct();
+    {   
+	   
+error_log("before constructor");	   
+ parent::__construct();
+	    error_log( "sau controller contrutctor");
+	    
         $this->load->model('Custom_model');
         $this->load->library('auth/auth_plugin');
         $this->pub_config = unserialize(file_get_contents('setting_file/publisher.txt'));

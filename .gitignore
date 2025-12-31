@@ -1,0 +1,20 @@
+# docker / volumes
+_docker/
+docker/
+docker/*/data/
+_docker/*/data/
+_docker/redis/data/
+_docker/mysql/data/
+
+# database dump / test files
+*.sql
+phpinfo_test.php
+*.pem
+*.key
+
+# runtime / cache / temp
+application/logs/
+temp/
+
+# vendor (tuỳ cách deploy; nếu dùng composer thì nên ignore)
+vendor/

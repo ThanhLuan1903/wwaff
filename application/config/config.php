@@ -1,8 +1,11 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /////config mini point cashout
 // return phpinfo();
+$scheme = (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
+$host   = $_SERVER['HTTP_HOST'];
+$config['base_url'] = $scheme.'://'.$host.'/';
 
-$config['base_url']	= 'http://localhost/';
+// $config['base_url']	= 'https://34.142.222.189:8080/';
 // $config['base_url']	= 'localhost';
 // dev
 // $config['base_url']	= 'http://beeklink.store';

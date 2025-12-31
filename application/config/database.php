@@ -48,12 +48,12 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = 'localhost';
+$db['default']['hostname'] = 'db';
 $db['default']['username'] = 'root';
-$db['default']['password'] = '';
+$db['default']['password'] = 'rootpass';
 $db['default']['database'] = 'wwaff';
 $db['default']['dbdriver'] = 'mysqli';
-$db['default']['port'] = 3307;
+$db['default']['port'] = 3306;
 $db['default']['dbprefix'] = 'cpalead_';
 $db['default']['pconnect'] = FALSE;
 $db['default']['db_debug'] = true;

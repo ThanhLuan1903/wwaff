@@ -1,0 +1,37 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: _docker/php/Dockerfile
+    container_name: wwaff_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+      - ./_docker/apache/php.ini:/usr/local/etc/php/php.ini
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: mysql:5.7
+    command: --sql-mode="STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+    container_name: wwaff_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: wwaff
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./_docker/mysql/data:/var/lib/mysql
+
+  redis:
+    image: redis:7
+    container_name: wwaff_redis
+    restart: always
+    command: redis-server --requirepass StrongRedisPass --appendonly yes
+    volumes:
+      - ./_docker/redis/data:/data
+    ports:
+      - "127.0.0.1:6379:6379"
+

@@ -22,7 +22,7 @@ class ExceptionHandler extends CI_Controller
         $this->pub_config = unserialize(file_get_contents('setting_file/publisher.txt'));
         $this->managerid = $this->session->userdata('aduserid');
         $this->redis = new Redis();
-        $this->redis->connect('127.0.0.1', 6379);
+        $this->redis->connect('redis', 6379);
         $this->load->helper(array('timezone'));
     }
 

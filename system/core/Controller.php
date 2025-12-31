@@ -36,7 +36,8 @@ class CI_Controller {
 	 */
 	public function __construct()
 	{
-		self::$instance =& $this;
+ error_log("CI_Controller: enter");		
+self::$instance =& $this;
 		
 		// Assign all the class objects that were instantiated by the
 		// bootstrap file (CodeIgniter.php) to local class variables
@@ -47,8 +48,10 @@ class CI_Controller {
 		}
 
 		$this->load =& load_class('Loader', 'core');
+    error_log("CI_Controller: after load_class Loader");
 
 		$this->load->initialize();
+    error_log("CI_Controller: after Loader initialize");
 		
 		log_message('debug', "Controller Class Initialized");
 	}
