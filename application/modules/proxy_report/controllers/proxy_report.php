@@ -267,10 +267,6 @@ class Proxy_report extends CI_Controller
     public function index($offset = 0)
     {
         $data = $this->getData($offset);
-                echo '<pre>';
-print_r($data);
-echo '</pre>';
-exit;
         // đổi múi giờ chỗ này 
         if ($this->session->userdata('timezone') == 1) {
             foreach ($data['dulieu'] as $conversion) {
@@ -431,7 +427,8 @@ exit;
                 ";
         }
 
-        $data['dulieu'] = $this->db->query($qr, array($data['from'] . " 00:00:00", $data['to'] . " 23:59:59"))->result();
+        // $data['dulieu'] = $this->db->query($qr, array($data['from'] . " 00:00:00", $data['to'] . " 23:59:59"))->result();
+        $data['dulieu'] = $this->db->query($qr, array($data['from'], $data['to']))->result();
         $qr = "
         SELECT COUNT(*) as total  FROM `cpalead_tracklink` tl
         $manager_join
