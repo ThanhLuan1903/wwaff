@@ -435,12 +435,12 @@ class Click extends CI_Controller
                     $cr_helper->syncCrData($cr_key, $this->redis);
                 }
 
-                // $url = $clickData->url . $clickData->subid . $tracklink;
-                // $url = str_replace('#pubid#', $pid, $url);
-                $affsub = $this->renderAffsub($clickData->subid, $pid, $tracklink);
+                $url = $clickData->url . $clickData->subid . $tracklink;
+                $url = str_replace('#pubid#', $pid, $url);
+                // $affsub = $this->renderAffsub($clickData->subid, $pid, $tracklink);
 
                 // Build final URL
-                $url = $clickData->url . $affsub;
+                // $url = $clickData->url . $affsub;
 
                 if (!empty($s4)) {
                     $url = str_replace('#s4#', $s4, $url);

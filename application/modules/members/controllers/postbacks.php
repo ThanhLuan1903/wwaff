@@ -69,7 +69,7 @@ class Postbacks extends CI_Controller
     private function geneRatorSubString($data)
     {
         $subValue = $data['pb_value']['pub_id'][1] ? '&' . $this->removeCurlyBraces($data['pb_value']['pub_id'][1]) . '=#pubid#' : '';
-        $subValue .= $data['pb_value']['clickid'][1] ? '&' . $this->removeCurlyBraces($data['pb_value']['clickid'][1]) . '=#clickid#' : '';
+        $subValue .= $data['pb_value']['clickid'][1] ? '&' . $this->removeCurlyBraces($data['pb_value']['clickid'][1]) . '=' : '';
         return $subValue;
     }
 

@@ -199,7 +199,7 @@ class Advertiser_model extends CI_Model
                 'pb_value' => serialize($pbvalue),
                 'show' => 1,
                 'order' => 0,
-                'subid' => '?pub_id=#pubid#&clickid=#clickid#'
+                'subid' => '?pub_id=#pubid#&clickid='
             ];
             $this->db->insert('cpalead_network', $inserData);
         }

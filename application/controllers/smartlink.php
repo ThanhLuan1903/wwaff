@@ -14,7 +14,7 @@ class Smartlink extends CI_Controller
         parent::__construct();
         $this->base_key = $this->config->item('base_key');
         $this->redis = new Redis();
-        $this->redis->connect('redis', 6379);
+        $this->redis->connect('127.0.0.1', 6379);
         $this->geoip = new Reader('vendor/GeoLite2-City.mmdb');
     }
 
@@ -137,10 +137,10 @@ class Smartlink extends CI_Controller
                 $tracklink = $this->db->insert_id();
 
 
-                // $url = $smartlink->url . $net->subid . $tracklink;
-                // $url = str_replace('#pubid#', $pid, $url);
-                $affsub = $this->renderAffsub($net->subid, $pid, $tracklink);
-                $url = $smartlink->url . $affsub;
+                $url = $smartlink->url . $net->subid . $tracklink;
+                $url = str_replace('#pubid#', $pid, $url);
+                // $affsub = $this->renderAffsub($net->subid, $pid, $tracklink);
+                // $url = $smartlink->url . $affsub;
 
                 if (!empty($s4)) {
                     $url = str_replace('#s4#', $s4, $url);
@@ -253,10 +253,10 @@ class Smartlink extends CI_Controller
                 $this->db->where('id', $off->id);
                 $this->db->set('click', "click +1", FALSE);
                 $this->db->update('offer');
-                // $url = $off->url . $off->subid . $tracklink; 
-                // $url = str_replace('#pubid#', $pid, $url);
-                $affsub = $this->renderAffsub($off->subid, $pid, $tracklink);
-                $url = $off->url . $affsub;
+                $url = $off->url . $off->subid . $tracklink; 
+                $url = str_replace('#pubid#', $pid, $url);
+                // $affsub = $this->renderAffsub($off->subid, $pid, $tracklink);
+                // $url = $off->url . $affsub;
                 if (!empty($s4)) {
                     $url = str_replace('#s4#', $s4, $url);
                 }
