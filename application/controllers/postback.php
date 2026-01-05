@@ -116,7 +116,7 @@ class Postback extends CI_Controller
                FROM cpalead_tracklink
                LEFT JOIN cpalead_users ON cpalead_users.id = cpalead_tracklink.userid
                LEFT JOIN cpalead_offer ON cpalead_offer.id = cpalead_tracklink.offerid
-               WHERE cpalead_tracklink.id = '$tracklink' AND cpalead_tracklink.flead =0 AND cpalead_tracklink.status=0 cpalead_tracklink.status_adv=0
+               WHERE cpalead_tracklink.id = '$tracklink' AND cpalead_tracklink.flead =0 AND cpalead_tracklink.status=0
             ";
 
             $track = $this->db->query($qr)->row();
@@ -156,11 +156,6 @@ class Postback extends CI_Controller
                         ->set('curent', "curent +$point", FALSE)
                         ->set('balance', "balance +$point", FALSE)
                         ->update('users');
-
-                    $this->db->where('id', $track->advids)
-                        ->set('curent', "curent +$pointadv", FALSE)
-                        ->set('balance', "balance +$pointadv", FALSE)
-                        ->update('advertiser');
 
                     $this->db->where(array('id' => $track->offerid))
                         ->set('lead', 'lead+1', false)
@@ -221,7 +216,7 @@ class Postback extends CI_Controller
                 'userids'    => $track->userid,
                 'campaignid' => $track->offerid
             ));
-            // return;
+            return;
         }
         $pb = $this->Home_model->get_data('postback', array('affid' => $track->userid));
         if ($pb) {

@@ -386,12 +386,12 @@ class Click extends CI_Controller
                 }
 
                 $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Direct Access';
-                $tracklink = uniqid() . mt_rand(100, 999);
+                // $tracklink = uniqid() . mt_rand(100, 999);
 
                 $this->db->insert(
                     'tracklink',
                     array(
-                        'id' => $tracklink,
+                        // 'id' => $tracklink,
                         'userid' => $pid,
                         'offerid' => $clickData->id,
                         'oname' => $clickData->title,
@@ -421,7 +421,7 @@ class Click extends CI_Controller
 
                     )
                 );
-
+                $tracklink = $this->db->insert_id();
                 $this->db->where('id', $offerid);
                 $this->db->set('click', "click +1", FALSE);
                 $this->db->update('offer');
@@ -435,12 +435,37 @@ class Click extends CI_Controller
                     $cr_helper->syncCrData($cr_key, $this->redis);
                 }
 
-                $url = $clickData->url . $clickData->subid . $tracklink;
-                $url = str_replace('#pubid#', $pid, $url);
-                // $affsub = $this->renderAffsub($clickData->subid, $pid, $tracklink);
+                // $url = $clickData->url . $clickData->subid . $tracklink;
+                // $url = str_replace('#pubid#', $pid, $url);
+                $url = $clickData->url;
 
-                // Build final URL
-                // $url = $clickData->url . $affsub;
+                // MODE A: nếu url đã có #clickid# thì chỉ replace
+                if (strpos($url, '#clickid#') !== false) {
+                    $url = str_replace('#clickid#', $tracklink, $url);
+                } else {
+
+                    // LẤY AFFSUB TEMPLATE: ưu tiên theo network (đúng yêu cầu sếp)
+                    $network = $this->db->get_where('network', ['id' => $clickData->idnet])->row();
+                    $subid_template = !empty($network->subid) ? $network->subid : $clickData->subid;
+
+                    // append clickid vào template (legacy mode)
+                    $subid_origin = $subid_template . $tracklink;
+
+                    // Gắn subid_origin vào url đúng chuẩn ? / &
+                    if (strpos($url, '?') !== false) {
+                        if (preg_match('/[?&]$/', $url)) {
+                            $url .= ltrim($subid_origin, '&');
+                        } else {
+                            $url .= '&' . ltrim($subid_origin, '&');
+                        }
+                    } else {
+                        $url = rtrim($url, '/') . '?' . ltrim($subid_origin, '&');
+                    }
+                }
+
+                // REPLACE PUBID (nếu bạn chưa có custom_user thì cứ dùng pid)
+                $url = str_replace('#pubid#', $pid, $url);
+                $url = str_replace('#clickid#', $tracklink, $url);
 
                 if (!empty($s4)) {
                     $url = str_replace('#s4#', $s4, $url);
@@ -679,22 +704,5 @@ class Click extends CI_Controller
         } catch (Exception $e) {
             log_message('error', 'update_unknowBrowser: ' . $e->getMessage());
         }
-    }
-    
-    private function renderAffsub($template, $pubid, $clickid)
-    {
-        $tpl = (string)$template;
-
-        $hasClickToken = (strpos($tpl, '#clickid#') !== false);      
-        $tpl = str_replace('#pubid#', $pubid, $tpl);
-        $tpl = str_replace('#clickid#', $clickid, $tpl);
-
-        if (!$hasClickToken) {
-            if (preg_match('/=$/', $tpl)) {
-                $tpl .= $clickid;
-            }
-        }
-        return $tpl;
-    }
-
+    }  
 }
