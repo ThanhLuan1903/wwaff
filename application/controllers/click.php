@@ -386,12 +386,12 @@ class Click extends CI_Controller
                 }
 
                 $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Direct Access';
-                // $tracklink = uniqid() . mt_rand(100, 999);
+                $tracklink = uniqid() . mt_rand(100, 999);
 
                 $this->db->insert(
                     'tracklink',
                     array(
-                        // 'id' => $tracklink,
+                        'id' => $tracklink,
                         'userid' => $pid,
                         'offerid' => $clickData->id,
                         'oname' => $clickData->title,
@@ -421,7 +421,6 @@ class Click extends CI_Controller
 
                     )
                 );
-                $tracklink = $this->db->insert_id();
                 $this->db->where('id', $offerid);
                 $this->db->set('click', "click +1", FALSE);
                 $this->db->update('offer');
@@ -439,41 +438,29 @@ class Click extends CI_Controller
                 // $url = str_replace('#pubid#', $pid, $url);
                 $url = $clickData->url;
 
-                // MODE A: nếu url đã có #clickid# thì chỉ replace
-                if (strpos($url, '#clickid#') !== false) {
-                    $url = str_replace('#clickid#', $tracklink, $url);
+                // ưu tiên network subid
+                $network = $this->db->get_where('network', ['id' => $clickData->idnet])->row();
+                $subid_template = !empty($network->subid) ? $network->subid : $clickData->subid;
+
+                if (strpos($url, '#clickid#') !== false || strpos($subid_template, '#clickid#') !== false) {
+                    // dùng placeholder
+                    $url = $url . $subid_template;
+                    $url = str_replace('#clickid#', rawurlencode($tracklink), $url);
                 } else {
+                    // legacy: append clickid cuối
+                    $subid_origin = $subid_template . rawurlencode($tracklink);
 
-                    // LẤY AFFSUB TEMPLATE: ưu tiên theo network (đúng yêu cầu sếp)
-                    $network = $this->db->get_where('network', ['id' => $clickData->idnet])->row();
-                    $subid_template = !empty($network->subid) ? $network->subid : $clickData->subid;
-
-                    // append clickid vào template (legacy mode)
-                    $subid_origin = $subid_template . $tracklink;
-
-                    // Gắn subid_origin vào url đúng chuẩn ? / &
                     if (strpos($url, '?') !== false) {
-                        if (preg_match('/[?&]$/', $url)) {
-                            $url .= ltrim($subid_origin, '&');
-                        } else {
-                            $url .= '&' . ltrim($subid_origin, '&');
-                        }
+                        if (preg_match('/[?&]$/', $url)) $url .= ltrim($subid_origin, '&');
+                        else $url .= '&' . ltrim($subid_origin, '&');
                     } else {
                         $url = rtrim($url, '/') . '?' . ltrim($subid_origin, '&');
                     }
                 }
 
-                // REPLACE PUBID (nếu bạn chưa có custom_user thì cứ dùng pid)
-                $url = str_replace('#pubid#', $pid, $url);
-                $url = str_replace('#clickid#', $tracklink, $url);
-
-                if (!empty($s4)) {
-                    $url = str_replace('#s4#', $s4, $url);
-                }
-
-                if (!empty($s3)) {
-                    $url = str_replace('#s3#', $s3, $url);
-                }
+                $url = str_replace('#pubid#', rawurlencode($pid), $url);
+                if (!empty($s4)) $url = str_replace('#s4#', rawurlencode($s4), $url);
+                if (!empty($s3)) $url = str_replace('#s3#', rawurlencode($s3), $url);
 
                 redirect($url);
             } else {
