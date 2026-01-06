@@ -37,8 +37,9 @@ class Postback extends CI_Controller
             $idpb = 0;
         }
         $this->db->select('pb_value,id,title');
-        $network = $this->Home_model->get_one('network', array('id' => $idpb, 'pb_pass' => $password));
+        $network = $this->Home_model->get_one('network', array('id' => $idpb, 'pb_pass ' => $password));
         if (!empty($network)) {
+            $this->debug($network->id);
             $pb_value_array = unserialize($network->pb_value);
             $tracklink = $this->input->get_post($pb_value_array['clickid'][0], TRUE);
             $sale_amount = $this->input->get_post($pb_value_array['sale_amount'][0], TRUE);
@@ -256,7 +257,7 @@ class Postback extends CI_Controller
                 if (strpos($url, '{view6}')) {
                     $url = str_replace('{view6}', $track->s6, $url);
                 }
-
+                
                 $resutl = $this->curl_senpost($url);
                 $this->db->insert('postback_log', array(
                     'finalurl' => $url,
@@ -384,10 +385,9 @@ class Postback extends CI_Controller
 
     function debug()
     {
-        //if($_POST){$vv=serialize($_POST);}else $vv='-get-';
-        //$uri = $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"].'--'.$vv;        
-        //$this->db->insert('debug',array('debug1'=>$uri)); 
-
+        if($_POST){$vv=serialize($_POST);}else $vv='-get-';
+        $uri = $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"].'--'.$vv;        
+        $this->db->insert('debug',array('debug1'=>$uri)); 
     }
 
     function update_crKey($track)
