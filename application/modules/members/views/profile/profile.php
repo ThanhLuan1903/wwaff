@@ -1,6 +1,6 @@
 <?php require_once(APPPATH . '/modules/adm_adc/services/classes/ThemeService.php'); ?>
 <link href="<?php echo base_url(); ?>/temp/default/css/nhap.css" rel="stylesheet">
-<?php $acc = unserialize($userData->mailling);  ?>
+<?php $acc = unserialize($userData->mailling);?>
 <?php $countries = []; ?>
 <?php $product_categories = []; ?>
 <?php $conversion_flow = []; ?>
@@ -117,8 +117,11 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
                         <p class="sc-hARARD cKOZpE">Avatar (Please use image with 3x4 size)</p>
 
                         <?php
-                          $avatarSrc = !empty($profile->avatar_url)
-                            ? base_url($profile->avatar_url)
+                        $avatarPath = !empty($acc['avartar'])
+                            ? $acc['avartar']
+                            : '';
+                        $avatarSrc = !empty($avatarPath)
+                            ? base_url($avatarPath)
                             : base_url('temp/default/images/avt_unknow.jpeg');
                         ?>
 
@@ -127,7 +130,6 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
                                 style="width:70px;height:90px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;" />
 
                             <div style="flex:1;">
-                                <!-- FILE INPUT: KHÔNG được đặt name avatar_url -->
                                 <input type="file" id="avatar_file" name="avatar_file"
                                     accept="image/png,image/jpeg,image/jpg" style="width:100%;" />
 
@@ -135,9 +137,8 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
                                     Allowed: JPG/PNG. Max 2MB.
                                 </small>
 
-                                <!-- HIDDEN PATH: cái này mới update vào DB -->
-                                <input type="hidden" name="avatar_url" id="avatar_url_hidden"
-                                    value="<?= !empty($profile->avatar_url) ? htmlspecialchars($profile->avatar_url) : '' ?>">
+                                <input type="hidden" name="current_avatar"
+                                    value="<?= htmlspecialchars($avatarPath, ENT_QUOTES, 'UTF-8') ?>">
                             </div>
                         </div>
                     </div>
@@ -185,9 +186,9 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
                     </div>
                     <!-- Volume -->
                     <div>
-                        <p class="sc-bJHhxl gXRQqD">Volume /Month</p>
+                        <p class="sc-bJHhxl gXRQqD">Volume (Monthly) *</p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-gd4v6g">
-                            <input name="volume" placeholder="Volume/Month" type="number" min="1"
+                            <input name="volume" placeholder="Volume/Month" type="number" min="1" step="1"
                                 class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c"
                                 value="<?php echo $acc['volume']; ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -242,7 +243,11 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
                     <div>
                         <p class="sc-bJHhxl gXRQqD">Traffic Type</p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-gd4v6g">
-                            <?php $aff_types =  unserialize($acc['aff_type']); ?>
+                            <?php $aff_types = array();
+                            if (!empty($acc['aff_type'])) {
+                                $aff_types = array_map('trim', explode(',', $acc['aff_type']));
+                            }
+                            ?>
                             <select name="aff_type[]" class="selectpicker" multiple aria-label="size 3 select example">
                                 <?php foreach ($trafficTypes as $type): ?>
                                 <option value="<?= $type->content ?>"
@@ -265,7 +270,8 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
                                 aria-label="size 3 select example">
                                 <?php $flow_ids =  explode(',', $userData->product_categories); ?>
                                 <?php foreach ($conversion_flows as $flow): ?>
-                                    <option value="<?= $flow->id ?>" <?= in_array($flow->id, $flow_ids) ? 'selected' : '' ?>>
+                                <option value="<?= $flow->id ?>"
+                                    <?= in_array($flow->id, $flow_ids) ? 'selected' : '' ?>>
                                     <?= $flow->offercat ?></option>
                                 <?php endforeach ?>
                             </select>
@@ -278,17 +284,36 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
                         </div>
                     </div>
                     <div>
-                        <p class="sc-bJHhxl gXRQqD">Product Geo</p>
+                        <p class="sc-bJHhxl gXRQqD">Product Geo *</p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-gd4v6g">
-                            <select name="product_geos[]" class="selectpicker" multiple
-                                aria-label="size 3 select example">
-                                <?php $product_geo_ids =  explode(',', $userData->product_geos); ?>
+                            <?php $product_geo_ids = explode(',', $userData->product_geos); ?>
+
+                            <select name="product_geos[]" class="selectpicker" multiple data-live-search="true"
+                                data-placeholder="Product Geo">
+
                                 <?php foreach ($product_geos as $geo): ?>
+
+                                <?php
+                                    $cc = strtolower(trim($geo->keycode));
+
+                                    $countryName = mb_convert_case(
+                                        mb_strtolower(trim($geo->country), 'UTF-8'),
+                                        MB_CASE_TITLE,
+                                        'UTF-8'
+                                    );
+                                ?>
+
                                 <option value="<?= $geo->id ?>"
-                                    <?= in_array($geo->id, $product_geo_ids) ? 'selected' : '' ?>><?= $geo->country ?>
+                                    <?= in_array($geo->id, $product_geo_ids) ? 'selected' : '' ?> data-content="
+                                        <span class='fi fi-<?= $cc ?> me-2'></span>
+                                        <?= htmlspecialchars($countryName) ?> - <?= htmlspecialchars($geo->keycode) ?>
+                                    ">
+                                    <?= htmlspecialchars($countryName) ?>
                                 </option>
+
                                 <?php endforeach ?>
                             </select>
+
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
@@ -297,6 +322,7 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
                             </svg>
                         </div>
                     </div>
+
                     <div>
                         <p class="sc-bJHhxl gXRQqD">Product Type</p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-gd4v6g">
@@ -444,6 +470,7 @@ $(document).ready(function() {
             data: formData,
             processData: false,
             contentType: false,
+            dataType: "json",
             success: ajaxSuccess,
             error: ajaxErr
         });
@@ -475,12 +502,18 @@ function ajaxSuccPb(data) {
     }
 }
 
-function ajaxSuccess(data) {
-    $('#toastContent').html(data);
+function ajaxSuccess(res) {
+    $('#toastContent').html(res && res.message ? res.message : 'Update failed');
+
     var myAlert = document.getElementById('thongBao');
     var bsAlert = new bootstrap.Toast(myAlert, option);
     bsAlert.show();
+
+    if (res && res.ok === true) {
+        window.location.href = res.redirect || "<?php echo site_url('v2'); ?>";
+    }
 }
+
 
 function ajaxErr() {
     alert('Update Error!');
@@ -492,3 +525,4 @@ var option = {
     autohide: true
 };
 </script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons/css/flag-icons.min.css">

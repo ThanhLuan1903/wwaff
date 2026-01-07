@@ -10,7 +10,8 @@
     <link href="<?php echo base_url(); ?>temp/default/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom styles for this template -->
     <link href="<?php echo base_url(); ?>/temp/default/css/login.css" rel="stylesheet">
-    <script src="<?php echo base_url(); ?>/temp/default/js/multiple/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <script src="<?php echo base_url(); ?>/temp/default/js/multiple/jquery-3.2.1.min.js" type="text/javascript">
+    </script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css">
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
 
@@ -97,7 +98,8 @@
             <main class="sc-fAjcbJ kFfNqn">
                 <div class="sc-Rmtcm cIUDWQ">
                     <div class="sc-bRBYWo eVigII" style="margin-top:100px">
-                        <img src="<?php echo base_url(); ?>/upload/files/website_logo_waff_png.png" class="sc-VigVT iApbYG">
+                        <img src="<?php echo base_url(); ?>/upload/files/website_logo_waff_png.png"
+                            class="sc-VigVT iApbYG">
                         <span class="sc-jhAzac cnxHgy">Registration</span>
                         <div class="sc-hzDkRC ioyCcs">
                             <div style="width: 385px;">
@@ -149,8 +151,8 @@
                                             <div class="sc-kAzzGY jIpyka">
                                                 <p>Email<span id="email_required"> *</span></p>
                                                 <input type="email" class="jxLAT click_btn_login"
-                                                    style="border:1px solid #CACFD3;border-radius:8px;height: 40px;" name="email"
-                                                    value="<?php echo set_value('email'); ?>">
+                                                    style="border:1px solid #CACFD3;border-radius:8px;height: 40px;"
+                                                    name="email" value="<?php echo set_value('email'); ?>">
 
                                                 <!-- <span class="jBAAej span_ip" height="36px">Email<span class="sc-brqgnP feZNLG">*</span></span> -->
                                             </div>
@@ -158,7 +160,8 @@
                                         <div class="sc-ckVGcZ xzcRZ">
                                             <div class="sc-kAzzGY jIpyka">
                                                 <p>Password<span id="password_required"> *</span></p>
-                                                <input type="password" id="password" class="jxLAT click_btn_login" style="border:1px solid #CACFD3;border-radius:8px;height: 40px;"
+                                                <input type="password" id="password" class="jxLAT click_btn_login"
+                                                    style="border:1px solid #CACFD3;border-radius:8px;height: 40px;"
                                                     name="password" value="<?php echo set_value('password'); ?>">
                                                 <!-- <span class="jBAAej span_ip"  height="36px">Password<span class="sc-brqgnP feZNLG">*</span></span> -->
                                                 <svg onclick="showpass()" xmlns="http://www.w3.org/2000/svg" width="18"
@@ -179,7 +182,9 @@
                                         <div class="sc-ckVGcZ xzcRZ">
                                             <div class="sc-kAzzGY jIpyka">
                                                 <p style="font-weight: 400;font-size:15px">Repeat password</p>
-                                                <input type="password" class="jxLAT click_btn_login" style="border:1px solid #CACFD3;border-radius:8px;height: 40px;" name="confirm_pass"
+                                                <input type="password" class="jxLAT click_btn_login"
+                                                    style="border:1px solid #CACFD3;border-radius:8px;height: 40px;"
+                                                    name="confirm_pass"
                                                     value="<?php echo set_value('confirm_pass'); ?>">
                                                 <!-- <span class="jBAAej span_ip" height="36px">Repeat password<span class="sc-brqgnP feZNLG">*</span></span> -->
                                             </div>
@@ -187,7 +192,8 @@
                                         <div class="sc-gipzik fusulQ">
                                             <div class="sc-kAzzGY jIpyka">
                                                 <p>First Name<span id="fname_required"> *</span></p>
-                                                <input maxlength="255" type="text" class="jxLAT click_btn_login" style="border:1px solid #CACFD3;border-radius:8px;height: 40px;"
+                                                <input maxlength="255" type="text" class="jxLAT click_btn_login"
+                                                    style="border:1px solid #CACFD3;border-radius:8px;height: 40px;"
                                                     name="mailling[firstname]"
                                                     value="<?php if (!empty($this->mailling['firstname'])) echo $this->mailling['firstname']; ?>">
                                                 <!-- <span class="jBAAej span_ip" height="36px">First Name<span class="sc-csuQGl bDzGcN">*</span> -->
@@ -197,19 +203,25 @@
                                         <div class="sc-gipzik fusulQ">
                                             <div class="sc-kAzzGY jIpyka">
                                                 <p>Last Name<span id="lname_required"> *</span></p>
-                                                <input maxlength="255" type="text" class="jxLAT click_btn_login" style="border:1px solid #CACFD3;border-radius:8px;height: 40px;"
+                                                <input maxlength="255" type="text" class="jxLAT click_btn_login"
+                                                    style="border:1px solid #CACFD3;border-radius:8px;height: 40px;"
                                                     name="mailling[lastname]"
                                                     value="<?php if (!empty($this->mailling['lastname'])) echo $this->mailling['lastname']; ?>">
                                                 <!-- <span class="jBAAej span_ip" height="36px">Last Name<span class="sc-csuQGl bDzGcN">*</span></span></div> -->
                                             </div>
                                             <div class="sc-kAzzGY jIpyka" height="52px">
                                                 <p>Address *</p>
-                                                <input type="text" style="border:1px solid #CACFD3;border-radius:8px;height: 40px;" name="mailling[ad]" class="jxLAT click_btn_login" data-placeholder="Address" />
+                                                <input type="text"
+                                                    style="border:1px solid #CACFD3;border-radius:8px;height: 40px;"
+                                                    name="mailling[ad]" class="jxLAT click_btn_login"
+                                                    data-placeholder="Address" />
                                             </div>
                                             <div class="sc-ckVGcZ xzcRZ">
                                                 <div class="sc-kAzzGY jIpyka">
                                                     <p style="font-weight: 400;font-size:15px">Phone Number</p>
-                                                    <input id="phone" style="border:1px solid #CACFD3;border-radius:8px;height: 40px;" name="phone" type="tel" name="phone" />
+                                                    <input id="phone"
+                                                        style="border:1px solid #CACFD3;border-radius:8px;height: 40px;"
+                                                        name="phone" type="tel" name="phone" />
                                                     <script>
                                                     var input = document.querySelector("#phone");
                                                     var iti = window.intlTelInput(input, {
@@ -228,7 +240,8 @@
                                             <div class="sc-gipzik fusulQ">
                                                 <div class="sc-kAzzGY jIpyka">
                                                     <p>Skype ID/Linkedin<span id="social_network_required"> *</span></p>
-                                                    <input maxlength="255" type="text" class="jxLAT click_btn_login" style="border:1px solid #CACFD3;border-radius:8px;height: 40px;"
+                                                    <input maxlength="255" type="text" class="jxLAT click_btn_login"
+                                                        style="border:1px solid #CACFD3;border-radius:8px;height: 40px;"
                                                         name="mailling[im_service]"
                                                         value="<?php if (!empty($this->mailling['im_service'])) echo $this->mailling['im_service']; ?>">
                                                 </div>
@@ -236,7 +249,8 @@
                                             <div class="sc-gipzik fusulQ">
                                                 <div class="sc-kAzzGY jIpyka">
                                                     <p>Website<span id="website_required"> *</span></p>
-                                                    <input maxlength="255" type="text" class="jxLAT click_btn_login" style="border:1px solid #CACFD3;border-radius:8px;height: 40px;"
+                                                    <input maxlength="255" type="text" class="jxLAT click_btn_login"
+                                                        style="border:1px solid #CACFD3;border-radius:8px;height: 40px;"
                                                         name="mailling[website]"
                                                         value="<?php if (!empty($this->mailling['website'])) echo $this->mailling['website']; ?>">
                                                 </div>
@@ -309,11 +323,11 @@
                                                 </div>
                                                 <!-- Volume -->
                                                 <div class="sc-kAzzGY jIpyka" height="52px">
-                                                    <p>Volume *</p>
+                                                    <p>Volume (Monthly) *</p>
                                                     <input type="number" name="mailling[volume]"
                                                         class="jxLAT click_btn_login"
                                                         style="border:1px solid #CACFD3;border-radius:8px;height: 40px;"
-                                                        data-placeholder="Volume" multiple />
+                                                        min="1" step="1" required />
                                                 </div>
                                                 <!-- Traffic Device -->
                                                 <div class="sc-kAzzGY jIpyka" height="52px">
@@ -349,8 +363,7 @@
                                                 </div>
                                                 <div class="sc-gipzik fusulQ">
                                                     <p style="margin-top:6px;" class="sc-jlyJG bqJkQa">Please choose
-                                                        your traffic
-                                                        type:*</p>
+                                                        your traffic type:*</p>
                                                     <?php foreach ($trafficTypes as $type): ?>
                                                     <div class="_2yRUtwQzTcJQHKHRzGIAfL _1zMi2ue1d1ggkuAFpIUpBi">
                                                         <input class="" type="checkbox" name="aff_type[]"
@@ -518,8 +531,8 @@
                 type: "POST",
                 url: ajurl,
                 data: formData,
-                processData: false, // IMPORTANT
-                contentType: false, // IMPORTANT
+                processData: false,
+                contentType: false,
                 success: ajaxSuccess,
                 error: ajaxErr
             });
@@ -540,18 +553,6 @@
 
         const queryString = getQueryString();
         $('input[name="ref_pub_token"]').val(queryString.ref)
-        // $('.btn_signup').on('click', function(e) {
-        //     e.preventDefault();
-        //     var form = $(this).closest('form');
-        //     ajurl = "<?php echo base_url('v2/sign/up'); ?>";
-        //     $.ajax({
-        //         type: "POST",
-        //         url: ajurl,
-        //         data: form.serialize(),
-        //         success: ajaxSuccess,
-        //         error: ajaxErr
-        //     });
-        // })
 
         function resetFieldRequired() {
             field_required.forEach((key) => {
@@ -559,8 +560,6 @@
             });
         }
     });
-
-
 
 
     function ajaxErr() {

@@ -39,29 +39,29 @@
                     <div>
                         <div class="row col-12 mx-auto">
                             <div class="col-6 form-check mx-auto">
-                <input class="form-check-input" type="radio" name=""
-                  id="" <?= $profile->is_company == 0 ? 'checked' : '' ?> disabled>
+                                <input class="form-check-input" type="radio" name="" id=""
+                                    <?= $profile->is_company == 0 ? 'checked' : '' ?> disabled>
                                 <label class="form-check-label" for="flexRadioDefault1">
                                     Personal
                                 </label>
                             </div>
                             <div class="col-6 form-check mx-auto">
-                <input class="form-check-input" type="radio" name=""
-                  id="" <?= $profile->is_company == 1 ? 'checked' : '' ?> disabled>
+                                <input class="form-check-input" type="radio" name="" id=""
+                                    <?= $profile->is_company == 1 ? 'checked' : '' ?> disabled>
                                 <label class="form-check-label" for="flexRadioDefault2">
                                     Company
                                 </label>
                             </div>
                             <div class="col-6 form-check mx-auto">
-                <input class="form-check-input" type="radio" name=""
-                  id="" <?= $user_setting['has_affiliate_program'] == 0 ? 'checked' : '' ?> disabled>
+                                <input class="form-check-input" type="radio" name="" id=""
+                                    <?= $user_setting['has_affiliate_program'] == 0 ? 'checked' : '' ?> disabled>
                                 <label class="form-check-label" for="flexRadioDefault1">
                                     No Affiliate Program
                                 </label>
                             </div>
                             <div class="col-6 form-check mx-auto">
-                <input class="form-check-input" type="radio" name=""
-                  id="" <?= $user_setting['has_affiliate_program'] == 1 ? 'checked' : '' ?> disabled>
+                                <input class="form-check-input" type="radio" name="" id=""
+                                    <?= $user_setting['has_affiliate_program'] == 1 ? 'checked' : '' ?> disabled>
                                 <label class="form-check-label" for="flexRadioDefault2">
                                     Affiliate Program
                                 </label>
@@ -69,8 +69,13 @@
                         </div>
                         <p class="sc-bJHhxl gXRQqD">Username</p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-gd4v6g">
-              <input name="username" placeholder="Username" type="text" class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c" value="<?= $profile->username ?>" <?= !empty($profile->username) ? 'readonly=true' : '' ?>>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
+                            <input name="username" placeholder="Username" type="text"
+                                class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c"
+                                value="<?= $profile->username ?>"
+                                <?= !empty($profile->username) ? 'readonly=true' : '' ?>>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                 <circle cx="12" cy="7" r="4"></circle>
                             </svg>
@@ -79,9 +84,15 @@
                     <div class="sc-ccLTTT cjuVOD">
                         <p class="sc-bJHhxl gXRQqD">Email</p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-1vr8bhw">
-              <input name="email" placeholder="Email" type="text" class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c" value="<?php echo $profile->email; ?>" <?= !empty($profile->email) ? 'readonly=true' : '' ?>>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <input name="email" placeholder="Email" type="text"
+                                class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c"
+                                value="<?php echo $profile->email; ?>"
+                                <?= !empty($profile->email) ? 'readonly=true' : '' ?>>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                </path>
                                 <polyline points="22,6 12,13 2,6"></polyline>
                             </svg>
                         </div>
@@ -89,8 +100,12 @@
                     <div class="sc-ccLTTT cjuVOD">
                         <p class="sc-hARARD cKOZpE">Skype ID/Telegram</p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-1vr8bhw">
-              <input name="social_network" maxlength="255" placeholder="Skype ID/Telegram" type="text" class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c" value="<?= $profile->social_network ?>">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
+                            <input name="social_network" maxlength="255" placeholder="Skype ID/Telegram" type="text"
+                                class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c"
+                                value="<?= $profile->social_network ?>">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
                                 <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                             </svg>
                         </div>
@@ -128,8 +143,12 @@
                     <div class="sc-ccLTTT cjuVOD">
                         <p class="sc-hARARD cKOZpE">First Name</p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-1vr8bhw">
-              <input name="first_name" maxlength="255" placeholder="First Name" type="text" class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c" value="<?= $profile->first_name ?>">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
+                            <input name="first_name" maxlength="255" placeholder="First Name" type="text"
+                                class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c"
+                                value="<?= $profile->first_name ?>">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
                                 <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                             </svg>
                         </div>
@@ -137,8 +156,12 @@
                     <div class="sc-ccLTTT cjuVOD">
                         <p class="sc-hARARD cKOZpE">Last Name</p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-1vr8bhw">
-              <input name="last_name" maxlength="255" placeholder="Last Name" type="text" class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c" value="<?= $profile->last_name ?>">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
+                            <input name="last_name" maxlength="255" placeholder="Last Name" type="text"
+                                class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c"
+                                value="<?= $profile->last_name ?>">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
                                 <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                             </svg>
                         </div>
@@ -146,8 +169,12 @@
                     <div>
                         <p class="sc-bJHhxl gXRQqD">Phone</p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-gd4v6g">
-              <input name="phone" placeholder="Phone" type="text" class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c" value="<?= $profile->phone; ?>">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
+                            <input name="phone" placeholder="Phone" type="text"
+                                class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c"
+                                value="<?= $profile->phone; ?>">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
                                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
                             </svg>
@@ -156,8 +183,12 @@
                     <div>
                         <p class="sc-bJHhxl gXRQqD">Address</p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-gd4v6g">
-              <input name="address" placeholder="Address" type="text" class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c" value="<?= $profile->address; ?>">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
+                            <input name="address" placeholder="Address" type="text"
+                                class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c"
+                                value="<?= $profile->address; ?>">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
                                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
                             </svg>
@@ -166,8 +197,12 @@
                     <div>
                         <p class="sc-bJHhxl gXRQqD">Website</p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-gd4v6g">
-              <input name="website" placeholder="Website" type="text" class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c" value="<?= $profile->website; ?>">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
+                            <input name="website" placeholder="Website" type="text"
+                                class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c"
+                                value="<?= $profile->website; ?>">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
                                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
                             </svg>
@@ -177,24 +212,46 @@
                         <p class="sc-bJHhxl gXRQqD">Traffic Type</p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-gd4v6g">
                             <?php
-              $traffic_sources = $this->db
-                ->select('cpalead_custom_features.*')
-                ->from('cpalead_advertiser_traffic')
-                ->join('cpalead_custom_features', 'cpalead_advertiser_traffic.traffic_source_id = cpalead_custom_features.id')
-                ->where('cpalead_advertiser_traffic.advertiser_id', $profile->id)
-                ->get();
+                                $advertiser_id = null;
 
-              $traffics = [];
-              foreach ($traffic_sources ? $traffic_sources->result() : [] as $traffic) {
-                array_push($traffics, $traffic->id);
-              }
-              ?>
-              <select name="traffic_source[]" class="selectpicker" multiple aria-label="size 3 select example">
+                                if (is_array($profile)) {
+                                    if (isset($profile['id'])) {
+                                        $advertiser_id = $profile['id'];
+                                    }
+                                } else {
+                                    if (isset($profile->id)) {
+                                        $advertiser_id = $profile->id;
+                                    }
+                                }
+
+                                $traffics = array();
+                                if ($advertiser_id) {
+                                    $rows = $this->db
+                                        ->select('traffic_source_id')
+                                        ->from('cpalead_advertiser_traffic')
+                                        ->where('advertiser_id', $advertiser_id)
+                                        ->get()
+                                        ->result_array();
+
+                                    foreach ($rows as $row) {
+                                        $traffics[] = (int)$row['traffic_source_id'];
+                                    }
+                                }
+                            ?>
+
+                            <select name="traffic_source[]" class="selectpicker" multiple
+                                aria-label="size 3 select example">
                                 <?php foreach ($trafficTypes as $type): ?>
-                  <option value="<?= $type->id ?>" <?= in_array($type->id, $traffics) ? 'selected' : '' ?>><?= $type->content ?></option>
-                                <?php endforeach ?>
+                                <option value="<?php echo (int)$type->id; ?>"
+                                    <?php echo in_array((int)$type->id, $traffics, true) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($type->content, ENT_QUOTES, 'UTF-8'); ?>
+                                </option>
+                                <?php endforeach; ?>
                             </select>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
                                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
                             </svg>
@@ -211,44 +268,87 @@
             ?>
                         <p class="sc-bJHhxl gXRQqD">Product Category</p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-gd4v6g">
-              <select name="product_categories[]" class="selectpicker" multiple aria-label="size 3 select example">
+                            <select name="product_categories[]" class="selectpicker" multiple
+                                aria-label="size 3 select example">
                                 <?php foreach ($offer_cats as $cat): ?>
-                  <option value="<?= $cat->id ?>" <?= in_array($cat->id, $product_cats) ? 'selected' : '' ?>><?= $cat->offercat ?></option>
+                                <option value="<?= $cat->id ?>"
+                                    <?= in_array($cat->id, $product_cats) ? 'selected' : '' ?>><?= $cat->offercat ?>
+                                </option>
                                 <?php endforeach ?>
                             </select>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
                                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
                             </svg>
                         </div>
                     </div>
                     <div>
-                        <p class="sc-bJHhxl gXRQqD">Product Geo</p>
+                        <p class="sc-bJHhxl gXRQqD">Product Geo *</p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-gd4v6g">
-                            <?php $product_geos = unserialize($profile->product_geo_ids) ?>
-              <select name="product_geo_ids[]" class="selectpicker" multiple aria-label="size 3 select example">
+
+                            <?php
+                                // product_geo_ids lưu dạng serialize
+                                $product_geos = @unserialize($profile->product_geo_ids);
+                                if (!is_array($product_geos)) {
+                                    $product_geos = [];
+                                }
+                            ?>
+
+                            <select name="product_geo_ids[]" class="selectpicker" multiple data-live-search="true"
+                                data-placeholder="Product Geo">
+
                                 <?php foreach ($countries as $country): ?>
-                  <option value="<?= $country->id ?>" <?= in_array($country->id, $product_geos) ?  'selected' : "" ?>><?= $country->country ?></option>
+
+                                <?php
+                                    $cc = strtolower(trim($country->keycode));
+
+                                    $countryName = mb_convert_case(
+                                        mb_strtolower(trim($country->country), 'UTF-8'),
+                                        MB_CASE_TITLE,
+                                        'UTF-8'
+                                    );
+                                ?>
+
+                                <option value="<?= $country->id ?>"
+                                    <?= in_array($country->id, $product_geos) ? 'selected' : '' ?> data-content="
+                                        <span class='fi fi-<?= $cc ?> me-2'></span>
+                                        <?= htmlspecialchars($countryName) ?> - <?= htmlspecialchars($country->keycode) ?>
+                                    ">
+                                    <?= htmlspecialchars($countryName) ?>
+                                </option>
+
                                 <?php endforeach ?>
                             </select>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">
                                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
                             </svg>
                         </div>
                     </div>
+
                     <div class="sc-ccLTTT cjuVOD">
-            <p class="sc-hARARD cKOZpE"><span>About your business:</span><span class="sc-hlILIN kDoghg">*</span></p>
+                        <p class="sc-hARARD cKOZpE"><span>About your business:</span><span
+                                class="sc-hlILIN kDoghg">*</span></p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-gd4v6g">
-              <textarea name="how_to_get_traffic" placeholder="Please introduce your business, fill more than 200 characters" type="text" class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c"><?= $profile->how_to_get_traffic ?></textarea>
+                            <textarea name="how_to_get_traffic"
+                                placeholder="Please introduce your business, fill more than 200 characters" type="text"
+                                class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c"><?= $profile->how_to_get_traffic ?></textarea>
                         </div>
                     </div>
                     <input type="hidden" name="action" value="update_info">
                     <div class="sc-TuwoP gOhHft">
                         <button class="data_save K3TX2EnGEDIGIEiEIo_0X _3-Xcfgk4YnBeM0kgvmZfs_">
-              <div class="_3kiCWIsiMrRqCXneU8Asq6" style="height: 0px; width: 0px; left: 0px; top: 0px;"></div>
+                            <div class="_3kiCWIsiMrRqCXneU8Asq6" style="height: 0px; width: 0px; left: 0px; top: 0px;">
+                            </div>
                             <span class="_1pFgCebzxXEI3gItBe_863">
-                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                                 </svg>
@@ -373,6 +473,9 @@ function ajaxSuccess(data) {
     var myAlert = document.getElementById('thongBao');
     var bsAlert = new bootstrap.Toast(myAlert, option);
     bsAlert.show();
+    if (typeof data === 'string' && data.indexOf('Successfully') !== -1) {
+        window.location.href = "<?php echo site_url('v2'); ?>";
+    }
 }
 
 function ajaxErr() {
@@ -384,3 +487,4 @@ var option = {
     autohide: true
 };
 </script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons/css/flag-icons.min.css">

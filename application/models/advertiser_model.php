@@ -161,17 +161,17 @@ class Advertiser_model extends CI_Model
             'ref_pub_token' => $data['ref_pub_token'],
             'using_ref_token' => $data['using_ref_token']
         ]);
-        $user = $this->db->where('email', $data['email'])->get('advertiser')->row();
+        $advertiser_id = $this->db->insert_id();
         foreach ($data['traffic_source_id'] as $traffic) {
             $this->db->insert('advertiser_traffic', [
-                'traffic_source_id' => $traffic,
-                'advertiser_id' => $user->id
+                'traffic_source_id' => (int)$traffic,
+                'advertiser_id'     => $advertiser_id
             ]);
         }
         foreach ($data['product_categories'] as $pcate) {
             $this->db->insert('advertiser_pcategories', [
                 'product_category_id' => $pcate,
-                'advertiser_id' => $user->id
+                'advertiser_id' => $advertiser_id
             ]);
         }
 
@@ -199,7 +199,7 @@ class Advertiser_model extends CI_Model
                 'pb_value' => serialize($pbvalue),
                 'show' => 1,
                 'order' => 0,
-                'subid' => '?pub_id=#pubid#&clickid='
+                'subid' => '?pub_id=#pubid#&clickid=#clickid#'
             ];
             $this->db->insert('cpalead_network', $inserData);
         }

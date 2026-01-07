@@ -225,9 +225,43 @@ trait PublisherTrait
     }
   }
 
+
   function update_info()
-  { 
-    if ($_POST) {
+  {
+      if (!$_POST) {
+          return;
+      }
+      $data = $this->security->xss_clean($_POST);
+      if (!empty($_FILES['avatar_file']) && !empty($_FILES['avatar_file']['name'])) {
+
+          $uploadDir = FCPATH . 'upload/files/avatars/';
+          if (!is_dir($uploadDir)) { @mkdir($uploadDir, 0755, true); }
+
+          $config = [
+              'upload_path'   => $uploadDir,
+              'allowed_types' => 'jpg|jpeg|png',
+              'max_size'      => 2048,
+              'encrypt_name'  => true,
+          ];
+
+          $this->load->library('upload', $config);
+
+          if (!$this->upload->do_upload('avatar_file')) {
+              return '<strong>FAILURE: </strong>' . $this->upload->display_errors('', '');
+          }
+
+          $up = $this->upload->data();
+          $relativePath = 'upload/files/avatars/' . $up['file_name'];
+
+          $_POST['avartar'] = $relativePath;
+
+      } else {
+          if (!empty($data['current_avatar'])) {
+              $_POST['avartar'] = $data['current_avatar'];
+          }
+      }
+
+      // 3) set rules
       $this->form_validation->set_rules('username', 'Username', 'trim|xss_clean|callback_check_username');
       $this->form_validation->set_rules('email', 'Email', 'trim|valid_email|xss_clean|callback_check_email');
       $this->form_validation->set_rules('im_service', 'Skype ID/Telegram', 'trim|xss_clean');
@@ -236,43 +270,57 @@ trait PublisherTrait
       $this->form_validation->set_rules('ad', 'Address Line 1', 'trim|required|xss_clean');
       $this->form_validation->set_rules('phone', 'Phone', 'required|trim|regex_match[/^(\+)?[0-9]{9,12}$/]|xss_clean');
       $this->form_validation->set_rules('hear_about', 'How did you find us?', 'trim|xss_clean');
+
       $this->form_validation->set_rules('volume', 'Volumne', 'greater_than[0]|xss_clean');
-      $this->form_validation->set_rules('website', 'Website', 'trim|required|regex_match[/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/]|xss_clean');
-      if ($this->form_validation->run() == TRUE) {
-        $data = $this->security->xss_clean($_POST); 
 
-        $member_info = $this->member_info;
-        $member_info['im_service'] = trim($data['im_service']);
-        $member_info['avartar'] = trim($data['avartar']);
-        $member_info['username'] = trim($data['username']);
-        $member_info['firstname'] = trim($data['firstname']);
-        $member_info['lastname'] = trim($data['lastname']);
-        $member_info['ad'] = trim($data['ad']);
-        $member_info['hear_about'] = trim($data['hear_about']);
-        $member_info['volume'] = trim($data['volume']);
-        $member_info['website'] = trim($data['website']);
-        $member_info['aff_type'] = join(',', $data['aff_type']);
+      $this->form_validation->set_rules(
+          'website',
+          'Website',
+          'trim|required|regex_match[/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/]|xss_clean'
+      );
 
-        $this->db->where('id', $this->session->userdata('userid'));
-        $this->db->update('users', [
-          'mailling' => serialize($member_info),
-          'phone' => trim($data['phone']),
-          'product_categories' => join(',', $data['product_categories']),
-          'conversion_flow' => join(',', $data['conversion_flow']),
-          'traffic_device' => $data['traffic_device'],
-          'product_geos' => join(',', $data['product_geos']),
-          'username' => trim($data['username'])
-        ]);
-
-        if ($this->db->affected_rows() > 0) {
-          return '<strong>SUCCESS: </strong> Successfully edited profile.';
-        } else {
-          return '<strong>FAILURE: </strong>Update error!';
-        }
-      } else {
-        return '<strong>FAILURE: </strong>' . validation_errors();
+      // 4) validate
+      if ($this->form_validation->run() != TRUE) {
+          return '<strong>FAILURE: </strong>' . validation_errors();
       }
-    }
+
+      $data = $this->security->xss_clean($_POST);
+      $member_info = $this->member_info;
+      $member_info['im_service']  = trim($data['im_service']);
+      $member_info['avartar']     = trim($data['avartar']); 
+      $member_info['username']    = trim($data['username']);
+      $member_info['firstname']   = trim($data['firstname']);
+      $member_info['lastname']    = trim($data['lastname']);
+      $member_info['ad']          = trim($data['ad']);
+      $member_info['hear_about']  = trim($data['hear_about']);
+      $member_info['volume']      = trim($data['volume']);
+      $member_info['website']     = trim($data['website']);
+      $member_info['aff_type']    = isset($data['aff_type']) ? join(',', (array)$data['aff_type']) : '';
+
+      $this->db->where('id', $this->session->userdata('userid'));
+      $this->db->update('users', [
+          'mailling'           => serialize($member_info),
+          'phone'              => trim($data['phone']),
+          'product_categories' => join(',', (array)$data['product_categories']),
+          'conversion_flow'    => join(',', (array)$data['conversion_flow']),
+          'traffic_device'     => $data['traffic_device'],
+          'product_geos'       => join(',', (array)$data['product_geos']),
+          'username'           => trim($data['username'])
+      ]);
+
+      $errNo  = (int) $this->db->_error_number();
+      $errMsg = $this->db->_error_message();
+
+      $ok = ($errNo === 0);
+
+      $this->output
+          ->set_content_type('application/json')
+          ->set_output(json_encode([
+              'ok'       => $ok,
+              'message'  => $ok ? 'Update Profile Successfully' : ('Update Profile Failed' . $errMsg),
+              'redirect' => site_url('v2'),
+          ]));
+      return;
   }
 
   private function savewire()

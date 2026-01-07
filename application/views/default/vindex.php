@@ -17,7 +17,8 @@
     <link href="<?php echo base_url(); ?>/temp/default/css/hover.css" rel="stylesheet">
     <link href="<?php echo base_url(); ?>/temp/default/css/search-header.css" rel="stylesheet">
     <link href="<?php echo base_url(); ?>/temp/default/css/custom.css" rel="stylesheet">
-    <script src="<?php echo base_url(); ?>/temp/default/js/multiple/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <script src="<?php echo base_url(); ?>/temp/default/js/multiple/jquery-3.2.1.min.js" type="text/javascript">
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" type="text/javascript"></script>
 
     <link rel="stylesheet"
@@ -68,26 +69,25 @@
                         $unread_notifications = 0;
                     }
                 ?>
-                
+
                 <div class="nav_u_profil me-4 pe-1">
                     <div class="dropdown  m-auto col-3 mx-3 d-flex d-row">
 
-                        <a class="fs-6 d-flex align-items-center" style="text-decoration: none" href="<?php echo base_url('v2/notifications'); ?>">
+                        <a class="fs-6 d-flex align-items-center" style="text-decoration: none"
+                            href="<?php echo base_url('v2/notifications'); ?>">
                             <i class="widget-icon fa fa-bell " style="color:black; font-size:20px"></i>
-                            <span class="bell-number" style="font-size:30px" data-count="<?= $unread_notifications ?>"></span>
+                            <span class="bell-number" style="font-size:30px"
+                                data-count="<?= $unread_notifications ?>"></span>
                         </a>
 
                         <a class="nav-link dropdown-toggle fs-6" id="dropdownUser1" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
 
-                            <?php 
-                            $advertiser = $this->session->userdata('user');
-                            $avatar = (!empty($advertiser->avatar_url))
-                                ? base_url($advertiser->avatar_url)
-                                : base_url('temp/default/images/avt_unknow.jpeg');?>
-                            <img src="<?=$avatar ?>" width="30" height="30" class="rounded-circle"> 
+                            <?php $this->load->helper('avatar'); ?>
+                            <?php $avatar = get_header_avatar(); ?>
+                            <img src="<?=$avatar ?>" width="30" height="30" class="rounded-circle">
                         </a>
-                        
+
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser1"
                             style="right:0px !important">
                             <li>
@@ -107,7 +107,8 @@
                             </li>
                             <li><a style="font-size:12px" class="dropdown-item" href="#">English</a></li>
                             <li><a style="font-size:12px" class="dropdown-item"
-                                    href="<?php echo base_url($this->uri->segment(1) . '/help_and_support/1') ?>">Help and
+                                    href="<?php echo base_url($this->uri->segment(1) . '/help_and_support/1') ?>">Help
+                                    and
                                     Support</a></li>
                             <li>
                                 <hr class="dropdown-divider">
@@ -118,12 +119,12 @@
                         </ul>
 
                         <script>
-                            $(document).ready(function() {
-                                var firstName = $('#firstName').text();
-                                var lastName = $('#lastName').text();
-                                var intials = firstName.charAt(0) + lastName.charAt(0);
-                                var profileImage = $('#profileImage').text(intials);
-                            });
+                        $(document).ready(function() {
+                            var firstName = $('#firstName').text();
+                            var lastName = $('#lastName').text();
+                            var intials = firstName.charAt(0) + lastName.charAt(0);
+                            var profileImage = $('#profileImage').text(intials);
+                        });
                         </script>
 
                     </div>
@@ -131,7 +132,7 @@
             </div>
         </div>
     </header>
-  
+
     <main>
         <!-- sidebar-->
 
@@ -180,39 +181,39 @@
                         <p>Users ref your link</p>
                         <ul>
                             <?php foreach ($this->session->userdata('refs') as $ref): ?>
-                                <li><?php echo $ref; ?></li>
+                            <li><?php echo $ref; ?></li>
                             <?php endforeach; ?>
                         </ul>
                     </div>
                     <?php ?>
                     <style>
-                        .refs p {
-                            color: var(--bs-blue);
-                            font-weight: bold;
-                            font-size: 14px;
-                            padding: 0 5px;
-                        }
+                    .refs p {
+                        color: var(--bs-blue);
+                        font-weight: bold;
+                        font-size: 14px;
+                        padding: 0 5px;
+                    }
 
-                        .refs ul li {}
+                    .refs ul li {}
 
-                        .note {
-                            color: #ff0000d6;
-                            font-weight: 400;
-                            font-size: 14px;
-                            padding: 0 5px;
-                        }
+                    .note {
+                        color: #ff0000d6;
+                        font-weight: 400;
+                        font-size: 14px;
+                        padding: 0 5px;
+                    }
 
-                        .btn-copy svg {
-                            fill: white;
-                        }
+                    .btn-copy svg {
+                        fill: white;
+                    }
 
-                        .btn-copy {
-                            width: 60px;
-                            background-color: #3d76b9;
-                            color: #fff;
-                        }
+                    .btn-copy {
+                        width: 60px;
+                        background-color: #3d76b9;
+                        color: #fff;
+                    }
 
-                        .btn-copy:hover {}
+                    .btn-copy:hover {}
                     </style>
                 </div>
                 <div class="modal-footer">
@@ -230,33 +231,37 @@
         integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous">
     </script>
     <script>
-        const myModalRefer = new bootstrap.Modal(document.getElementById('modalRefer'), {
-            keyboard: false
-        })
-        $("#referBtn").on('click', (e) => {
-            e.preventDefault();
-            myModalRefer.show()
-        })
-        $(".btn-copy").on('click', () => {
-            const value = $('#refer').val();
-            copyToClipboard(value)
-        })
-        const copyToClipboard = (data) => {
-            if (window.isSecureContext && navigator.clipboard) {
-                navigator.clipboard.writeText(data);
-            } else {
-                unsecuredCopyToClipboard(data);
-            }
-        };
-        const unsecuredCopyToClipboard = (data) => {
-            var $temp = $("<input type='hidden'>");
-            $("body").append($temp);
-            $temp.val(data).focus().select();
-            $temp.remove();
-        };
+    const myModalRefer = new bootstrap.Modal(document.getElementById('modalRefer'), {
+        keyboard: false
+    })
+    $("#referBtn").on('click', (e) => {
+        e.preventDefault();
+        myModalRefer.show()
+    })
+    $(".btn-copy").on('click', () => {
+        const value = $('#refer').val();
+        copyToClipboard(value)
+    })
+    const copyToClipboard = (data) => {
+        if (window.isSecureContext && navigator.clipboard) {
+            navigator.clipboard.writeText(data);
+        } else {
+            unsecuredCopyToClipboard(data);
+        }
+    };
+    const unsecuredCopyToClipboard = (data) => {
+        var $temp = $("<input type='hidden'>");
+        $("body").append($temp);
+        $temp.val(data).focus().select();
+        $temp.remove();
+    };
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/js/bootstrap-select.min.js" integrity="sha512-FHZVRMUW9FsXobt+ONiix6Z0tIkxvQfxtCSirkKc5Sb4TKHmqq1dZa8DphF0XqKb3ldLu/wgMa8mT6uXiLlRlw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/js/bootstrap-select.min.js"
+        integrity="sha512-FHZVRMUW9FsXobt+ONiix6Z0tIkxvQfxtCSirkKc5Sb4TKHmqq1dZa8DphF0XqKb3ldLu/wgMa8mT6uXiLlRlw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 </body>
 

@@ -61,6 +61,7 @@ class Auth extends CI_Controller
                 if (form_error('avatar_url')) $errors .=  form_error('avatar_url') . '<br/>';
                 if (form_error('is_company')) $errors .=  form_error('is_company') . '<br/>';
                 if (form_error('product_geo_ids')) $errors .=  form_error('product_geo_ids') . '<br/>';
+                if (form_error('traffic_source_id')) $errors .=  form_error('traffic_source_id') . '<br/>';
                 if (form_error('how_to_get_traffic')) $errors .=  form_error('how_to_get_traffic') . '<br/>';
                 if (form_error('product_categories')) $errors .=  form_error('product_categories') . '<br/>';
                 if (form_error('user_setting[has_affiliate_program]')) $errors .=  form_error('user_setting[has_affiliate_program]') . '<br/>';
@@ -76,6 +77,8 @@ class Auth extends CI_Controller
                 $password = sha1(md5($_POST['password']));
                 $user_setting = serialize($_POST['user_setting']);
                 $product_geo_ids = serialize($_POST['product_geo_ids']);
+                $data['traffic_source_id'] = $this->input->post('traffic_source_id');
+                $data['product_categories'] = $this->input->post('product_categories');
                 $data['has_affiliate_program'] = $this->input->post('user_setting')['has_affiliate_program'];
                 $data['password'] = $password;
                 $data['user_setting'] = $user_setting;

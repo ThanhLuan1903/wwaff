@@ -13,10 +13,7 @@ class Auth extends CI_Controller
     function  __construct()
     {   
 	   
-error_log("before constructor");	   
- parent::__construct();
-	    error_log( "sau controller contrutctor");
-	    
+        parent::__construct();	    
         $this->load->model('Custom_model');
         $this->load->library('auth/auth_plugin');
         $this->pub_config = unserialize(file_get_contents('setting_file/publisher.txt'));
@@ -231,7 +228,7 @@ error_log("before constructor");
                 $loi .= 'Please enter a valid <strong>IM Name.</strong><br/>';
             }
 
-            $data['mailling']['aff_type'] = isset($data['aff_type']) ? join(',', (array)$data['aff_type']) : '';
+           $data['mailling']['aff_type'] = isset($data['aff_type']) ? join(',', (array)$data['aff_type']) : '';
             if (($this->form_validation->run() == FALSE)) {
                 if ($loi && $data) {
                     $dt = $loi;
@@ -254,7 +251,9 @@ error_log("before constructor");
                 }
             } else {
                 $managerid = 1;
-
+                if (!empty($this->uploaded_avatar_path)) {
+                    $data['mailling']['avartar'] = $this->uploaded_avatar_path;
+                }
                 if ($this->session->userdata('managerid')) {
                     $managerid = $this->session->userdata('managerid');
                 } else {
@@ -274,13 +273,8 @@ error_log("before constructor");
 
                 $firstname = $data['mailling']['firstname'];
                 $lastname = $data['mailling']['lastname'];
-
                 $this->load->helper('string');
                 $mangaunhien = random_string('alnum', 16);
-                $data['mailling']['avartar'] =
-                    isset($this->mailling['avartar'])
-                        ? $this->mailling['avartar']
-                        : (isset($data['mailling']['avartar']) ? $data['mailling']['avartar'] : '');
                 $idata['mailling'] = serialize($data['mailling']);
                 $idata['manager'] = $managerid;
                 $idata['phone'] = $data['phone'];
@@ -444,34 +438,27 @@ error_log("before constructor");
         $this->form_validation->set_rules('mailling[ad]', 'Address', 'required');
         $this->form_validation->set_rules('avatar_url', 'Avatar', 'callback__validate_and_upload_avatar');
 
-        // if (!empty($this->input->post('mailling')['avartar'])) {
-        //     $this->form_validation->set_rules('mailling[avartar]', 'Avatar', 'regex_match[/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/]');
-        // }
-
         if ($registerType == 'Company') {
             $this->form_validation->set_rules("mailling[website]", 'Website', 'required|regex_match[/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/]');
         }
     }
 
-    public function _validate_and_upload_avatar()
+public function _validate_and_upload_avatar()
 {
-    // Nếu không có file
     if (empty($_FILES['avatar_url']) || empty($_FILES['avatar_url']['name'])) {
         $this->form_validation->set_message('_validate_and_upload_avatar', 'Please upload an <strong>Avatar</strong>.');
         return false;
     }
 
-    // Ensure folder exists: /upload/files/avatars
     $uploadDir = FCPATH . 'upload/files/avatars/';
-    if (!is_dir($uploadDir)) {
-        @mkdir($uploadDir, 0755, true);
-    }
+    if (!is_dir($uploadDir)) @mkdir($uploadDir, 0755, true);
 
-    $config = [];
-    $config['upload_path']   = $uploadDir;
-    $config['allowed_types'] = 'jpg|jpeg|png';
-    $config['max_size']      = 2048; // KB = 2MB
-    $config['encrypt_name']  = true;
+    $config = array(
+        'upload_path'   => $uploadDir,
+        'allowed_types' => 'jpg|jpeg|png',
+        'max_size'      => 2048,
+        'encrypt_name'  => true,
+    );
 
     $this->load->library('upload', $config);
 
@@ -481,21 +468,14 @@ error_log("before constructor");
     }
 
     $up = $this->upload->data();
-
-    // Lưu đường dẫn relative để dùng base_url() render
     $relativePath = 'upload/files/avatars/' . $up['file_name'];
 
-    // IMPORTANT: đưa vào mailling để register() serialize xuống DB
-    if (!isset($this->mailling) || !is_array($this->mailling)) {
-        $this->mailling = [];
-    }
-    $this->mailling['avartar'] = $relativePath;
-
-    // Đồng bộ vào POST data để phía dưới bạn serialize($data['mailling']) ra đúng
-    $_POST['mailling']['avartar'] = $relativePath;
+    // LƯU VÀO BIẾN CLASS để dùng sau
+    $this->uploaded_avatar_path = $relativePath;
 
     return true;
 }
+
 
 
     public function valid_password($password)
