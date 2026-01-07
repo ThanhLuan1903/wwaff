@@ -303,7 +303,7 @@ trait PublisherTrait
           'phone'              => trim($data['phone']),
           'product_categories' => join(',', (array)$data['product_categories']),
           'conversion_flow'    => join(',', (array)$data['conversion_flow']),
-          'traffic_device'     => $data['traffic_device'],
+          'traffic_device'     => join(',', (array)$data['traffic_device']),
           'product_geos'       => join(',', (array)$data['product_geos']),
           'username'           => trim($data['username'])
       ]);

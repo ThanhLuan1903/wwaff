@@ -243,7 +243,7 @@ class Auth extends CI_Controller
                 if (form_error('mailling[hear_about]')) $dt .=  form_error('mailling[hear_about]') . '<br/>';
                 if (form_error('conversion_flow')) $dt .=  form_error('conversion_flow') . '<br/>';
                 if (form_error('mailling[volume]')) $dt .=  form_error('mailling[volume]') . '<br/>';
-                if (form_error('traffic_device')) $dt .=  form_error('traffic_device') . '<br/>';
+                if (form_error('traffic_device[]')) $dt .=  form_error('traffic_device[]') . '<br/>';
                 if (form_error('mailling[ad]')) $dt .=  form_error('mailling[ad]') . '<br/>';
                 if (form_error('mailling[username]')) $dt .=  form_error('mailling[username]') . '<br/>';
                 if (empty($data['mailling']['terms'])) {
@@ -290,7 +290,9 @@ class Auth extends CI_Controller
                 $idata['product_geos'] = implode(',', $data['product_geo']);
                 $idata['product_categories'] = implode(',', $data['product_category']);
                 $idata['conversion_flow'] = implode(',', $data['conversion_flow']);
-                $idata['traffic_device'] = $data['traffic_device'];
+                $idata['traffic_device'] = isset($data['traffic_device'])
+                ? implode(',', (array)$data['traffic_device'])
+                : '';
                 $idata['username'] = $data['mailling']['username'];
                 $idata['is_company'] = $is_company;
 
@@ -434,7 +436,7 @@ class Auth extends CI_Controller
         $this->form_validation->set_rules('mailling[hear_about]', 'About your business', 'required');
         $this->form_validation->set_rules('conversion_flow', 'Product Type', 'required');
         $this->form_validation->set_rules('mailling[volume]', 'Volume', 'required');
-        $this->form_validation->set_rules('traffic_device', 'Traffic Device', 'required');
+        $this->form_validation->set_rules('traffic_device[]', 'Traffic Device', 'required');
         $this->form_validation->set_rules('mailling[ad]', 'Address', 'required');
         $this->form_validation->set_rules('avatar_url', 'Avatar', 'callback__validate_and_upload_avatar');
 

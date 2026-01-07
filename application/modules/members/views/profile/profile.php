@@ -207,14 +207,18 @@ $offer_types = $this->Home_model->get_data('offertype', ['show' => 1]);
                         <p class="sc-bJHhxl gXRQqD">Traffic Device</p>
                         <div class="_3WCfA5WYRlXEJAXoSGLCJM css-gd4v6g">
                             <?php $traffic_devices = $this->Home_model->get_data('device', ['show' => 1]); ?>
-                            <select name="traffic_device" class="selectpicker" aria-label="size 3 select example">
+                            <?php $device_ids = array_filter(array_map('trim', explode(',', (string)$userData->traffic_device))); ?>
+
+                            <select name="traffic_device[]" class="selectpicker" multiple
+                                aria-label="size 3 select example">
                                 <?php foreach ($traffic_devices as $traffic_device): ?>
                                 <option value="<?= $traffic_device->id ?>"
-                                    <?= $traffic_device->id == $userData->traffic_device ? 'selected' : '' ?>>
-                                    <?= $traffic_device->device ?></option>
+                                    <?= in_array((string)$traffic_device->id, $device_ids, true) ? 'selected' : '' ?>>
+                                    <?= $traffic_device->device ?>
+                                </option>
                                 <?php endforeach ?>
                             </select>
-                            <!-- <input name="traffic_device" placeholder="Traffic Device" type="text" class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c" value="<?= $userData->traffic_device ?>"> -->
+
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round" class="_2ZTo9--SzlVupN_LAvBNdo css-gyuu5p">

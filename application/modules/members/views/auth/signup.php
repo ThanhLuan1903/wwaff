@@ -333,7 +333,7 @@
                                                 <div class="sc-kAzzGY jIpyka" height="52px">
                                                     <?php $traffic_devices = $this->Home_model->get_data('device', ['show' => 1]); ?>
                                                     <p>Traffic Device *</p>
-                                                    <select name="traffic_device" class="selectpicker"
+                                                    <select name="traffic_device[]" class="selectpicker" multiple
                                                         data-placeholder="Traffic Device">
                                                         <?php foreach ($traffic_devices as $traffic_device): ?>
                                                         <option value="<?= $traffic_device->id ?>">
