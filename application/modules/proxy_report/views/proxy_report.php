@@ -2,218 +2,251 @@
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>temp/default/css/jquery-ui.css" />
 
 <script>
-   $(document).ready(function() {
-      $("#startdate").datepicker({
-         dateFormat: "yy-mm-dd"
-      });
+$(document).ready(function() {
+    $("#startdate").datepicker({
+        dateFormat: "yy-mm-dd"
+    });
 
-      $("#enddate").datepicker({
-         dateFormat: "yy-mm-dd"
-      });
+    $("#enddate").datepicker({
+        dateFormat: "yy-mm-dd"
+    });
 
-      $('#checkAll').click(function() {
-         $('.tbdata_check input:checkbox').prop('checked', this.checked);
-      });
+    $('#checkAll').click(function() {
+        $('.tbdata_check input:checkbox').prop('checked', this.checked);
+    });
 
-      $('.action_pay_random input[name="randomPay"]').on('change', function() {
-         let randomPay = $(this).val();
-         if (randomPay > 0) {
+    $('.action_pay_random input[name="randomPay"]').on('change', function() {
+        let randomPay = $(this).val();
+        if (randomPay > 0) {
             $('.action_pay_random button').prop('disabled', false);
-         } else {
+        } else {
             $('.action_pay_random button').prop('disabled', true);
-         }
-      })
+        }
+    })
 
-   })
+})
 </script>
 
 <style>
-   .rp_fitter {
-      width: 640px;
-      margin: 10px auto;
-   }
+.rp_fitter {
+    width: 640px;
+    margin: 10px auto;
+}
 
-   select.timezone {
-      margin-left: 17px;
-      display: flex;
-      background-color: #f5f5f5;
-      height: 27px !important;
-   }
+select.timezone {
+    margin-left: 17px;
+    display: flex;
+    background-color: #f5f5f5;
+    height: 27px !important;
+}
 
-   .timezone_label {
-      margin-left: 17px;
-   }
+.timezone_label {
+    margin-left: 17px;
+}
 
-   .ip_timezone {
-      display: flex;
-   }
+.ip_timezone {
+    display: flex;
+}
 
-   .form-group textarea {
-      resize: none;
-      border: 1px solid #ced4da;
-      border-radius: 4px;
-      transition: border-color 0.15s ease-in-out;
-      font-size: 14px;
-      max-height: 38px;
-   }
+.form-group textarea {
+    resize: none;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    transition: border-color 0.15s ease-in-out;
+    font-size: 14px;
+    max-height: 38px;
+}
+
+/* Scroll ngang cho table (desktop cũng áp dụng) */
+.table-scroll-x {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Table không làm tràn bố cục */
+.table-fix-overflow {
+    width: 100%;
+    min-width: 1200px;
+    /* tăng/giảm tùy số cột */
+    table-layout: auto;
+}
+
+/* Text dài không kéo bung cột */
+.table-fix-overflow td,
+.table-fix-overflow th {
+    vertical-align: middle;
+}
+
+.table-fix-overflow td {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
 </style>
 
 <div class="panel panel-success">
-   <div class="panel-heading">
-      <h3 class="panel-title">Filter</h3>
-   </div>
-   <div class="panel-body">
-      <form class="form_filter" method="post" action="<?php echo base_url('proxy_report/filtdata'); ?>">
-         <div class="row">
-            <div class="form-group col-md-6">
-               <label>Start Date</label>
-               <input id="startdate" type="date" class="form-control" name="from"
-                  value="<?php if ($this->session->userdata('from')) {
+    <div class="panel-heading">
+        <h3 class="panel-title">Filter</h3>
+    </div>
+    <div class="panel-body">
+        <form class="form_filter" method="post" action="<?php echo base_url('proxy_report/filtdata'); ?>">
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label>Start Date</label>
+                    <input id="startdate" type="date" class="form-control" name="from" value="<?php if ($this->session->userdata('from')) {
                               echo $this->session->userdata('from');
                            } ?>" />
-            </div>
-            <div class="form-group col-md-6">
-               <label>End Date</label>
-               <input id="enddate" type="date" class="form-control" name="to"
-                  value="<?php if ($this->session->userdata('to')) {
+                </div>
+                <div class="form-group col-md-6">
+                    <label>End Date</label>
+                    <input id="enddate" type="date" class="form-control" name="to" value="<?php if ($this->session->userdata('to')) {
                               echo $this->session->userdata('to');
                            } ?>" />
+                </div>
             </div>
-         </div>
-         <div class="row">
-            <div class="form-group col-md-6">
-               <label>Filter</label>
-               <select class="form-control" name="status">
-                  <option value="">All</option>
-                  <option <?php echo $this->session->userdata('status') == 1 ? 'selected' : '' ?> value="1">Pending</option>
-                  <option <?php echo $this->session->userdata('status') == 4 ? 'selected' : '' ?> value="4">Approved</option>
-                  <option <?php echo $this->session->userdata('status') == 3 ? 'selected' : '' ?> value="3">Pay</option>
-                  <option <?php echo $this->session->userdata('status') == 2 ? 'selected' : '' ?> value="2">Declined</option>
-               </select>
-            </div>
-            <div class="form-group col-md-6">
-               <label>Networks</label>
-               <select class="form-control" name="network">
-                  <option value="all">All</option>
-                  <?php if (!empty($networks)): ?>
-                     <?php foreach ($networks as $network): ?>
-                        <option value="<?php echo $network->id; ?>"
-                           <?php echo $this->session->userdata('network') == $network->id ? 'selected' : ''; ?>>
-                           <?php echo $network->title; ?>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label>Filter</label>
+                    <select class="form-control" name="status">
+                        <option value="">All</option>
+                        <option <?php echo $this->session->userdata('status') == 1 ? 'selected' : '' ?> value="1">
+                            Pending</option>
+                        <option <?php echo $this->session->userdata('status') == 4 ? 'selected' : '' ?> value="4">
+                            Approved</option>
+                        <option <?php echo $this->session->userdata('status') == 3 ? 'selected' : '' ?> value="3">Pay
                         </option>
-                     <?php endforeach; ?>
-                  <?php endif; ?>
-               </select>
+                        <option <?php echo $this->session->userdata('status') == 2 ? 'selected' : '' ?> value="2">
+                            Declined</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Networks</label>
+                    <select class="form-control" name="network">
+                        <option value="all">All</option>
+                        <?php if (!empty($networks)): ?>
+                        <?php foreach ($networks as $network): ?>
+                        <option value="<?php echo $network->id; ?>"
+                            <?php echo $this->session->userdata('network') == $network->id ? 'selected' : ''; ?>>
+                            <?php echo $network->title; ?>
+                        </option>
+                        <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
             </div>
-         </div>
-         <div class="row">
-            <div class="form-group col-md-3">
-               <input name="userid" type="text" class="form-control" value="<?php echo $this->session->userdata('userid'); ?>" placeholder="UserId" />
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <input name="userid" type="text" class="form-control"
+                        value="<?php echo $this->session->userdata('userid'); ?>" placeholder="UserId" />
+                </div>
+                <div class="form-group col-md-3">
+                    <input name="offerid" type="text" class="form-control"
+                        value="<?php echo $this->session->userdata('offerid'); ?>" placeholder="OfferId" />
+                </div>
+                <div class="form-group col-md-6">
+                    <input name="amount2" type="text" class="form-control"
+                        value="<?php echo $this->session->userdata('amount2'); ?>" placeholder="Payout >" />
+                </div>
             </div>
-            <div class="form-group col-md-3">
-               <input name="offerid" type="text" class="form-control"
-                  value="<?php echo $this->session->userdata('offerid'); ?>" placeholder="OfferId" />
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="subid">SubId</label>
+                    <textarea class="form-control" id="subid" rows="3"
+                        name="searchSubid"><?php echo $this->session->userdata('searchSubid'); ?></textarea>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="subid2">SubId2</label>
+                    <textarea class="form-control" id="subid2" rows="3"
+                        name="searchSubid2"><?php echo $this->session->userdata('searchSubid2'); ?></textarea>
+                </div>
             </div>
-            <div class="form-group col-md-6">
-               <input name="amount2" type="text" class="form-control"
-                  value="<?php echo $this->session->userdata('amount2'); ?>" placeholder="Payout >" />
+            <div class="row ip_timezone">
+                <div class="form-group col-md-6">
+                    <label>Check Duplicate IP</label>
+                    <span class="box_switch <?php echo !empty($dupips) && $dupips == 1 ? '' : 'off'; ?>">
+                        <a href="#">Switch Off</a>
+                        <input id="off_on" type="hidden" name="dupips"
+                            value="<?php echo !empty($dupips) ? $dupips : 0; ?>" />
+                    </span>
+                </div>
+                <div>
+                    <label class="timezone_label">Time Zone</label>
+                    <select name="timezone" class="timezone">
+                        <option value="0">GMT +7</option>
+                        <option value="1">GMT -5</option>
+                    </select>
+                </div>
             </div>
-         </div>
-         <div class="row">
-            <div class="form-group col-md-6">
-               <label for="subid">SubId</label>
-               <textarea class="form-control" id="subid" rows="3" name="searchSubid"><?php echo $this->session->userdata('searchSubid'); ?></textarea>
-            </div>
-            <div class="form-group col-md-6">
-               <label for="subid2">SubId2</label>
-               <textarea class="form-control" id="subid2" rows="3" name="searchSubid2"><?php echo $this->session->userdata('searchSubid2'); ?></textarea>
-            </div>
-         </div>
-         <div class="row ip_timezone">
-            <div class="form-group col-md-6">
-               <label>Check Duplicate IP</label>
-               <span class="box_switch <?php echo !empty($dupips) && $dupips == 1 ? '' : 'off'; ?>">
-                  <a href="#">Switch Off</a>
-                  <input id="off_on" type="hidden" name="dupips"
-                     value="<?php echo !empty($dupips) ? $dupips : 0; ?>" />
-               </span>
-            </div>
-            <div>
-               <label class="timezone_label">Time Zone</label>
-               <select name="timezone" class="timezone">
-                  <option value="0">GMT +7</option>
-                  <option value="1">GMT -5</option>
-               </select>
-            </div>
-         </div>
-         <?php if ($this->session->userdata('admin')) { ?>
+            <?php if ($this->session->userdata('admin')) { ?>
             <hr>
             <div class="row action_pay_random">
-               <div class="form-group col-md-3">
-                  <input name="randomPay" type="text" class="form-control" value="" placeholder="Random Pay">
-               </div>
-               <div class="col-md-12">
-                  <button name="actionPay" value="pending" class="btn btn-warning btn-sm ">Pending</button>
-                  <button name="actionPay" value="pay" class="btn btn-info btn-sm "> Pay </button>
-                  <button name="actionPay" value="declined" class="btn btn-danger btn-sm ">Declined</button>
-               </div>
+                <div class="form-group col-md-3">
+                    <input name="randomPay" type="text" class="form-control" value="" placeholder="Random Pay">
+                </div>
+                <div class="col-md-12">
+                    <button name="actionPay" value="pending" class="btn btn-warning btn-sm ">Pending</button>
+                    <button name="actionPay" value="pay" class="btn btn-info btn-sm "> Pay </button>
+                    <button name="actionPay" value="declined" class="btn btn-danger btn-sm ">Declined</button>
+                </div>
             </div>
-         <?php } ?>
-         <hr />
-         <div class="row">
-            <div class="form-group col-md-12 text-center">
-               <button type="submit" name="submit" value="1" class="btn btn-primary btn-sm">Submit</button>
-               <button type="submit" name="reset" value="1" class="btn btn-warning btn-sm">Reset</button>
-               <button type="submit" name="export" value="1" class="btn btn-info btn-sm">Export Excel</button>
+            <?php } ?>
+            <hr />
+            <div class="row">
+                <div class="form-group col-md-12 text-center">
+                    <button type="submit" name="submit" value="1" class="btn btn-primary btn-sm">Submit</button>
+                    <button type="submit" name="reset" value="1" class="btn btn-warning btn-sm">Reset</button>
+                    <button type="submit" name="export" value="1" class="btn btn-info btn-sm">Export Excel</button>
+                </div>
             </div>
-         </div>
-      </form>
-   </div>
+        </form>
+    </div>
 </div>
 <div class="row">
-   <div class="box col-md-12">
-      <div data-original-title="" class="box-header">
-         <h2><i class="glyphicon glyphicon-signal"></i><span class="break"></span>Proxy Report</h2>
-         <div class="box-icon">
-            <a class="btn-setting" href="#"><i class="glyphicon glyphicon-wrench"></i></a>
-            <a class="btn-minimize" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
-            <a class="btn-close" href="#"><i class="glyphicon glyphicon-remove"></i></a>
-         </div>
-      </div>
-      <div class="box-content">
-         <div class="row">
-            <div class="col-md-12"></div>
-            <div class="col-md-12">
-               <form class="form_lead" method="post" action="<?php echo base_url('proxy_report/rvdata'); ?>">
-                  <?php
+    <div class="box col-md-12">
+        <div data-original-title="" class="box-header">
+            <h2><i class="glyphicon glyphicon-signal"></i><span class="break"></span>Proxy Report</h2>
+            <div class="box-icon">
+                <a class="btn-setting" href="#"><i class="glyphicon glyphicon-wrench"></i></a>
+                <a class="btn-minimize" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
+                <a class="btn-close" href="#"><i class="glyphicon glyphicon-remove"></i></a>
+            </div>
+        </div>
+        <div class="box-content">
+            <div class="row">
+                <div class="col-md-12"></div>
+                <div class="col-md-12">
+                    <form class="form_lead" method="post" action="<?php echo base_url('proxy_report/rvdata'); ?>">
+                        <?php
                   $tb = $this->session->userdata('updatedone');
                   if ($tb) {
                      echo $tb;
                      $this->session->unset_userdata('updatedone');
                   }
                   ?>
-                  <table class="table table-striped table-bordered">
-                     <thead>
-                        <tr>
-                           <th><input id="checkAll" type="checkbox" /></th>
-                           <th>SubID</th>
-                           <th>SubID2</th>
-                           <th>ADV ID</th>
-                           <th>Payout ADV</th>
-                           <th>Users</th>
-                           <th>OfferId</th>
-                           <th>OferName</th>
-                           <th>Ip</th>
-                           <th>Date</th>
-                           <th>Payout</th>
-                           <th>proxy</th>
-                           <th>Status</th>
-                           <th>Device</th>
-                           <th>Referrer</th>
-                        </tr>
-                     </thead>
-                     <tbody class="tbdata_check">
-                        <?php
+                        <div class="table-responsive table-scroll-x">
+                            <table class="table table-striped table-bordered table-fix-overflow">
+                                <thead>
+                                    <tr>
+                                        <th><input id="checkAll" type="checkbox" /></th>
+                                        <th>SubID</th>
+                                        <th>SubID2</th>
+                                        <th>ADV ID</th>
+                                        <th>Payout ADV</th>
+                                        <th>Users</th>
+                                        <th>OfferId</th>
+                                        <th>OferName</th>
+                                        <th>Ip</th>
+                                        <th>Date</th>
+                                        <th>Payout</th>
+                                        <th>proxy</th>
+                                        <th>Status</th>
+                                        <th>Device</th>
+                                        <th>Referrer</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="tbdata_check">
+                                    <?php
                         if (!empty($dulieu)) {
                            //lấy pubname
                            $currentIp = 0;
@@ -278,9 +311,11 @@
                            }
                         }
                         ?>
-                     </tbody>
-                  </table>
-                  <?php
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <?php
                   if ($this->session->userdata('admin') == 1) {
                      echo '                     
                       <div class="col-md-5 1pull-right action_clk">
@@ -293,14 +328,15 @@
                       ';
                   }
                   ?>
-            </div>
-            </form>
-            <div class="row">
-               <div class="col-md-6">
-                  <div style="margin:20px 0;float:left" class="form-group form-inline filter">
-                     <select title="<?php echo $this->uri->segment(3); ?>" name="filter_cat" size="1" class="form-control input-sm">
-                        <option value="0">all</option>
-                        <?php
+                </div>
+                </form>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div style="margin:20px 0;float:left" class="form-group form-inline filter">
+                            <select title="<?php echo $this->uri->segment(3); ?>" name="filter_cat" size="1"
+                                class="form-control input-sm">
+                                <option value="0">all</option>
+                                <?php
                         if (!empty($category)) {
                            $where = $this->session->userdata('where');
 
@@ -315,29 +351,30 @@
                            }
                         }
                         ?>
-                     </select>
-                     <label></label>
-                  </div>
-               </div>
-               <div class="col-md-6">
-                  <ul class=" pagination">
-                     <?php echo $this->pagination->create_links(); ?>
-                  </ul>
-               </div>
+                            </select>
+                            <label></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class=" pagination">
+                            <?php echo $this->pagination->create_links(); ?>
+                        </ul>
+                    </div>
+                </div>
             </div>
-         </div>
-      </div>
-   </div>
+        </div>
+    </div>
 </div>
 
 <script>
-   $(document).ready(function() {
-      var checkDupIp = $('input[name="dupips"]').val()
-      if (checkDupIp == 1) {}
+$(document).ready(function() {
+    var checkDupIp = $('input[name="dupips"]').val()
+    if (checkDupIp == 1) {}
 
-      $('.stat').val(<?php echo $this->session->userdata('status') ?>);
-      var timezone_status = "<?php echo $this->session->userdata('timezone') ? $this->session->userdata('timezone') : 0; ?>";
-      $('select.timezone option[value="' + timezone_status + '"]').prop('selected', true);
+    $('.stat').val(<?php echo $this->session->userdata('status') ?>);
+    var timezone_status =
+        "<?php echo $this->session->userdata('timezone') ? $this->session->userdata('timezone') : 0; ?>";
+    $('select.timezone option[value="' + timezone_status + '"]').prop('selected', true);
 
-   })
+})
 </script>

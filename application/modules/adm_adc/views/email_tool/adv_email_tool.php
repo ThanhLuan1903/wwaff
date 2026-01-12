@@ -1,37 +1,39 @@
 <?php echo $dt;?>
 <form class="row checkemail" role="form" method="post" action="#">
 
-  <div class="col-md-6">
-    <div class="form-group">
-        <label for="exampleInputEmail1">Subject</label>
-        <input type="text" class="form-control" name="sub" value="<?php echo $this->session->userdata('sub');?>" placeholder="Subject">
-      </div>
-      <div class="form-group">
-        <label for="exampleInputEmail1">Message</label>
-        <textarea id="soanthao"  class="form-control" rows="10" name="ct"><?php echo $this->session->userdata('ct');?></textarea>
-      </div>
-      <button type="submit" name="act"  class="btn btn-default" value="send">Send</button>
-      <hr/>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="exampleInputEmail1">Subject</label>
+            <input type="text" class="form-control" name="sub" value="<?php echo $this->session->userdata('sub');?>"
+                placeholder="Subject">
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Message</label>
+            <textarea id="soanthao" class="form-control" rows="10"
+                name="ct"><?php echo $this->session->userdata('ct');?></textarea>
+        </div>
+        <button type="submit" name="act" class="btn btn-default" value="send">Send</button>
+        <hr />
 
-      <div class="form-group">
-        <label for="exampleInputEmail1">Search Email</label>
-        <textarea class="form-control" rows="10" name="search">
+        <div class="form-group">
+            <label for="exampleInputEmail1">Search Email</label>
+            <textarea class="form-control" rows="3" name="search">
           <?php //echo $this->session->userdata('search');
         ?></textarea>
-      </div>
-      <button type="submit" name="act" class="btn btn-default" value="search">Search Email</button>
-  </div>
+        </div>
+        <button type="submit" name="act" class="btn btn-default" value="search">Search Email</button>
+    </div>
 
 
-  <div class="col-md-6 table-responsive">
-  <h4>Chose Member</h4>
-    <table  class="table table-striped table-bordered table-condensed">
-      <tr>
-        <th width="20"><input id="checkAll" type="checkbox"></th>
-        <th>Email</th>
-        <th>Status</th>
-      </tr>
-      <?php
+    <div class="col-md-6 table-responsive">
+        <h4>Chose Member</h4>
+        <table class="table table-striped table-bordered table-condensed">
+            <tr>
+                <th width="20"><input id="checkAll" type="checkbox"></th>
+                <th>Email</th>
+                <th>Status</th>
+            </tr>
+            <?php
      if(!empty($us)){
           foreach($us as $us){
             if($us->status==1){
@@ -56,28 +58,23 @@
         }
         //0->pending 1->ativate 2->pause 3->banned	
       ?>
-     
-    </table>
-     <!-- pagination-->
-   <div class="col-md-12 my-2">
-      <ul class=" pagination">                       
-         <?php echo $this->pagination->create_links();?>     
-      </ul>
-   </div>
-   <!-- end pagination-->
 
-  </div>
+        </table>
+        <!-- pagination-->
+        <div class="col-md-12 my-2">
+            <ul class=" pagination">
+                <?php echo $this->pagination->create_links();?>
+            </ul>
+        </div>
+        <!-- end pagination-->
+
+    </div>
 </form>
 
 <script>
-  $('document').ready(function(){
-      $('#checkAll').click(function () {    
-        $('.checkemail input:checkbox').prop('checked', this.checked);    
+$('document').ready(function() {
+    $('#checkAll').click(function() {
+        $('.checkemail input:checkbox').prop('checked', this.checked);
     });
-  })
-
+})
 </script>
-
-
-
-

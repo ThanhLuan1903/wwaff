@@ -298,33 +298,21 @@ class Auth extends CI_Controller
 
                 $sitename = $this->pub_config['sitename'];
 
-                if ($this->pub_config['activate']) {
-                    $idata['activated'] = 0;
-                    $noidung = "
-                            <b>Dear $firstname $lastname,</b><p>
-                            Thanks for interested with $sitename. Your application is completed and will be process within 3-5 business days.
-                            </p>
-                            <p>
-                            In the meantime, please active your account by the following link:
-                            <a href=" . base_url() . "confirmation/$mangaunhien>Active</a>
-                            </p>
-                            If the active does not work well with your end then please copy and paste the url below for activate your account
-                            " . base_url() . "confirmation/$mangaunhien
-                            <br/>                                 
-                            Regards,<br/>
-                            Affiliate Application Team.                    
-                            ";
-                } else {
-                    $idata['activated'] = 1;
-                    $noidung = "
-                        <b>Dear $firstname $lastname,</b><p>
-                        Thanks for interested with $sitename. Your application is completed and will be process within 3-5 business days.
-                        </p>
-                        <br/>                                 
-                        Regards,<br/>
-                        Affiliate Application Team.                    
-                        ";
-                }
+                $idata['activated'] = 0;
+
+                $active_link = base_url() . "confirmation/$mangaunhien";
+                $noidung = "
+                    <b>Dear $firstname $lastname,</b><p>
+                    Thanks for interested with $sitename. Your application is completed and will be process within 3-5 business days.
+                    </p>
+                    <p><b>Important:</b> Please verify your email by clicking the link below:</p>
+                    <p><a href=\"$active_link\">Verify Email</a></p>
+                    <p>If the link does not work, copy and paste this URL into your browser:</p>
+                    <p>$active_link</p>
+                    <br/>
+                    Regards,<br/>
+                    Affiliate Application Team.
+                ";
 
                 $this->db->insert('users', $idata);
                 $err = 0;
@@ -369,54 +357,46 @@ class Auth extends CI_Controller
 
     private function guimail($toemail = '', $tieude = '', $noidung = '')
     {
-        $domain = 'noreply3.wedebeek.com';
-        $api = '738d80a2f18a41c0c4d6a9e67696516c-31eedc68-b5347e9d';
-        $from = $this->pub_config['sitename'] . '<' . $this->pub_config['emailadmin'] . '>';
-        $txt = strip_tags($noidung);
-        $curl_post_data = array(
-            'from'    => $from,
-            'to'      => $toemail,
-            'subject' => $tieude,
-            'html' => $noidung,
-            'text'    => $txt
-        );
-
-        $service_url = 'https://api.mailgun.net/v3/' . $domain . '/messages';
-        $curl = curl_init($service_url);
-        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($curl, CURLOPT_USERPWD, "api:$api");
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $curl_post_data);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        $curl_response = curl_exec($curl);
-        $response = json_decode($curl_response);
-        curl_close($curl);
-        if ($response->message == 'Queued. Thank you.') return 1;
-        else return 0;
+        $this->load->library('Mailjet');
+        $this->mailjet->send_email($toemail, $tieude, $noidung, 'support@wedebeek.com', $this->pub_config['sitename']);
     }
 
     function activate($key = '')
     {
+        $data = array(
+            'status' => 'error',
+            'title'  => 'Activation Failed',
+            'message'=> 'Your activation key is invalid or expired.'
+        );
+
         $log = $this->Home_model->get_one('users', array('key_active' => $key));
-        if (!empty($log)) {
+
+        if ($log) {
             if (!$log->activated) {
-                if ($log->key_active != $key) {
-                    echo 'your activation code is not right, please correct them';
-                } else {
-                    $this->db->where('key_active', $key);
-                    $this->db->update('users', array('activated' => 1));
-                    echo 'Thanks for interested with ' . $this->pub_config['sitename'] . '. Your application is completed and will be process within 3-5 business days'; //noi dugn thong bao sau khi kich hoat mail
-                    $mailling = unserialize($log->mailling);
-                    $name = $mailling['firstname'] . ' ' . $mailling['lastname'];
-                }
+                $this->db->where('key_active', $key);
+                $this->db->update('users', array('activated' => 1));
+
+                $sitename = isset($this->pub_config['sitename']) && $this->pub_config['sitename']
+                    ? $this->pub_config['sitename']
+                    : 'our affiliate system';
+
+                $data = array(
+                    'status'  => 'success',
+                    'title'   => 'Email Verified Successfully',
+                    'message' => "Thanks for joining <b>$sitename</b>.<br>Your email has been verified and your application will be processed within <b>3–5 business days</b>."
+                );
             } else {
-                echo 'activated!';
+                $data = array(
+                    'status'  => 'info',
+                    'title'   => 'Already Verified',
+                    'message' => 'Your email has been verified and your application will be processed within <b>3–5 business days'
+                );
             }
-        } else {
-            echo 'Your Activation key is experied !';
         }
+
+        $this->load->view('auth/activate_result', $data);
     }
+
 
     function hienthi()
     {

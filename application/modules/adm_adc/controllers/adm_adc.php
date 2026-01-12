@@ -340,10 +340,10 @@ class Adm_adc extends CI_Controller
                         $tieude = 'Your Application Has Been Approved';
                         $noidung = "
                             Dear Partner,<p>
-                            We have reviewed your application and you have been approved as a Wedebeek affiliate. You may now log into obtain creatives to promote all of our offers. Your login information is as follows:
+                            We have reviewed your application and you have been approved as a Worldwide affiliate. You may now log into obtain creatives to promote all of our offers. Your login information is as follows:
                                 <br/>
-                            Wedebeek Log in Link:<br/>
-                            Log in link: http://beeklink.store/v2/sign/in
+                            Worldwide Log in Link:<br/>
+                            Log in link: http://wwaff.com/v2/sign/in
                             <br/>
                             
                             Username:<br/>
@@ -432,34 +432,33 @@ class Adm_adc extends CI_Controller
         }
     }
 
-    private function guimail($toemail = '', $tieude = '', $noidung = '')
+
+    private function guimail($toemail = '', $tieude = '', $noidung = '', $fromEmail = '', $fromName = '')
     {
-        $domain = 'noreply3.wedebeek.com';
-        $api = '738d80a2f18a41c0c4d6a9e67696516c-31eedc68-b5347e9d';
-        $from = $this->pub_config['sitename'] . '<' . $this->pub_config['emailadmin'] . '>';
-        $txt = strip_tags($noidung);
-        $curl_post_data = array(
-            'from'    => $from,
-            'to'      => $toemail,
-            'subject' => $tieude,
-            'html' => $noidung,
-            'text'    => $txt
+        if (!$toemail || !filter_var($toemail, FILTER_VALIDATE_EMAIL)) {
+            return 0;
+        }
+
+        if (!$fromEmail) {
+           $fromEmail = 'support@wwaff.com';
+        }
+
+        if (!$fromName) {
+            $fromName = $this->pub_config['sitename'];
+        }
+
+        $this->load->library('Mailjet');
+        $rs = $this->mailjet->send_email(
+            $toemail,
+            $tieude,
+            $noidung,
+            $fromEmail,
+            $fromName
         );
 
-        $service_url = 'https://api.mailgun.net/v3/' . $domain . '/messages';
-        $curl = curl_init($service_url);
-        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($curl, CURLOPT_USERPWD, "api:$api");
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $curl_post_data);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        $curl_response = curl_exec($curl);
-        $response = json_decode($curl_response);
-        curl_close($curl);
-        if ($response->message == 'Queued. Thank you.') return 1;
-        else return 0;
+        return $rs ? 1 : 0;
     }
+
 
     function show_ajax($table, $dieukhien)
     {
@@ -533,6 +532,10 @@ class Adm_adc extends CI_Controller
             $enail_search = $_POST['search'];
             $action = $_POST['act'];
             $wherein = $w = '';
+            $fromEmail = $this->session->userdata('ademail'); 
+            if (empty($fromEmail)) {
+                $fromEmail = $this->pub_config['emailadmin'];
+            }
             if ($action == 'send') {
                 if (!empty($uid)) {
                     if ($tieude) $this->session->set_userdata('sub', $tieude);
@@ -543,7 +546,7 @@ class Adm_adc extends CI_Controller
                     $t = $e = 0;
                     if (!empty($user)) {
                         foreach ($user as $user) {
-                            if ($this->guimail($user->email, $tieude, $noidung)) {
+                            if ($this->guimail($user->email, $tieude, $noidung, $fromEmail)) {
                                 $t++;
                             } else {
                                 $e++;
@@ -594,6 +597,10 @@ class Adm_adc extends CI_Controller
             $enail_search = $_POST['search'];
             $action = $_POST['act'];
             $w = '';
+            $fromEmail = $this->session->userdata('ademail'); 
+            if (empty($fromEmail)) {
+                $fromEmail = $this->pub_config['emailadmin'];
+            }
             if ($action == 'send') {
                 if (!empty($uid)) {
                     if ($tieude) $this->session->set_userdata('sub', $tieude);
@@ -604,7 +611,7 @@ class Adm_adc extends CI_Controller
                     $t = $e = 0;
                     if (!empty($user)) {
                         foreach ($user as $user) {
-                            if ($this->guimail($user->email, $tieude, $noidung)) {
+                            if ($this->guimail($user->email, $tieude, $noidung, $fromEmail)) {
                                 $t++;
                             } else {
                                 $e++;

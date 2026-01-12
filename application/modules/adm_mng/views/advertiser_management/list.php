@@ -54,6 +54,30 @@
 .label2 {
     width: 65px;
 }
+
+.table-scroll-x {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-fix-overflow {
+    width: 100%;
+    min-width: 1500px;
+    table-layout: auto;
+}
+
+.table-fix-overflow th,
+.table-fix-overflow td {
+    vertical-align: middle !important;
+    /* white-space: nowrap; */
+}
+
+.table-fix-overflow td {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
 </style>
 <?php
 $sort = $this->session->userdata('sort');
@@ -78,7 +102,7 @@ $order = $this->session->userdata('order');
         <?php endif; ?>
 
         <div class="box-header">
-            <h2><i class="glyphicon glyphicon-user"></i><span class="break"></span>List Avertiser</h2>
+            <h2><i class="glyphicon glyphicon-user"></i><span class="break"></span>List Avertisers</h2>
             <div class="box-icon">
                 <a class="btn-add"
                     href="<?php echo base_url() . $this->config->item('manager') . '/advertiser/add_new_advertiser/'; ?>"><i
@@ -141,42 +165,44 @@ $order = $this->session->userdata('order');
 
             </div>
 
-            <table class="table table-striped table-bordered table-center">
-                <thead>
-                    <tr role="row">
-                        <th scope="col" style="width: 50px">ID</th>
-                        <th scope="col" style="width: 50px">Avatar</th>
-                        <th scope="col" style="width: 50px">Email</th>
-                        <th scope="col" style="width: 50px">UserName</th>
-                        <th scope="col" style="width: 100px">Fullname</th>
-                        <th scope="col" style="width: 50px">Phone</th>
-                        <th scope="col" style="width: 150px">Account Type</th>
-                        <th scope="col" id="sort-balance">Balance</th>
-                        <th scope="col" id="sort-pending">Pending</th>
-                        <th scope="col" id="sort-avaliable">Available</th>
-                        <th scope="col" style="width: 50px">Manager</th>
-                        <th scope="col">Status</th>
-                        <th scope="col" style="width: 100px">Last Update</th>
-                        <th scope="col" style="width: 50px">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($data)) { ?>
-                    <tr>
-                        <td colspan="8" style="text-align: center;">No data.</td>
-                    </tr>
-                    <?php } else { ?>
-                    <?php
+
+            <div class="table-scroll-x">
+                <table class="table table-striped table-bordered table-fix-overflow">
+                    <thead>
+                        <tr role="row">
+                            <th scope="col" style="width: 50px">ID</th>
+                            <th scope="col" style="width: 50px">Avatar</th>
+                            <th scope="col" style="min-width: 200px">Email</th>
+                            <th scope="col" style="min-width: 120px">UserName</th>
+                            <th scope="col" style="min-width: 120px">Fullname</th>
+                            <th scope="col" style="min-width: 120px">Phone</th>
+                            <th scope="col" style="min-width: 120px">Account Type</th>
+                            <th scope="col" id="sort-balance">Balance</th>
+                            <th scope="col" id="sort-pending">Pending</th>
+                            <th scope="col" id="sort-avaliable">Available</th>
+                            <th scope="col" style="width: 20px">Manager</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" style="width: 100px">Last Update</th>
+                            <th scope="col" style="width: 50px">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($data)) { ?>
+                        <tr>
+                            <td colspan="8" style="text-align: center;">No data.</td>
+                        </tr>
+                        <?php } else { ?>
+                        <?php
                         foreach ($data as $dt) {
                         ?>
-                    <tr>
-                        <th scope="row">
-                            <!-- <a href="<?php echo base_url($this->uri->segment(1) . '/help_and_support/detail/' . $dt->id) ?>"> -->
-                            <?php echo $dt->id ?>
-                            <!-- </a> -->
-                        </th>
-                        <td>
-                            <?php
+                        <tr>
+                            <th scope="row">
+                                <!-- <a href="<?php echo base_url($this->uri->segment(1) . '/help_and_support/detail/' . $dt->id) ?>"> -->
+                                <?php echo $dt->id ?>
+                                <!-- </a> -->
+                            </th>
+                            <td>
+                                <?php
                                     $avatar = base_url('temp/default/images/avt_unknow.jpeg');
 
                                     if (!empty($dt->avatar_url)) {
@@ -188,31 +214,31 @@ $order = $this->session->userdata('order');
                                         $avatar = base_url($relPath) . '?v=' . $v;
                                     }
                                 ?>
-                            <img src="<?= $avatar ?>" class="img-thumbnail product-img" alt="Avatar">
-                        </td>
-                        <td><?php echo $dt->email; ?></td>
-                        <td><?php echo $dt->username; ?></td>
-                        <td><?php echo $dt->first_name . ' ' . $dt->last_name; ?></td>
-                        <td>
-                            <a href="tel:<?php echo $dt->phone ?>"><?php echo $dt->phone ?></a>
-                        </td>
-                        <td><?php echo $dt->is_company ? 'Company' : 'Persional'; ?></td>
-                        <td><?= $dt->pending + $dt->available ?></td>
-                        <td><?= $dt->pending ?></td>
-                        <td><?= (isset($dt->available) ? $dt->available : 0) - (isset($dt->invoice) ? $dt->invoice : 0) ?>
-                        </td>
-                        <td class="manager">
-                            <select id="<?php echo $dt->id; ?>" class="manager" data-advertiser="1">
-                                <option value="0">None</option>
-                                <?php foreach ($managers as $manager) {
+                                <img src="<?= $avatar ?>" class="img-thumbnail product-img" alt="Avatar">
+                            </td>
+                            <td><?php echo $dt->email; ?></td>
+                            <td><?php echo $dt->username; ?></td>
+                            <td><?php echo $dt->first_name . ' ' . $dt->last_name; ?></td>
+                            <td>
+                                <a href="tel:<?php echo $dt->phone ?>"><?php echo $dt->phone ?></a>
+                            </td>
+                            <td><?php echo $dt->is_company ? 'Company' : 'Persional'; ?></td>
+                            <td><?= $dt->pending + $dt->available ?></td>
+                            <td><?= $dt->pending ?></td>
+                            <td><?= (isset($dt->available) ? $dt->available : 0) - (isset($dt->invoice) ? $dt->invoice : 0) ?>
+                            </td>
+                            <td class="manager">
+                                <select id="<?php echo $dt->id; ?>" class="manager" data-advertiser="1">
+                                    <option value="0">None</option>
+                                    <?php foreach ($managers as $manager) {
                                             echo '<option value="' . $manager->id . '" ';
                                             echo $manager->id == $dt->manager ? ' selected ' : '';
                                             echo ' >' . $manager->username . '</option>';
                                         } ?>
-                            </select>
-                        </td>
-                        <td class="approv">
-                            <?php
+                                </select>
+                            </td>
+                            <td class="approv">
+                                <?php
                                     switch ($dt->status) {
                                         case 0:
                                             echo '<span class="label label-warning">Pending</span>';
@@ -234,47 +260,50 @@ $order = $this->session->userdata('order');
                                             break;
                                     }
                                     ?>
-                            <span class="glyphicon glyphicon-cog approved"
-                                style="float: right;position:relative;cursor: pointer;"></span>
-                            <select id="<?php echo $dt->id; ?>" class="update-user-status" style="display: none;">
-                                <option value="0" <?php echo $dt->status == 0 ? 'selected' : ''; ?>>Pending</option>
-                                <option value="1" <?php echo $dt->status == 1 ? 'selected' : ''; ?>>Approved</option>
-                                <option value="2" <?php echo $dt->status == 2 ? 'selected' : ''; ?>>Pause</option>
-                                <option value="3" <?php echo $dt->status == 3 ? 'selected' : ''; ?>>Banned</option>
-                                <option value="4" <?php echo $dt->status == 4 ? 'selected' : ''; ?>>Reject</option>
-                            </select>
-                        </td>
-                        <td><?php echo $dt->updated_at; ?></td>
-                        <td>
-                            <!--invoicebhhhhhhhhhn>>>-->
-                            <a data-email="<?php echo $dt->email; ?>" title="<?php echo $dt->id; ?>"
-                                class="btn btn-success btn-xs invoice-adv">
-                                <i class="glyphicon glyphicon-euro glyphicon-white"></i>
-                            </a>
-                            <!--login acc membert>>>-->
-                            <a href="<?php echo base_url() . $this->config->item('manager') . '/viewmember/advertiser/' . $dt->id; ?>"
-                                class="btn btn-success btn-xs" target=_blank>
-                                <i class="glyphicon glyphicon-eye-open glyphicon-white"></i>
-                            </a>
-                            <!--edit>>>-->
-                            <a class="btn btn-info btn-xs advmodal" title="<?php echo $dt->id; ?>">
-                                <i class="glyphicon glyphicon-edit glyphicon-white"></i>
-                            </a>
-                            <!--delete>>>-->
-                            <a href="<?php echo base_url() . $this->config->item('manager') . '/route/' . $this->uri->segment(2) . '/delete/' . $dt->id; ?>"
-                                class="btn btn-danger btn-xs del">
-                                <i class="glyphicon glyphicon-trash glyphicon-white"></i>
-                            </a>
-                            <a href="<?php echo base_url() . 'cron-jobs/calculator/advertisers/' . $dt->id; ?>"
-                                class="btn btn-success btn-xs refresh">
-                                <i class="glyphicon glyphicon-refresh glyphicon-white"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    <?php } ?>
-                    <?php } ?>
-                </tbody>
-            </table>
+                                <span class="glyphicon glyphicon-cog approved"
+                                    style="float: right;position:relative;cursor: pointer;"></span>
+                                <select id="<?php echo $dt->id; ?>" class="update-user-status" style="display: none;">
+                                    <option value="0" <?php echo $dt->status == 0 ? 'selected' : ''; ?>>Pending</option>
+                                    <option value="1" <?php echo $dt->status == 1 ? 'selected' : ''; ?>>Approved
+                                    </option>
+                                    <option value="2" <?php echo $dt->status == 2 ? 'selected' : ''; ?>>Pause</option>
+                                    <option value="3" <?php echo $dt->status == 3 ? 'selected' : ''; ?>>Banned</option>
+                                    <option value="4" <?php echo $dt->status == 4 ? 'selected' : ''; ?>>Reject</option>
+                                </select>
+                            </td>
+                            <td><?php echo $dt->updated_at; ?></td>
+                            <td>
+                                <!--invoicebhhhhhhhhhn>>>-->
+                                <a data-email="<?php echo $dt->email; ?>" title="<?php echo $dt->id; ?>"
+                                    class="btn btn-success btn-xs invoice-adv">
+                                    <i class="glyphicon glyphicon-euro glyphicon-white"></i>
+                                </a>
+                                <!--login acc membert>>>-->
+                                <a href="<?php echo base_url() . $this->config->item('manager') . '/viewmember/advertiser/' . $dt->id; ?>"
+                                    class="btn btn-success btn-xs" target=_blank>
+                                    <i class="glyphicon glyphicon-eye-open glyphicon-white"></i>
+                                </a>
+                                <!--edit>>>-->
+                                <a class="btn btn-info btn-xs advmodal" title="<?php echo $dt->id; ?>">
+                                    <i class="glyphicon glyphicon-edit glyphicon-white"></i>
+                                </a>
+                                <!--delete>>>-->
+                                <a href="<?php echo base_url() . $this->config->item('manager') . '/route/' . $this->uri->segment(2) . '/delete/' . $dt->id; ?>"
+                                    class="btn btn-danger btn-xs del">
+                                    <i class="glyphicon glyphicon-trash glyphicon-white"></i>
+                                </a>
+                                <a href="<?php echo base_url() . 'cron-jobs/calculator/advertisers/' . $dt->id; ?>"
+                                    class="btn btn-success btn-xs refresh">
+                                    <i class="glyphicon glyphicon-refresh glyphicon-white"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <?php } ?>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+
             <?php if (!empty($data)) { ?>
             <div class="row flex-justify-center">
                 <div class="col-md-6">
