@@ -358,7 +358,7 @@ class Auth extends CI_Controller
     private function guimail($toemail = '', $tieude = '', $noidung = '')
     {
         $this->load->library('Mailjet');
-        $this->mailjet->send_email($toemail, $tieude, $noidung, 'support@wedebeek.com', $this->pub_config['sitename']);
+        $this->mailjet->send_email($toemail, $tieude, $noidung, 'support@wwaff.com', $this->pub_config['sitename']);
     }
 
     function activate($key = '')
