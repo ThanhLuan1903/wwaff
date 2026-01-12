@@ -495,12 +495,13 @@ class Adm_mng extends CI_Controller
 
                     if ($val == 1) {
                         $tieude = 'Your Application Has Been Approved';
+                        $login_link = base_url('v2/sign/in');
                         $noidung = "
                             Dear Partner,<p>
                             We have reviewed your application and you have been approved as a Worldwide affiliate. You may now log into obtain creatives to promote all of our offers. Your login information is as follows:
                                 <br/>
                             Worldwide Log in Link:<br/>
-                            Log in link: https://wwaff.com/v2/sign/in
+                            <a href='{$login_link}'>{$login_link}</a>
                             <br/>
                             
                             Username:<br/>

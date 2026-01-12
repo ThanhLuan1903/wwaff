@@ -1,4 +1,4 @@
-a:14:{s:8:"activate";s:1:"1";s:6:"minpay";s:2:"50";s:8:"sitename";s:8:"WedeBeek";s:10:"emailadmin";s:19:"Biphan@wedebeek.com";s:4:"logo";s:73:"https://wedebeek.com/upload/files/website_logo_transparent_background.png";s:9:"termsinfo";s:12548:"TERMS AND CONDITIONS<br>
+a:14:{s:8:"activate";s:1:"1";s:6:"minpay";s:2:"50";s:8:"sitename";s:18:"Worldwide Affilate";s:10:"emailadmin";s:19:"Biphan@wedebeek.com";s:4:"logo";s:73:"https://wedebeek.com/upload/files/website_logo_transparent_background.png";s:9:"termsinfo";s:12548:"TERMS AND CONDITIONS<br>
 This agreement (“Agreement”), is made the (“Effective Date”) between (“Advertiser”), with offices at Wedebeek Technology (“Client”), with 
 offices 174 Chau Thi Vinh Te, My an, Ngu hanh son, Da nang. In consideration of the premises and promises set forth herein, and Client 
 hereby agree as follows: <br>
