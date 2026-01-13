@@ -58,19 +58,18 @@ class Auth extends CI_Controller
                     $password = sha1(md5($pass));
                     $this->db->where('email', $email);
                     $this->db->update('users', array('password' => $password));
-                    $sitename = $this->pub_config['sitename'];
-                    $tieude = ' Your new password for ' . $sitename;
-                    $name =   $user['firstname'] . $user['lastname'];
-                    $noidung = "
-                        <b>Dear $name ,</b><p>
-                        As you requested, your password has now been reset. Your new details are as follows:
-                        Email: $email 
-                        Password: $pass
-                        
-                        Regards,<br/>
-                        Affiliate Application Team.                    
-                        ";
 
+                    $name =   $user['firstname'] . $user['lastname'];
+                    $tieude = ' Your new password for ' . $name;
+                    $dataMail = [
+                        'firstname' => $user['firstname'],
+                        'lastname'  => $user['lastname'],
+                        'email'     => $email,
+                        'password'  => $pass,
+                        'sitename'  => $this->pub_config['sitename'],
+                    ];
+
+                    $noidung = $this->load->view('members/email_template/reset_password', $dataMail, TRUE);
                     $this->guimail($email, $tieude, $noidung);
                     $err = 0;
                     $dt .= 'Reset Instructions Sent. Please check your email.';
@@ -300,19 +299,22 @@ class Auth extends CI_Controller
 
                 $idata['activated'] = 0;
 
-                $active_link = base_url() . "confirmation/$mangaunhien";
-                $noidung = "
-                    <b>Dear $firstname $lastname,</b><p>
-                    Thanks for interested with $sitename. Your application is completed and will be process within 3-5 business days.
-                    </p>
-                    <p><b>Important:</b> Please verify your email by clicking the link below:</p>
-                    <p><a href=\"$active_link\">Verify Email</a></p>
-                    <p>If the link does not work, copy and paste this URL into your browser:</p>
-                    <p>$active_link</p>
-                    <br/>
-                    Regards,<br/>
-                    Affiliate Application Team.
-                ";
+                $active_link = base_url('confirmation/' . $mangaunhien);
+
+                $tieude = 'Verify your email address';
+
+                $dataemail = array(
+                    'firstname'   => $firstname,
+                    'lastname'    => $lastname,
+                    'sitename'    => $sitename,
+                    'active_link' => $active_link
+                );
+
+                $noidung = $this->load->view(
+                    'members/email_template/verify_email',
+                    $dataemail,
+                    TRUE
+                );
 
                 $this->db->insert('users', $idata);
                 $err = 0;
@@ -389,12 +391,12 @@ class Auth extends CI_Controller
                 $data = array(
                     'status'  => 'info',
                     'title'   => 'Already Verified',
-                    'message' => 'Your email has been verified and your application will be processed within <b>3–5 business days'
+                    'message' => 'Your email has been verified and your application will be processed within <b>3–5 business days</b>'
                 );
             }
         }
 
-        $this->load->view('auth/activate_result', $data);
+        $this->load->view('members/email_template/activate_result', $data);
     }
 
 
@@ -425,40 +427,38 @@ class Auth extends CI_Controller
         }
     }
 
-public function _validate_and_upload_avatar()
-{
-    if (empty($_FILES['avatar_url']) || empty($_FILES['avatar_url']['name'])) {
-        $this->form_validation->set_message('_validate_and_upload_avatar', 'Please upload an <strong>Avatar</strong>.');
-        return false;
+    public function _validate_and_upload_avatar()
+    {
+        if (empty($_FILES['avatar_url']) || empty($_FILES['avatar_url']['name'])) {
+            $this->form_validation->set_message('_validate_and_upload_avatar', 'Please upload an <strong>Avatar</strong>.');
+            return false;
+        }
+
+        $uploadDir = FCPATH . 'upload/files/avatars/';
+        if (!is_dir($uploadDir)) @mkdir($uploadDir, 0755, true);
+
+        $config = array(
+            'upload_path'   => $uploadDir,
+            'allowed_types' => 'jpg|jpeg|png',
+            'max_size'      => 2048,
+            'encrypt_name'  => true,
+        );
+
+        $this->load->library('upload', $config);
+
+        if (!$this->upload->do_upload('avatar_url')) {
+            $this->form_validation->set_message('_validate_and_upload_avatar', $this->upload->display_errors('', ''));
+            return false;
+        }
+
+        $up = $this->upload->data();
+        $relativePath = 'upload/files/avatars/' . $up['file_name'];
+
+        // LƯU VÀO BIẾN CLASS để dùng sau
+        $this->uploaded_avatar_path = $relativePath;
+
+        return true;
     }
-
-    $uploadDir = FCPATH . 'upload/files/avatars/';
-    if (!is_dir($uploadDir)) @mkdir($uploadDir, 0755, true);
-
-    $config = array(
-        'upload_path'   => $uploadDir,
-        'allowed_types' => 'jpg|jpeg|png',
-        'max_size'      => 2048,
-        'encrypt_name'  => true,
-    );
-
-    $this->load->library('upload', $config);
-
-    if (!$this->upload->do_upload('avatar_url')) {
-        $this->form_validation->set_message('_validate_and_upload_avatar', $this->upload->display_errors('', ''));
-        return false;
-    }
-
-    $up = $this->upload->data();
-    $relativePath = 'upload/files/avatars/' . $up['file_name'];
-
-    // LƯU VÀO BIẾN CLASS để dùng sau
-    $this->uploaded_avatar_path = $relativePath;
-
-    return true;
-}
-
-
 
     public function valid_password($password)
     {

@@ -1,190 +1,438 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-	<title>Authorization</title>
-	<meta property="og:image" content="<?php echo base_url(); ?>/upload/files/website_logo_waff.jpeg">
-	<link rel="icon" href="<?php echo base_url(); ?>/upload/files/website_logo_waff.jpeg">
-	<!-- Bootstrap core CSS -->
-	<link href="<?php echo base_url(); ?>temp/default/css/bootstrap.min.css" rel="stylesheet">
-	<!-- Custom styles for this template -->
-	<meta property="og:image" content="<?php echo base_url(); ?>/upload/files/website_logo_waff.jpeg">
-	<link rel="icon" href="<?php echo base_url(); ?>/upload/files/website_logo_waff.jpeg">
-	<link href="<?php echo base_url(); ?>/temp/default/css/login.css" rel="stylesheet">
-	<script src="<?php echo base_url(); ?>/temp/default/js/multiple/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    <title>Password Recovering</title>
 
-<body wfd-invisible="true">
-	<div class="loader" wfd-invisible="true"><i class="dot"></i> <i class="dot"></i> <i class="dot"></i></div>
-	<div id="root">
-		<div class="_15fu8tliQjoFX_txAhIwyW _2JZmjKGweSe3VKt76UWHXO css-1ed4bhs">
-			<div class="_1q1YDBKhjzRspY4va-DRI4"></div>
-		</div>
-		<div class="sc-eqIVtm jFlzmB">
-			<header class="sc-bdVaJa hTXyZr">
-				<div class="sc-bxivhb cpOYPG"></div>
-				<div class="ECBVuC1-2xlutADBhrw- ON7Z_5ZehzihyO3o4vqbE" data-test-id="menu-English">
-					<div class="_37NUkzmoyY2UEU1AerMvXX">
-						<span class="_2cCWo1Fd19nOeZ9SafKr1H">English</span>
+    <meta property="og:image" content="<?php echo base_url(); ?>/upload/files/website_logo_waff.jpeg">
+    <link rel="icon" href="<?php echo base_url(); ?>/upload/files/website_logo_waff.jpeg">
 
-					</div>
-				</div>
-			</header>
+    <!-- Bootstrap -->
+    <link href="<?php echo base_url(); ?>temp/default/css/bootstrap.min.css" rel="stylesheet">
 
-			<Script>
-				$(document).ready(function() {
+    <!-- jQuery -->
+    <script src="<?php echo base_url(); ?>/temp/default/js/multiple/jquery-3.2.1.min.js" type="text/javascript">
+    </script>
 
-					$(".click_btn_login").each(function() {
-						var t = $(this).siblings('.span_ip');
-						if ($(this).val()) {
-							$(t).removeClass('jBAAej span_ip');
-							$(t).addClass('fLnJSC');
-						} else {
-							$(t).removeClass('fLnJSC');
-							$(t).addClass('jBAAej span_ip');
-						}
-					});
-					//thuwr span click
-					$('.span_ip').on('click', function() {
-						var t = $(this).siblings('.click_btn_login');
-						$(this).removeClass('jBAAej span_ip');
-						$(this).addClass('fLnJSC');
-						$(t).focus();
-					})
+    <style>
+    /* ====== Base ====== */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0
+    }
 
-					$('.click_btn_login').on('click', function() {
-						var t = $(this).siblings('.span_ip');
-						$(t).removeClass('jBAAej span_ip');
-						$(t).addClass('fLnJSC');
-					})
-					$(".click_btn_login").focusout(function() {
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        background: #f3f5f7;
+        color: #203040;
+        min-height: 100vh;
+    }
 
-						var t = $(this).siblings('span');
-						if ($(this).val()) {
-							$(t).removeClass('jBAAej');
-							$(t).addClass('fLnJSC');
-						} else {
-							$(t).removeClass('fLnJSC');
-							$(t).addClass('jBAAej');
-						}
-					});
-				})
-			</script>
+    /* ====== Page wrapper ====== */
+    .auth-page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
 
-			<main class="sc-fAjcbJ kFfNqn">
-				<div class="sc-Rmtcm cIUDWQ">
-					<div class="sc-bRBYWo eVigII">
-						<img src="<?php echo $this->pub_config['logo']; ?>" class="sc-VigVT iApbYG">
-						<span class="sc-jhAzac cnxHgy">Password Recovering</span>
-						<div class="sc-hzDkRC ioyCcs">
-							<form class="sc-kpOJdX kFPdwr">
-								<div class="sc-ckVGcZ xzcRZ">
-									<div class="sc-kAzzGY jIpyka" height="52px">
-										<input type="email" name="email" class="sc-chPdSV jxLAT click_btn_login" value="<?php echo set_value('email'); ?>">
-										<span class="sc-kgoBCf jBAAej  span_ip" height="36px">Enter email to get link for password recovering</span>
-									</div>
-								</div>
-								<div class="sc-dxgOiQ jaHTXm">
-									<button type="submit" class="K3TX2EnGEDIGIEiEIo_0X _3-Xcfgk4YnBeM0kgvmZfs_ btn_signin">
-										<div class="_3kiCWIsiMrRqCXneU8Asq6" style="height: 0px; width: 0px; left: 0px; top: 0px;"></div>
-										<span class="_1pFgCebzxXEI3gItBe_863">
-											<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="">
-												<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-												<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-											</svg>
-										</span>
-										<span class="_3axrJUuPR6Tfk-J1aQF4dm">Get link</span>
-									</button>
-									<a class="sc-jKJlTe gPtJgO" href="<?php echo base_url('v2/sign/in'); ?>">Sign In</a>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-			</main>
-			<footer class="sc-ifAKCX hbyzzN">
-				<span>Powered by&nbsp;<a target="_blank" rel="noreferrer" href="http://affise.com" class="sc-EHOje fPkDMs">Affise.com</a>&nbsp;2020</span>
-				<div class="sc-bZQynM dAZhcd"><a href="https://www.linkedin.com/in/biphan-wedebeek/" rel="noreferrer" target="_blank">Our LinkedIn </a>
-					<a href="https://www.facebook.com/teamwedebeek" rel="noreferrer" target="_blank">Our Facebook</a>
-				</div>
-			</footer>
-		</div>
-	</div>
-	<!--thoong bao -->
-	<div class="position-fixed top-0 end-0 p-5 hide">
-		<div class="toast fade alert-info" role="alert" aria-live="assertive" aria-atomic="true" id="thongBao">
-			<div class="toast-body d-flex">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
-					<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-				</svg>
-				<span class="toastContent">
-					Successfully edited profile
-				</span>
-			</div>
-		</div>
-	</div>
-	<!--thong bao loi-->
-	<div class="position-fixed top-0 end-0 p-5 hide">
-		<div class="toast fade alert-info" role="alert" aria-live="assertive" aria-atomic="true" id="thongBao2">
-			<div class="toast-body bg-danger text-white">
+    /* ====== Top header (language) ====== */
+    .auth-header {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 18px 22px;
+    }
 
-				<span class="toastContent ">
-					Successfully edited profile
-				</span>
-			</div>
-		</div>
-	</div>
-	<script>
-		$(document).ready(function() {
-			$('.btn_signin').on('click', function(e) {
-				e.preventDefault();
-				var form = $(this).closest('form');
-				ajurl = "<?php echo base_url('v2/sign/password/reset'); ?>";
-				$.ajax({
-					type: "POST",
-					url: ajurl,
-					data: form.serialize(),
-					success: ajaxSuccess,
-					error: ajaxErr
-				});
-			})
+    .lang-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border: 1px solid rgba(0, 0, 0, .08);
+        border-radius: 999px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+        font-size: 14px;
+        color: #22324a;
+        cursor: default;
+        user-select: none;
+    }
 
-		});
+    .lang-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #154272;
+        display: inline-block;
+    }
 
-		function ajaxErr() {
-			alert('Network Error!');
-		}
+    /* ====== Main ====== */
+    .auth-main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 18px 40px;
+    }
 
-		function ajaxSuccess(data) {
-			const obj = JSON.parse(data);
-			if (obj.error == 0) {
-				$('.toastContent').html(obj.data);
-				var myAlert = document.getElementById('thongBao');
-				var bsAlert = new bootstrap.Toast(myAlert, {
-					animation: true,
-					delay: 10000,
-					autohide: true
-				});
-				bsAlert.show();
-				setTimeout(() => {
-					window.location.href = "<?php echo base_url('v2'); ?>";
-				}, 15000);
-			} else {
-				$('.toastContent').html(obj.data);
-				var myAlert = document.getElementById('thongBao2');
-				var bsAlert = new bootstrap.Toast(myAlert, option);
-				bsAlert.show();
-			}
-		}
+    .auth-card {
+        width: 100%;
+        max-width: 520px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
+        padding: 26px 26px 22px;
+    }
 
-		var option = {
-			animation: true,
-			delay: 5000,
-			autohide: true
-		};
-	</script>
-	<script src="<?php echo base_url(); ?>/temp/default/js/bootstrap.min.js"></script>
-	<script src="<?php echo base_url(); ?>/temp/default/js/bootstrap.bundle.min.js"></script>
+    .auth-logo {
+        width: 82px;
+        height: 82px;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto 10px;
+    }
+
+    .auth-title {
+        text-align: center;
+        font-size: 22px;
+        font-weight: 700;
+        color: #154272;
+        margin-bottom: 14px;
+    }
+
+    /* ====== Form ====== */
+    .auth-form {
+        margin-top: 6px;
+    }
+
+    .field {
+        position: relative;
+        margin-top: 10px;
+    }
+
+    /* input */
+    .field input {
+        width: 100%;
+        height: 52px;
+        border-radius: 10px;
+        border: 1px solid rgba(0, 0, 0, .14);
+        padding: 16px 14px 12px;
+        outline: none;
+        font-size: 15px;
+        color: #22324a;
+        background: #fff;
+        transition: all .15s ease;
+    }
+
+    .field input:focus {
+        border-color: #154272;
+        box-shadow: 0 0 0 4px rgba(21, 66, 114, .12);
+    }
+
+    /* floating label */
+    .field label {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 0 6px;
+        color: #6b7280;
+        background: #fff;
+        transition: all .15s ease;
+        pointer-events: none;
+        font-size: 14px;
+    }
+
+    .field.is-active label,
+    .field input:focus+label {
+        top: 0;
+        transform: translateY(-50%);
+        font-size: 12px;
+        color: #154272;
+    }
+
+    /* Actions */
+    .auth-actions {
+        margin-top: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .btn-getlink {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: none;
+        border-radius: 999px;
+        background: #FFDF00;
+        color: #000000;
+        padding: 12px 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all .15s ease;
+        box-shadow: 0 8px 16px rgba(21, 66, 114, .18);
+        white-space: nowrap;
+    }
+
+    .btn-getlink:hover {
+        background: #f2d600;
+        transform: translateY(-1px);
+        box-shadow: 0 12px 20px rgba(255, 223, 0, 0.45);
+    }
+
+    .btn-getlink:active {
+        transform: translateY(0);
+        box-shadow: 0 6px 12px rgba(255, 223, 0, 0.35);
+    }
+
+    .btn-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        background: rgba(13, 8, 8, 0.14);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(13, 8, 8, 0.14);
+    }
+
+    .btn-icon svg {
+        display: block
+    }
+
+    .link-signin {
+        color: #154272;
+        text-decoration: none;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .link-signin:hover {
+        text-decoration: underline
+    }
+
+    /* Footer */
+    .auth-footer {
+        padding: 14px 18px;
+        text-align: center;
+        color: #6b7280;
+        font-size: 13px;
+        background: transparent;
+    }
+
+    .auth-footer a {
+        color: #154272;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .auth-footer a:hover {
+        text-decoration: underline;
+    }
+
+    /* ====== Toast wrappers ====== */
+    .toast-wrap {
+        position: fixed;
+        top: 18px;
+        right: 18px;
+        z-index: 9999;
+        width: 340px;
+        max-width: calc(100vw - 36px);
+    }
+
+    /* ====== Responsive ====== */
+    @media (max-width: 600px) {
+        .auth-card {
+            padding: 22px 18px
+        }
+
+        .auth-actions {
+            flex-direction: column;
+            align-items: stretch
+        }
+
+        .btn-getlink {
+            justify-content: center
+        }
+    }
+    </style>
+</head>
+
+<body>
+    <div class="auth-page">
+
+        <!-- Header -->
+        <div class="auth-header">
+            <div class="lang-pill" title="Language">
+                <span class="lang-dot"></span>
+                <span>English</span>
+            </div>
+        </div>
+
+        <!-- Main -->
+        <div class="auth-main">
+            <div class="auth-card">
+
+                <img src="<?php echo base_url(); ?>/upload/files/website_logo_waff.jpeg" class="auth-logo" alt="Logo">
+                <div class="auth-title">Password Recovery</div>
+
+                <form class="auth-form" id="recoverForm" autocomplete="off">
+                    <!-- Email -->
+                    <div class="field" id="emailField">
+                        <input type="email" name="email" id="email" value="<?php echo set_value('email'); ?>" required>
+                        <label>Enter your email address to recovery your password</label>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="auth-actions">
+                        <button type="submit" class="btn-getlink btn_signin">
+                            <span class="btn-icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                </svg>
+                            </span>
+                            <span>Send reset link</span>
+                        </button>
+
+                        <a class="link-signin" href="<?php echo base_url('v2/sign/in'); ?>">Sign In</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="auth-footer">
+            <span>
+                Powered by&nbsp;<a target="_blank" rel="noreferrer" href="http://affise.com">Affise.com</a>&nbsp;2020
+            </span>
+            <span>
+                <a href="https://www.linkedin.com/in/biphan-wedebeek/" rel="noreferrer" target="_blank">Our LinkedIn</a>
+                &nbsp;|&nbsp;
+                <a href="https://www.facebook.com/teamwedebeek" rel="noreferrer" target="_blank">Our Facebook</a>
+            </span>
+        </div>
+
+    </div>
+
+    <!-- Toast: success -->
+    <div class="toast-wrap">
+        <div class="toast fade alert-info" role="alert" aria-live="assertive" aria-atomic="true" id="thongBao">
+            <div class="toast-body d-flex">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
+                    class="bi bi-check-circle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img"
+                    aria-label="Success">
+                    <path
+                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.17-.94L7.5 9.584 5.854 7.939a.75.75 0 0 0-1.06 1.06l2.176 2.031z" />
+                </svg>
+                <span class="toastContent">Success</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast: error -->
+    <div class="toast-wrap" style="top:90px;">
+        <div class="toast fade" role="alert" aria-live="assertive" aria-atomic="true" id="thongBao2">
+            <div class="toast-body bg-danger text-white">
+                <span class="toastContent">Error</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="<?php echo base_url(); ?>/temp/default/js/bootstrap.min.js"></script>
+    <script src="<?php echo base_url(); ?>/temp/default/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    // ===== Floating label behavior (clean) =====
+    function syncFieldState($field, $input) {
+        if ($input.val()) $field.addClass('is-active');
+        else $field.removeClass('is-active');
+    }
+
+    $(document).ready(function() {
+        var $emailField = $('#emailField');
+        var $emailInput = $('#email');
+
+        // init state
+        syncFieldState($emailField, $emailInput);
+
+        // focus/blur update
+        $emailInput.on('focus', function() {
+            $emailField.addClass('is-active');
+        });
+        $emailInput.on('blur', function() {
+            syncFieldState($emailField, $emailInput);
+        });
+
+        // ===== AJAX submit =====
+        $('#recoverForm').on('submit', function(e) {
+            e.preventDefault();
+
+            var ajurl = "<?php echo base_url('v2/sign/password/reset'); ?>";
+            var form = $(this);
+
+            $.ajax({
+                type: "POST",
+                url: ajurl,
+                data: form.serialize(),
+                success: ajaxSuccess,
+                error: ajaxErr
+            });
+        });
+    });
+
+    function ajaxErr() {
+        alert('Network Error!');
+    }
+
+    var option = {
+        animation: true,
+        delay: 5000,
+        autohide: true
+    };
+
+    function ajaxSuccess(data) {
+        var obj;
+        try {
+            obj = JSON.parse(data);
+        } catch (e) {
+            $('.toastContent').html('Server response invalid!');
+            var myAlert = document.getElementById('thongBao2');
+            var bsAlert = new bootstrap.Toast(myAlert, option);
+            bsAlert.show();
+            return;
+        }
+
+        if (obj.error == 0) {
+            $('.toastContent').html(obj.data);
+            var myAlert = document.getElementById('thongBao');
+            var bsAlert = new bootstrap.Toast(myAlert, {
+                animation: true,
+                delay: 10000,
+                autohide: true
+            });
+            bsAlert.show();
+
+            setTimeout(function() {
+                window.location.href = "<?php echo base_url('v2'); ?>";
+            }, 15000);
+
+        } else {
+            $('.toastContent').html(obj.data);
+            var myAlert = document.getElementById('thongBao2');
+            var bsAlert = new bootstrap.Toast(myAlert, option);
+            bsAlert.show();
+        }
+    }
+    </script>
 </body>
 
 </html>

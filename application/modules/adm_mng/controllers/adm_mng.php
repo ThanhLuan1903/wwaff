@@ -477,87 +477,80 @@ class Adm_mng extends CI_Controller
 
             case 'ban_user':
                 if ($_POST) {
-                    $id = (int)$this->input->post('id', true);
+                    $id  = (int)$this->input->post('id', true);
                     $val = (int)$this->input->post('val', true);
+
+                    if (!$id) { echo 0; return; }
 
                     $this->db->where('id', $id);
                     $this->db->update('users', array('status' => $val));
+
                     $acc = $this->Admin_model->get_one('users', array('id' => $id));
+                    if (!$acc) { echo 0; return; }
+
                     $toemail = trim($acc->email);
-                    $tieude = '';
+
+                    $mailign  = @unserialize($acc->mailling);
+                    $firstname = isset($mailign['firstname']) ? $mailign['firstname'] : '';
+                    $lastname  = isset($mailign['lastname']) ? $mailign['lastname'] : '';
+
+                    $name = trim($firstname . ' ' . $lastname);
+                    if ($name == '') $name = 'Partner';
+                    $from    = 'support@wwaff.com';
+                    $tieude  = '';
                     $noidung = '';
-                    $mailign = unserialize($acc->mailling);
-                    $firstname = $mailign['firstname'];
-                    $lastname = $mailign['lastname'];
 
-                    if ($val == 0) {
+                    switch ($val) {
+                        case 0: // pending -> không gửi
+                            break;
+
+                        case 1: // approved
+                            $tieude = 'Your Application Has Been Approved';
+                            $dataemail = array(
+                                'name'          => $name,
+                                'email'         => $acc->email,
+                            );
+                            $noidung = $this->load->view('members/email_template/approved', $dataemail, TRUE);
+                            break;
+
+                        case 2: // paused
+                            $tieude = 'Account paused!';
+                            $dataemail = array(
+                                'name'          => $name,
+                            );
+                            $noidung = $this->load->view('members/email_template/paused', $dataemail, TRUE);
+                            break;
+
+                        case 3: // banned
+                            $tieude = 'Account banned!';
+                            $dataemail = array(
+                                'name'          => $name,
+                            );
+                            $noidung = $this->load->view('members/email_template/banned', $dataemail, TRUE);
+                            break;
+
+                        case 4: // rejected
+                            $tieude = 'Account is not approved';
+                            $dataemail = array(
+                                'name' => $name
+                            );
+                            $noidung = $this->load->view('members/email_template/reject', $dataemail, TRUE);
+                            break;
+
+                        default:
+                            break;
                     }
 
-                    if ($val == 1) {
-                        $tieude = 'Your Application Has Been Approved';
-                        $login_link = base_url('v2/sign/in');
-                        $noidung = "
-                            Dear Partner,<p>
-                            We have reviewed your application and you have been approved as a Worldwide affiliate. You may now log into obtain creatives to promote all of our offers. Your login information is as follows:
-                                <br/>
-                            Worldwide Log in Link:<br/>
-                            <a href='{$login_link}'>{$login_link}</a>
-                            <br/>
-                            
-                            Username:<br/>
-                            $acc->email / Your password seting.<br/>
-
-                            Postback Information:<br/>
-                            Clickid: {sub1}<br/>
-                            Pubid: {sub2}<br/>
-                            Conversion payout: {sum}<br/>
-                            You can check more marco in postback seting account.<br/>          
-                            For help your account approval faster kindly contact your manager via email: " . $this->users->email . " or skype id: " . $this->users->skype . ".
-
-                            You will be assigned a account manager in the next 48 hours, in which time they will be in contact to introduce themselves.<br/>
-
-                            Many Thanks   <br/>       
-                            
-                        ";
-                        if (!$this->guimail($toemail, $tieude, $noidung)) {
-                            $this->guimail($toemail, $tieude, $noidung);
-                        }
-                    }
-
-                    if ($val == 2) {
-                        $tieude = 'Welcome to ' . $this->pub_config['sitename'] . '- Account paused!';
-                        $noidung = 'Dear partner!<p>
-                        We\'re sorry to report that your account has been paused for quality coming from traffic source.<br/> 
-                        Contact skype if you have any question: ' . $this->users->skype . '  ( ' . $this->users->name . '|Wedebeek ).';
-                        if (!$this->guimail($toemail, $tieude, $noidung)) {
-                            $this->guimail($toemail, $tieude, $noidung);
-                        }
-                    }
-
-                    if ($val == 3) {
-                        $tieude = 'Welcome to ' . $this->pub_config['sitename'] . '- Account banned!';
-                        $noidung = 'Dear partner!<p>
-                        We\'re sorry to report that your account has been banned for quality coming from traffic source.<br/> 
-                        Contact skype if you have any question: ' . $this->users->skype . '  ( ' . $this->users->name . '|Wedebeek ).';
-                        if (!$this->guimail($toemail, $tieude, $noidung)) {
-                            $this->guimail($toemail, $tieude, $noidung);
-                        }
-                    }
-
-                    if ($val == 4) {
-                        $tieude = 'Account is not approved';
-                        $noidung = 'Dear Partner,<p>
-                        Thank you for showing your interest in cooperation with Wedebeek, we really appreciate it.<br/> 
-                        Sorry, at the moment we can not accept you as an affiliate, but will place your request to our waiting list and will contact in case there is a possibility.
-                        ';
-                        if (!$this->guimail($toemail, $tieude, $noidung)) {
-                            $this->guimail($toemail, $tieude, $noidung);
+                    if (!empty($tieude) && !empty($noidung)) {
+                        if (!$this->guimail($toemail, $tieude, $noidung, $from)) {
+                            $this->guimail($toemail, $tieude, $noidung, $from);
                         }
                     }
 
                     echo $val;
                 }
                 break;
+
             case 'manager':
 
                 if ($_POST) {
@@ -579,12 +572,6 @@ class Adm_mng extends CI_Controller
                 break;
         }
     }
-
-    //     private function guimail($toemail = '', $tieude = '', $noidung = '')
-    // {
-    //     $this->load->library('Mailjet');
-    //     $this->mailjet->send_email($toemail, $tieude, $noidung, 'support@wwaff.com', $this->pub_config['sitename']);
-    // }
 
     private function guimail($toemail = '', $tieude = '', $noidung = '', $fromEmail = '', $fromName = '')
     {
@@ -712,7 +699,8 @@ class Adm_mng extends CI_Controller
          FROM cpalead_users        
          INNER JOIN cpalead_manager ON cpalead_users.manager = cpalead_manager.id AND (cpalead_manager.id = $this->managerid OR cpalead_manager.parrent = $this->managerid)
          WHERE cpalead_users.id !=1 AND cpalead_users.status=1 $emai_serch
-         LIMIT $this->per_page OFFSET  $offset     
+         ORDER BY cpalead_users.created DESC
+         LIMIT $this->per_page OFFSET  $offset    
         ";
         $dtuser = $this->db->query($qr)->result();
         //
@@ -762,48 +750,92 @@ class Adm_mng extends CI_Controller
 
     function addusers()
     {
-        $thongbao = '';
-        if ($_POST) {
-            $data['activated'] = 1;
-            $data['status'] = 1;
-            $data['ref'] = "manager_creater_" . $this->managerid;
-            $data['manager'] =  $this->managerid;
-            $data['balance'] = $data['curent'] = $_POST['balance'];
+            $thongbao = '';
+            $status   = '';
 
-            $chuoimailing = 'a:15:{s:9:"firstname";s:3:"N/A";s:8:"lastname";s:3:"N/A";s:7:"company";s:3:"N/A";s:2:"ad";s:3:"N/A";s:4:"city";s:3:"N/A";s:5:"state";s:3:"N/A";s:3:"zip";s:3:"N/A";s:7:"country";s:13:"United States";s:3:"ssn";s:0:"";s:14:"payment_method";s:6:"Paypal";s:12:"payment_info";s:3:"N/A";s:10:"incentives";s:2:"NO";s:8:"Birthday";s:3:"N/A";s:11:"trafficdesc";s:3:"N/A";s:13:"affiliate_man";s:3:"N/A";}';
-            $mailing = unserialize($chuoimailing);
-            if ($_POST['firstname']) $mailing['firstname'] = $_POST['firstname'];
-            else $mailing['firstname'] = 'N/A';
-            if ($_POST['lastname']) $mailing['lastname'] = $_POST['lastname'];
-            else $mailing['lastname'] = 'N/A';
-            $data['mailling'] = serialize($mailing);
-            $data['ip'] = 01111111;
-            $data['ref'] = 0;
+            if ($_POST) {
+                $data['activated'] = 1;
+                $data['status']    = 1;
+                $data['ref']       = "manager_creater_" . $this->managerid;
+                $data['manager']   = $this->managerid;
+                $data['balance']   = $data['curent'] = $_POST['balance'];
 
-            if ($_POST['password'] &&  $_POST['email']) {
-                $data['password'] = sha1(md5($_POST['password']));
-                $data['email'] = $_POST['email'];
+                // 1.2. KHỞI TẠO & GÁN MAILLING (SERIALIZE)
+                $chuoimailing = 'a:15:{s:9:"firstname";s:3:"N/A";s:8:"lastname";s:3:"N/A";s:7:"company";s:3:"N/A";s:2:"ad";s:3:"N/A";s:4:"city";s:3:"N/A";s:5:"state";s:3:"N/A";s:3:"zip";s:3:"N/A";s:7:"country";s:13:"United States";s:3:"ssn";s:0:"";s:14:"payment_method";s:6:"Paypal";s:12:"payment_info";s:3:"N/A";s:10:"incentives";s:2:"NO";s:8:"Birthday";s:3:"N/A";s:11:"trafficdesc";s:3:"N/A";s:13:"affiliate_man";s:3:"N/A";}';
 
-                if ($this->Home_model->get_one('users', array('email' => $_POST['email']))) {
-                    $thongbao = 'Emails exits!!!';
-                } else {
-                    if ($this->db->insert('users', $data)) {
-                        $thongbao = 'Done!!';
+                $mailing = unserialize($chuoimailing);
+                $mailing['firstname'] = !empty($_POST['firstname']) ? $_POST['firstname'] : 'N/A';
+                $mailing['lastname']  = !empty($_POST['lastname'])  ? $_POST['lastname']  : 'N/A';
+
+                $data['mailling'] = serialize($mailing);
+                $data['ip']       = 01111111;
+                $data['ref']      = 0;
+
+                // 1.3. KIỂM TRA EMAIL & PASSWORD
+                if ($_POST['password'] && $_POST['email']) {
+
+                    $data['password'] = sha1(md5($_POST['password']));
+                    $data['email']    = $_POST['email'];
+                    
+                    // Thông tin dùng cho gửi email
+                    $firstname      = !empty($_POST['firstname']) ? trim($_POST['firstname']) : 'N/A';
+                    $lastname       = !empty($_POST['lastname'])  ? trim($_POST['lastname'])  : 'N/A';
+                    $email          = trim($_POST['email']);
+                    if ($this->Home_model->get_one('users', array('email' => $email))) {
+                        $thongbao = 'Emails exits!!!';
                     } else {
-                        $thongbao = 'Error!!';
+                        if ($this->db->insert('users', $data)) {
+
+                            $status   = 'success';
+                            $thongbao = 'Done!!';
+
+                            //  GỬI EMAIL ACCOUNT CREATED
+                            $toemail = $email;
+
+                            $fromEmail = $this->session->userdata('ademail');
+                            if (empty($fromEmail)) {
+                                $fromEmail = $this->pub_config['emailadmin'];
+                            }
+
+                            $tieude = 'Your account has been created';
+                            $dataemail = array(
+                                'name'     => trim($firstname . ' ' . $lastname),
+                                'email'    => $email,
+                            );
+
+                            $noidung = $this->load->view(
+                                'members/email_template/account_created',
+                                $dataemail,
+                                TRUE
+                            );
+
+                            if (!$this->guimail($toemail, $tieude, $noidung, $fromEmail)) {
+                                $this->guimail($toemail, $tieude, $noidung, $fromEmail);
+                            }
+
+                        } else {
+                            $status   = 'error';
+                            $thongbao = 'Error!!';
+                        }
                     }
+
+                } else {
+                    $thongbao = 'Email or password not required!!';
                 }
-            } else {
-                $thongbao = 'Email or password not required!!';
             }
-        }
-        $dt = 1;
-        $this->load->view(
-            'manager/index',
-            array(
-                'content' => $this->load->view('manager/content/addusers', array('thongbao' => $thongbao), true)
-            )
-        );
+            $this->load->view(
+                'manager/index',
+                array(
+                    'content' => $this->load->view(
+                        'manager/content/addusers',
+                        array(
+                            'thongbao' => $thongbao,
+                            'status'   => $status
+                        ),
+                        true
+                    )
+                )
+            );
     }
 
     function showev($table, $dieukhien = '', $number = '')

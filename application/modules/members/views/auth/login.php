@@ -7,266 +7,575 @@
     <meta property="og:image" content="<?php echo base_url(); ?>/upload/files/website_logo_waff_png.png">
     <link rel="icon" href="<?php echo base_url(); ?>/upload/files/website_logo_waff_png.png">
     <title>Authorization</title>
+
+    <!-- Bootstrap -->
     <link href="<?php echo base_url(); ?>temp/default/css/bootstrap.min.css" rel="stylesheet">
-    <link href="<?php echo base_url(); ?>temp/default/css/newlogin.css?time=<?php echo time(); ?>" rel="stylesheet">
-    <script src="<?php echo base_url(); ?>/temp/default/js/multiple/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <!-- jQuery -->
+    <script src="<?php echo base_url(); ?>/temp/default/js/multiple/jquery-3.2.1.min.js" type="text/javascript">
+    </script>
 
     <style>
-        .icon-social {
-            width: 38px;
-            height: 38px;
-            padding: 8px;
-            border-radius: 8px;
-            display: inline-block;
-            margin-right: 8px;
-            cursor: pointer;
-            color: #fff;
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        background: #f3f5f7;
+        color: #203040;
+        min-height: 100vh;
+    }
+
+    /* ===== Page layout ===== */
+    .auth-page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .auth-shell {
+        flex: 1;
+        display: flex;
+        min-height: calc(100vh - 64px);
+    }
+
+    /* Left: form area */
+    .auth-left {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 22px 18px 30px;
+    }
+
+    .auth-card {
+        width: 100%;
+        max-width: 520px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
+        padding: 20px 20px 22px;
+    }
+
+    .auth-logo {
+        width: 82px;
+        height: 82px;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto 10px;
+    }
+
+    .auth-title {
+        text-align: center;
+        font-size: 22px;
+        font-weight: 800;
+        color: #154272;
+        margin-bottom: 10px;
+    }
+
+    .auth-subtitle {
+        text-align: center;
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 14px;
+    }
+
+    /* Right: image area (1/2 screen on large) */
+    .auth-right {
+        width: 50%;
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        min-height: 100vh;
+        position: relative;
+    }
+
+    .auth-right::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, rgba(243, 245, 247, 0.00) 0%, rgba(21, 66, 114, 0.10) 100%);
+        pointer-events: none;
+    }
+
+    /* Hide image from tablet down */
+    @media (max-width: 991.98px) {
+        .auth-right {
+            display: none;
         }
 
-        .label-register {
-            cursor: pointer;
-            max-width: 200px;
-            height: 38px;
-            border: 1px solid rgba(20, 177, 247, 0.2);
-            border-radius: 19px;
-            display: inline-block;
-            margin: 0 4px;
-            padding: 11px 17px;
-            color: #14B1F7;
-            font-weight: 500 !important;
+        .auth-left {
+            padding: 18px 14px 26px;
         }
 
-        .label-register>a {
-            color: #14B1F7;
-            font-weight: 500 !important;
+        .auth-shell {
+            min-height: calc(100vh - 56px);
         }
+    }
 
-        .toast-top-left {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 9999;
-        }
+    /* ===== Form blocks ===== */
+    .section-label {
+        font-size: 14px;
+        color: #374151;
+        margin: 8px 0 10px;
+        font-weight: 600;
+    }
+
+    .role-row {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+    }
+
+    .role-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #1f2937;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .field {
+        margin-top: 10px;
+        /* bỏ position:relative vì label không còn absolute */
+    }
+
+    .field label {
+        position: static;
+        /* quan trọng */
+        transform: none;
+        /* quan trọng */
+        display: block;
+        margin: 0 0 6px;
+        padding: 0;
+        background: transparent;
+        pointer-events: auto;
+        /* label click được */
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+        width: 100%;
+        height: 48px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(0, 0, 0, .14);
+        outline: none;
+        font-size: 15px;
+        color: #22324a;
+        background: #fff;
+        transition: all .15s ease;
+    }
+
+    .field textarea {
+        height: auto;
+        min-height: 110px;
+        padding: 12px 14px;
+        resize: vertical;
+    }
+
+    .field input:focus,
+    .field select:focus,
+        {
+        border-color: #154272;
+        box-shadow: 0 0 0 4px rgba(21, 66, 114, .12);
+    }
+
+    .form-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+    }
+
+    .link {
+        color: #154272;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 16px;
+    }
+
+    .link:hover {
+        text-decoration: underline;
+    }
+
+    .remember {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+        color: #374151;
+        font-weight: 500;
+        user-select: none;
+    }
+
+    .btn-wrapper {
+        display: flex;
+        justify-content: center;
+    }
+
+    .btn-signin {
+        width: 50%;
+        margin: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        border-radius: 999px;
+        background: #FFDF00;
+        color: #000;
+        font-size: 18px;
+        border: 1px solid #4a4a4a;
+        padding: 10px 16px;
+        font-weight: 650;
+        cursor: pointer;
+        transition: all .15s ease;
+        box-shadow: 0 8px 16px rgba(21, 66, 114, .18);
+    }
+
+    .btn-signin:hover {
+        background: #f2d600;
+        transform: translateY(-1px);
+    }
+
+    .btn-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        background: rgba(13, 8, 8, 0.14);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(13, 8, 8, 0.14);
+    }
+
+    .policy-row {
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        font-size: 13px;
+    }
+
+    /* Social */
+    .social-row {
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .social-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        text-decoration: none;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, .10);
+    }
+
+    .social-btn svg {
+        width: 20px;
+        height: 20px;
+        display: block;
+    }
+
+    .social-fb {
+        background: #3b5998;
+    }
+
+    .social-tw {
+        background: #1da1f2;
+    }
+
+    .social-li {
+        background: #0077b5;
+    }
+
+    /* Register */
+    .register-wrap {
+        margin-top: 8px;
+        text-align: center;
+    }
+
+    .register-text {
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 4px;
+    }
+
+    .register-pills {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 16px;
+        border-radius: 999px;
+        border: 1px solid rgba(21, 66, 114, .22);
+        color: #154272;
+        font-weight: 650;
+        font-size: 14px;
+        text-decoration: none;
+        background: #f3f9ff;
+    }
+
+    .pill:hover {
+        filter: brightness(0.98);
+    }
+
+    /* Toast */
+    .toast-wrap {
+        position: fixed;
+        top: 18px;
+        left: 18px;
+        z-index: 9999;
+        width: 360px;
+        max-width: calc(100vw - 36px);
+    }
     </style>
 </head>
 
-<body wfd-invisible="true">
-    <div class="loader" wfd-invisible="true"><i class="dot"></i> <i class="dot"></i> <i class="dot"></i></div>
-    <div id="root">
-        <div class="_15fu8tliQjoFX_txAhIwyW _2JZmjKGweSe3VKt76UWHXO css-1ed4bhs">
-            <div class="_1q1YDBKhjzRspY4va-DRI4"></div>
-        </div>
-        <div class="sc-eqIVtm jFlzmB">
-            <div class="row col-12">
-                <div class="col-4" style="height:100vh">
-                    <main class="sc-fAjcbJ kFfNqn">
-                        <div class="sc-Rmtcm cIUDWQ">
-                            <div class="sc-bRBYWo eVigII">
-                                <img src="<?php echo base_url(); ?>/upload/files/website_logo_waff.jpeg" class="sc-VigVT iApbYG">
-                                <span class="sc-jhAzac cnxHgy">Authorization</span>
-                                <div class="sc-hzDkRC ioyCcs">
-                                    <form class="sc-kpOJdX kFPdwr" method="post" action="">
-                                        <div data-test-id="login-signin-email-input" class="xzcRZ">
-                                            <p class="sc-jlyJG bqJkQa">
-                                                <span>Please choose your account type: *</span>
-                                                <span class="sc-csuQGl bDzGcN"></span>
-                                            </p>
-                                            <div class="row col-12 mx-auto">
-                                                <div class="col-6 form-check mx-auto">
-                                                    <input class="form-check-input" type="radio" name="role" value="2" id="flexRadioDefault1">
-                                                    <label class="form-check-label" for="flexRadioDefault1">Advertiser</label>
-                                                </div>
-                                                <div class="col-6 form-check mx-auto">
-                                                    <input class="form-check-input" type="radio" name="role" value="1" id="flexRadioDefault2" checked>
-                                                    <label class="form-check-label" for="flexRadioDefault2">Publisher</label>
-                                                </div>
-                                            </div>
-                                            <div class="sc-kAzzGY jIpyka">
-                                                <p>Email</p>
-                                                <input type="hidden" name="login" value="login">
-                                                <input name="email" type="email" class="jxLAT click_btn_login" style="width:100%"
-                                                    value="<?php if (set_value('email')) echo set_value('email'); ?>" id="ip_email">
-                                            </div>
-                                        </div>
-                                        <div data-test-id="login-signin-password-input" class="xzcRZ">
-                                            <div class="sc-kAzzGY jIpyka">
-                                                <p>Password</p>
-                                                <input type="password" name="pwd" class="jxLAT click_btn_login" style="width:100%"
-                                                    value="<?php if (set_value('pwd')) echo set_value('pwd'); ?>" id="ip_pass">
-                                            </div>
-                                        </div>
-                                        <div class="newdiv">
-                                            <a class="sc-jKJlTe gPtJgO" href="<?php echo base_url('v2/sign/password/reset'); ?>">Password Recovering</a>
-                                            <div data-test-id="login-signin-remember-toogle" class="sc-eNQAEJ jpWIxZ">
-                                                <div class="_24Sdpdb7tKbUjJcti0bPnh _35iQwZ_AuaFmdI_kBnReo_">
-                                                    <input class="" type="checkbox" name="7h429qn81qj" id="7h429qn81qj" value="false">
-                                                    <label class="_19KU9ICo0Eb0R2seYqKsCW" for="7h429qn81qj">
-                                                        <span class="_19KU9ICo0Eb0R2seYqKsCW">Remember Me</span>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="sc-dxgOiQ jaHTXm">
-                                            <button data-test-id="login-signin-signin-button" type="submit"
-                                                class="K3TX2EnGEDIGIEiEIo_0X _3-Xcfgk4YnBeM0kgvmZfs_ btn_signin">
-                                                <div class="_3kiCWIsiMrRqCXneU8Asq6" style="height: 0px; width: 0px; left: 0px; top: 0px;"></div>
-                                                <span class="_1pFgCebzxXEI3gItBe_863">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17"
-                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                                        class="">
-                                                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                                                        <polyline points="10 17 15 12 10 7"></polyline>
-                                                        <line x1="15" y1="12" x2="3" y2="12"></line>
-                                                    </svg>
-                                                </span>
-                                                <span class="_3axrJUuPR6Tfk-J1aQF4dm">Sign In</span>
-                                            </button>
-                                            <br>
-                                        </div>
-                                        <div class="sc-hMqMXs iQKfMG">
-                                            <a class="sc-jKJlTe gPtJgO" target="_blank" href="#">Terms And Conditions</a>
-                                            <div class="sc-kEYyzF chXnfj"><a class="sc-jKJlTe gPtJgO" target="_blank" href="#">Privacy Policy</a></div>
-                                        </div>
-                                    </form>
-                                </div>
+<body>
+    <?php
+    $bg = $loginBackground ? $loginBackground->content : '';
+  ?>
+
+    <div class="auth-page">
+        <div class="auth-shell">
+
+            <!-- LEFT -->
+            <div class="auth-left">
+                <div class="auth-card">
+
+                    <img src="<?php echo base_url(); ?>/upload/files/website_logo_waff.jpeg" class="auth-logo"
+                        alt="Logo">
+                    <div class="auth-title">Authorization</div>
+                    <div class="auth-subtitle">Sign in to continue</div>
+
+                    <form id="loginForm" method="post" action="">
+                        <input type="hidden" name="login" value="login">
+
+                        <div class="section-label">Please choose your account type: *</div>
+                        <div class="role-row">
+                            <label class="role-option">
+                                <input class="form-check-input" type="radio" name="role" value="2" id="role_adv">
+                                Advertiser
+                            </label>
+
+                            <label class="role-option">
+                                <input class="form-check-input" type="radio" name="role" value="1" id="role_pub"
+                                    checked>
+                                Publisher
+                            </label>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="field" id="emailField">
+                            <label>Email</label>
+                            <input name="email" type="email" id="ip_email" class="click_btn_login"
+                                value="<?php if (set_value('email')) echo set_value('email'); ?>" required>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="field" id="passField">
+                            <label>Password</label>
+                            <input type="password" name="pwd" id="ip_pass" class="click_btn_login"
+                                value="<?php if (set_value('pwd')) echo set_value('pwd'); ?>" required>
+                        </div>
+
+                        <div class="form-row">
+                            <a class="link" href="<?php echo base_url('v2/sign/password/reset'); ?>">Password
+                                Recovering</a>
+
+                            <label class="remember">
+                                <input type="checkbox" name="remember" value="1">
+                                Remember Me
+                            </label>
+                        </div>
+                        <div class="btn-wrapper">
+                            <button type="submit" class="btn-signin btn_signin">
+                                <span class="btn-icon" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                        <polyline points="10 17 15 12 10 7"></polyline>
+                                        <line x1="15" y1="12" x2="3" y2="12"></line>
+                                    </svg>
+                                </span>
+                                <span>Sign In</span>
+                            </button>
+                        </div>
+                        <div class="policy-row">
+                            <a class="link" target="_blank" href="#">Terms And Conditions</a>
+                            <a class="link" target="_blank" href="#">Privacy Policy</a>
+                        </div>
+
+                        <!-- Social -->
+                        <div class="social-row">
+                            <a class="social-btn social-fb" href="#" target="_blank" title="Facebook">
+                                <svg>
+                                    <use
+                                        xlink:href="<?php echo base_url(); ?>/temp/default/images/icon.svg#facebook-icon">
+                                    </use>
+                                </svg>
+                            </a>
+                            <a class="social-btn social-tw" href="#" target="_blank" title="Twitter">
+                                <svg>
+                                    <use
+                                        xlink:href="<?php echo base_url(); ?>/temp/default/images/icon.svg#twitter-icon">
+                                    </use>
+                                </svg>
+                            </a>
+                            <a class="social-btn social-li" href="#" target="_blank" title="LinkedIn">
+                                <svg>
+                                    <use
+                                        xlink:href="<?php echo base_url(); ?>/temp/default/images/icon.svg#linkedin-icon">
+                                    </use>
+                                </svg>
+                            </a>
+                        </div>
+
+                        <!-- Register -->
+                        <div class="register-wrap">
+                            <div class="register-text">If you don't have an account, please register as</div>
+                            <div class="register-pills">
+                                <a class="pill" href="<?php echo base_url('v2/sign/up'); ?>">Publisher</a>
+                                <a class="pill" href="<?php echo base_url('v2/advertiser/sign-up'); ?>">Advertiser</a>
                             </div>
                         </div>
-                    </main>
 
-                    <div class="row">
-                        <div class="text-center">
-                            <a style="color:white" href="#" target="_blank">
-                                <div class="icon-social" style="background-color:rgb(59, 89, 152)">
-                                    <svg href="#" class="" style="width:100%;height:100%">
-                                        <use xlink:href="<?php echo base_url(); ?>/temp/default/images/icon.svg#facebook-icon"> </use>
-                                    </svg>
-                                </div>
-                            </a>
-                            <a style="color:white" href="#" target="_blank">
-                                <div class="icon-social" style="background-color:rgb(29, 161, 242)">
-                                    <svg class="" style="width:100%;height:100%">
-                                        <use xlink:href="<?php echo base_url(); ?>/temp/default/images/icon.svg#twitter-icon"></use>
-                                    </svg>
-                                </div>
-                            </a>
-                            <a style="color:white" href="#" target="_blank">
-                                <div class="icon-social" style="background-color:rgb(0, 119, 181)">
-                                    <svg class="" style="width:100%;height:100%">
-                                        <use xlink:href="<?php echo base_url(); ?>/temp/default/images/icon.svg#linkedin-icon"></use>
-                                    </svg>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
+                    </form>
 
-                    <div class="row">
-                        <span class="instruc text-center">If you don't have an account, please register as</span>
-                        <div class="text-center">
-                            <div class="label-register text-center"><a href="<?php echo base_url('v2/sign/up'); ?>"
-                                    style="text-decoration:none">Publisher</a></div>
-                            <div class="label-register text-center"><a href="<?php echo base_url('v2/advertiser/sign-up'); ?>"
-                                    style="text-decoration:none">Advertiser</a></div>
-                        </div>
-                    </div>
                 </div>
-                <div class="col-8" style="background:url(<?= $loginBackground ? $loginBackground->content : null ?>) no-repeat;background-size:cover"></div>
+            </div>
+
+            <!-- RIGHT (image) -->
+            <div class="auth-right" style="background-image:url('<?= $bg ?>');"></div>
+
+        </div>
+
+        <!-- Toast -->
+        <div class="toast-wrap">
+            <div class="toast fade alert-info" role="alert" aria-live="assertive" aria-atomic="true" id="thongBao">
+                <div class="toast-body d-flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
+                        class="bi bi-check-circle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img"
+                        aria-label="Info">
+                        <path
+                            d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.17-.94L7.5 9.584 5.854 7.939a.75.75 0 0 0-1.06 1.06l2.176 2.031z" />
+                    </svg>
+                    <span id="toastContent">Message</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="position-fixed top-0 end-0 p-5 hide">
-        <div class="toast fade alert-info" role="alert" aria-live="assertive" aria-atomic="true" id="thongBao">
-            <div class="toast-body d-flex">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                    class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img"
-                    aria-label="Warning:">
-                    <path
-                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-                </svg>
-                <span id="toastContent">Successfully edited profile</span>
-            </div>
-        </div>
-    </div>
-
-    <footer class="main-footer">
-        <span>Powered by&nbsp;<a href="https://wwaff.com" target="_blank">wwaff.com</a>&nbsp;2025</span>
-    </footer>
-
-
-    <script>
-        $(document).ready(function() {
-
-            $(".click_btn_login").each(function() {
-                var t = $(this).siblings('.span_ip');
-                if ($(this).val()) {
-                    $(t).removeClass('jBAAej');
-                    $(t).addClass('fLnJSC');
-                } else {
-                    $(t).removeClass('fLnJSC');
-                    $(t).addClass('jBAAej');
-                }
-            });
-
-            $('.click_btn_login').on('click', function() {
-                var t = $(this).siblings('.span_ip');
-                $(t).removeClass('jBAAej');
-                $(t).addClass('fLnJSC');
-            })
-
-            $(".click_btn_login").focusout(function() {
-                var t = $(this).siblings('.span_ip');
-                if ($(this).val()) {
-                    $(t).removeClass('jBAAej');
-                    $(t).addClass('fLnJSC');
-                } else {
-                    $(t).removeClass('fLnJSC');
-                    $(t).addClass('jBAAej');
-                }
-            });
-
-            $('.btn_signin').on('click', function(e) {
-                e.preventDefault();
-                var form = $(this).closest('form');
-                ajurl = "<?php echo base_url('v2/sign/in'); ?>";
-                $.ajax({
-                    type: "POST",
-                    url: ajurl,
-                    data: form.serialize(),
-                    success: ajaxSuccess,
-                    error: ajaxErr
-                });
-            })
-        })
-
-        function ajaxErr() {
-            alert('Network Error!');
-        }
-
-        function ajaxSuccess(data) {
-            const obj = JSON.parse(data);
-            if (obj.error == 0) {
-                setTimeout(() => {
-                    window.location.href = "<?php echo base_url('v2'); ?>";
-                }, 3000);
-            }
-            $('#toastContent').html(obj.data);
-            var myAlert = document.getElementById('thongBao'); //select id of toast
-            myAlert.classList.add('toast-top-left');
-            var bsAlert = new bootstrap.Toast(myAlert, option); //inizialize it
-
-            bsAlert.show(); //show it   
-        }
-
-        var option = {
-            animation: true,
-            delay: 5000,
-            autohide: true,
-            position: 'top-start'
-        };
-    </script>
     <script src="<?php echo base_url(); ?>/temp/default/js/bootstrap.min.js"></script>
     <script src="<?php echo base_url(); ?>/temp/default/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    // ===== Floating label behavior (same style as recover page) =====
+    function syncFieldState($field, $input) {
+        if ($input.val()) $field.addClass('is-active');
+        else $field.removeClass('is-active');
+    }
+
+    $(document).ready(function() {
+        var $emailField = $('#emailField');
+        var $passField = $('#passField');
+        var $emailInput = $('#ip_email');
+        var $passInput = $('#ip_pass');
+
+        syncFieldState($emailField, $emailInput);
+        syncFieldState($passField, $passInput);
+
+        $emailInput.on('focus', function() {
+            $emailField.addClass('is-active');
+        });
+        $emailInput.on('blur', function() {
+            syncFieldState($emailField, $emailInput);
+        });
+
+        $passInput.on('focus', function() {
+            $passField.addClass('is-active');
+        });
+        $passInput.on('blur', function() {
+            syncFieldState($passField, $passInput);
+        });
+
+        // ===== AJAX login (keep behavior) =====
+        $('#loginForm').on('submit', function(e) {
+            e.preventDefault();
+            var form = $(this);
+            var ajurl = "<?php echo base_url('v2/sign/in'); ?>";
+
+            $.ajax({
+                type: "POST",
+                url: ajurl,
+                data: form.serialize(),
+                success: ajaxSuccess,
+                error: ajaxErr
+            });
+        });
+    });
+
+    function ajaxErr() {
+        alert('Network Error!');
+    }
+
+    var option = {
+        animation: true,
+        delay: 5000,
+        autohide: true
+    };
+
+    function ajaxSuccess(data) {
+        var obj;
+        try {
+            obj = JSON.parse(data);
+        } catch (e) {
+            $('#toastContent').html('Server response invalid!');
+            showToast();
+            return;
+        }
+
+        $('#toastContent').html(obj.data);
+        showToast();
+
+        if (obj.error == 0) {
+            setTimeout(function() {
+                window.location.href = "<?php echo base_url('v2'); ?>";
+            }, 3000);
+        }
+    }
+
+    function showToast() {
+        var myAlert = document.getElementById('thongBao');
+        var bsAlert = new bootstrap.Toast(myAlert, option);
+        bsAlert.show();
+    }
+    </script>
 </body>
 
 </html>
