@@ -60,7 +60,7 @@ class Auth extends CI_Controller
                     $this->db->update('users', array('password' => $password));
 
                     $name =   $user['firstname'] . $user['lastname'];
-                    $tieude = ' Your new password for ' . $name;
+                    $tieude = 'Reset your password';
                     $dataMail = [
                         'firstname' => $user['firstname'],
                         'lastname'  => $user['lastname'],
@@ -318,7 +318,8 @@ class Auth extends CI_Controller
 
                 $this->db->insert('users', $idata);
                 $err = 0;
-                $dt .= "You have successfully registered!. please active your email address.If you don't see the verification email in your inbox, please check your Junk or Spam folders.";
+                $dt .= "Registration successful!<br>
+                Check your email to activate your account.";
 
                 $toemail = $data['email'];
                 $tieude = $sitename . ' Please verify your email address.';

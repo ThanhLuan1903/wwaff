@@ -369,7 +369,7 @@
 
                     <img src="<?php echo base_url(); ?>/upload/files/website_logo_waff.jpeg" class="auth-logo"
                         alt="Logo">
-                    <div class="auth-title">Authorization</div>
+                    <div class="auth-title">Worldwide Affiliate</div>
                     <div class="auth-subtitle">Sign in to continue</div>
 
                     <form id="loginForm" method="post" action="">

@@ -53,14 +53,14 @@
     .auth-page {
         min-height: 100vh;
         display: flex;
-        flex-direction: column;
+        justify-content: center;
+        align-items: stretch;
     }
 
     .auth-shell {
-        flex: 1;
-        display: flex;
+        width: 60%;
+        padding-top: 10px;
         min-height: calc(100vh - 64px);
-        padding: 50px 200px;
     }
 
     .auth-card {
@@ -277,7 +277,8 @@
 
         .auth-shell {
             min-height: calc(100vh - 56px);
-            padding: 0px;
+            padding: 10px;
+            width: 80%;
         }
 
         .auth-card {
@@ -292,7 +293,8 @@
 
         .auth-shell {
             min-height: calc(100vh - 56px);
-            padding: 0px;
+            padding: 6px;
+            width: 90%;
         }
 
         .auth-card {
@@ -438,19 +440,15 @@
 
 <body wfd-invisible="true">
     <div class="loader" wfd-invisible="true"><i class="dot"></i> <i class="dot"></i> <i class="dot"></i></div>
-
     <div class="auth-page">
-
         <div class="auth-shell">
             <div class="auth-card">
-
                 <div class="auth-header">
                     <img src="<?php echo base_url(); ?>/upload/files/website_logo_waff_png.png" class="auth-logo"
                         alt="Logo" />
-                    <div class="auth-title">Registration</div>
-                    <p class="auth-subtitle">Create your Worldwide Affiliate account</p>
+                    <div class="auth-title">Worldwide Affiliate</div>
+                    <p class="auth-subtitle">Create your account</p>
                 </div>
-
 
                 <form needs-validation enctype="multipart/form-data">
                     <input type="text" name="ref_pub_token" hidden
@@ -722,18 +720,24 @@
 
                 </form>
             </div>
+
+
+
+
+
+            <div class="auth-footer">
+                <span>Powered by <a target="_blank" rel="noreferrer" href="http://affise.com">Affise.com</a> 2020</span>
+                <span style="margin-left:10px;">
+                    <a class="link" href="https://www.linkedin.com/in/biphan-wedebeek/" rel="noreferrer"
+                        target="_blank">Our
+                        LinkedIn</a>
+                    <span style="opacity:.5;margin:0 8px;">•</span>
+                    <a class="link" href="https://www.facebook.com/teamwedebeek" rel="noreferrer" target="_blank">Our
+                        Facebook</a>
+                </span>
+            </div>
         </div>
 
-        <div class="auth-footer">
-            <span>Powered by <a target="_blank" rel="noreferrer" href="http://affise.com">Affise.com</a> 2020</span>
-            <span style="margin-left:10px;">
-                <a class="link" href="https://www.linkedin.com/in/biphan-wedebeek/" rel="noreferrer" target="_blank">Our
-                    LinkedIn</a>
-                <span style="opacity:.5;margin:0 8px;">•</span>
-                <a class="link" href="https://www.facebook.com/teamwedebeek" rel="noreferrer" target="_blank">Our
-                    Facebook</a>
-            </span>
-        </div>
 
     </div>
 

@@ -38,18 +38,17 @@
         min-height: 100vh;
     }
 
-    /* ===== Page layout ===== */
     .auth-page {
         min-height: 100vh;
         display: flex;
-        flex-direction: column;
+        justify-content: center;
+        align-items: stretch;
     }
 
     .auth-shell {
-        flex: 1;
-        display: flex;
+        width: 60%;
+        padding-top: 10px;
         min-height: calc(100vh - 64px);
-        padding: 50px 200px;
     }
 
     .auth-card {
@@ -90,7 +89,8 @@
 
         .auth-shell {
             min-height: calc(100vh - 56px);
-            padding: 0px;
+            padding: 10px;
+            width: 80%;
         }
 
         .auth-card {
@@ -412,6 +412,12 @@
         .group-btn {
             padding: 0px;
         }
+
+        .auth-shell {
+            min-height: calc(100vh - 56px);
+            padding: 6px;
+            width: 90%;
+        }
     }
 
     @media (max-width: 320px) {
@@ -434,8 +440,8 @@
 
                 <img src="<?php echo base_url(); ?>/upload/files/website_logo_waff_png.png" class="auth-logo"
                     alt="Logo">
-                <div class="auth-title">Registration</div>
-                <div class="auth-subtitle">Create your Worldwide Affiliate account</div>
+                <div class="auth-title">Worldwide Affiliate</div>
+                <div class="auth-subtitle">Create your account</div>
 
                 <!-- ===== FORM: giữ nguyên name/value logic ===== -->
                 <form class="sc-kpOJdX kFPdwr" enctype="multipart/form-data">
@@ -754,18 +760,19 @@
 
                 </form>
             </div>
+            <div class="auth-footer">
+                <span>Powered by <a target="_blank" rel="noreferrer" href="http://affise.com">Affise.com</a> 2020</span>
+                <span style="margin-left:10px;">
+                    <a class="link" href="https://www.linkedin.com/in/biphan-wedebeek/" rel="noreferrer"
+                        target="_blank">Our
+                        LinkedIn</a>
+                    <span style="opacity:.5;margin:0 8px;">•</span>
+                    <a class="link" href="https://www.facebook.com/teamwedebeek" rel="noreferrer" target="_blank">Our
+                        Facebook</a>
+                </span>
+            </div>
         </div>
 
-        <div class="auth-footer">
-            <span>Powered by <a target="_blank" rel="noreferrer" href="http://affise.com">Affise.com</a> 2020</span>
-            <span style="margin-left:10px;">
-                <a class="link" href="https://www.linkedin.com/in/biphan-wedebeek/" rel="noreferrer" target="_blank">Our
-                    LinkedIn</a>
-                <span style="opacity:.5;margin:0 8px;">•</span>
-                <a class="link" href="https://www.facebook.com/teamwedebeek" rel="noreferrer" target="_blank">Our
-                    Facebook</a>
-            </span>
-        </div>
 
         <!-- Toasts (giữ id/structure để JS show) -->
         <div class="toast-wrap">
@@ -920,7 +927,7 @@
             bsAlert.show();
             setTimeout(() => {
                 window.location.href = "<?php echo base_url('v2'); ?>";
-            }, 500);
+            }, 10000);
         } else {
             $('.toastContent').html(obj.data);
             $('.btn_signup').attr('disabled', false);

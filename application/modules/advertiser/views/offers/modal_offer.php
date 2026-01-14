@@ -1,30 +1,40 @@
-<div class="col-3 p-2">
-    <div class="card" style="height: 100%;">
-        <img class="card-img-top" src="<?= $offer->img ?>" alt="Card image cap" height="250px">
-        <div class="card-body" style="padding-bottom:0">
+   <style>
+.offer-img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+   </style>
 
-            <a class="box-offers-links" style="display: block; width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; cursor: pointer"
-                data-bs-toggle="modal" data-bs-target="#exampleModal<?= $offer->id ?>" data-toggle="tooltip" data-placement="top"
-                title="<?= $offer->title ?>"><?= $offer->title ?>
-            </a>
+   <div class="col-3 p-2">
+       <div class="card" style="height: 100%;">
+           <img class="card-img-top offer-img" src="<?= $offer->img ?>" alt="Card image cap">
+           <div class="card-body" style="padding-bottom:0">
 
-            <div class="box-offers-container" style="flex-direction: column;height: calc(100% - 10px);">
-                <div class="box-offers-detail">
-                    <div class="box-offers-ticons">
-                        <div class="align-items-center">
-                            <span class="box-offers-id">#&nbsp;<?= $badge ?> &nbsp; <?= $offer->id ?>&nbsp;<span>—</span></span>
-                            <!-- tag--->
-                            <?= $cat_tag ?>
-                            <span>— &nbsp;</span>
-                            <?= $termcat ?>
-                            <!--end tag-->
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-6 star-icon">
-                        
-                        <?php
+               <a class="box-offers-links"
+                   style="display: block; width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; cursor: pointer"
+                   data-bs-toggle="modal" data-bs-target="#exampleModal<?= $offer->id ?>" data-toggle="tooltip"
+                   data-placement="top" title="<?= $offer->title ?>"><?= $offer->title ?>
+               </a>
+
+               <div class="box-offers-container" style="flex-direction: column;height: calc(100% - 10px);">
+                   <div class="box-offers-detail">
+                       <div class="box-offers-ticons">
+                           <div class="align-items-center">
+                               <span class="box-offers-id">#&nbsp;<?= $badge ?> &nbsp;
+                                   <?= $offer->id ?>&nbsp;<span>—</span></span>
+                               <!-- tag--->
+                               <?= $cat_tag ?>
+                               <span>— &nbsp;</span>
+                               <?= $termcat ?>
+                               <!--end tag-->
+                           </div>
+                       </div>
+                   </div>
+                   <div class="row">
+                       <div class="col-6 star-icon">
+
+                           <?php
                         if ($offer->lead > 0 &&  $offer->lead < 10) {
                             echo '<span class="star-icon-text mr-2">0.5</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-half" viewBox="0 0 16 16">
@@ -153,53 +163,58 @@
                         ';
                         }
                         ?>
-                        <span class="text-muted">&nbsp;(<?= $offer->lead ?>)</span>
-                    </div>
-                    <div class="col-4 <?= $offer->ranking ? 'ranking-icon' : '' ?>">
-                        <div class="ranking-icon__text"><?= $offer->ranking ?></div>
-                    </div>
-                    <?php $isLiked = $this->Home_model->get_one('favorite_offer', ['offer_id' => $offer->id, 'user_id' => $this->session->userdata('user')->id, 'is_adv' => 1]); ?>
-                    <div class="col-2 heart-icon" data-id="<?= $offer->id ?>" data-isLiked="<?= $isLiked ? 1 : 0 ?>">
-                        <!-- is_liked = true -->
-                        <?php if ($isLiked->is_liked): ?>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart fill" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
-                            </svg>
-                            <!-- is_liked = null or 0 -->
-                        <?php else: ?>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
-                                <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />
-                            </svg>
-                        <?php endif; ?>
-                    </div>
-                    <i class="glyphicon glyphicon-trash glyphicon-white"></i>
-                </div>
-            </div>
+                           <span class="text-muted">&nbsp;(<?= $offer->lead ?>)</span>
+                       </div>
+                       <div class="col-4 <?= $offer->ranking ? 'ranking-icon' : '' ?>">
+                           <div class="ranking-icon__text"><?= $offer->ranking ?></div>
+                       </div>
+                       <?php $isLiked = $this->Home_model->get_one('favorite_offer', ['offer_id' => $offer->id, 'user_id' => $this->session->userdata('user')->id, 'is_adv' => 1]); ?>
+                       <div class="col-2 heart-icon" data-id="<?= $offer->id ?>" data-isLiked="<?= $isLiked ? 1 : 0 ?>">
+                           <!-- is_liked = true -->
+                           <?php if ($isLiked->is_liked): ?>
+                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                               class="bi bi-heart fill" viewBox="0 0 16 16">
+                               <path fill-rule="evenodd"
+                                   d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
+                           </svg>
+                           <!-- is_liked = null or 0 -->
+                           <?php else: ?>
+                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                               class="bi bi-heart" viewBox="0 0 16 16">
+                               <path
+                                   d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />
+                           </svg>
+                           <?php endif; ?>
+                       </div>
+                       <i class="glyphicon glyphicon-trash glyphicon-white"></i>
+                   </div>
+               </div>
 
-        </div>
+           </div>
 
-        <div class="card-footer" style="padding:0;">
-            <div class="box-offers-point mt-2 pt-2 d-flex" style="background:#2c91cb;padding:2%">
-                <?= $point_geos_s ?>
-            </div>
-        </div>
+           <div class="card-footer" style="padding:0;">
+               <div class="box-offers-point mt-2 pt-2 d-flex" style="background:#2c91cb;padding:2%">
+                   <?= $point_geos_s ?>
+               </div>
+           </div>
 
-    </div>
-</div>
+       </div>
+   </div>
 
-<div class="modal fade" id="exampleModal<?= $offer->id ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top: 2.8rem;">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content mb-5">
-            <div class="modal-header">
-                <h5 class="modal-title">#<?= $offer->id ?> - <?= $offer->title ?></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="m-3">
-                <?php include('campaign_view.php'); ?>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
+   <div class="modal fade" id="exampleModal<?= $offer->id ?>" tabindex="-1" aria-labelledby="exampleModalLabel"
+       aria-hidden="true" style="margin-top: 2.8rem;">
+       <div class="modal-dialog modal-xl">
+           <div class="modal-content mb-5">
+               <div class="modal-header">
+                   <h5 class="modal-title">#<?= $offer->id ?> - <?= $offer->title ?></h5>
+                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               </div>
+               <div class="m-3">
+                   <?php include('campaign_view.php'); ?>
+               </div>
+               <div class="modal-footer">
+                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+               </div>
+           </div>
+       </div>
+   </div>
