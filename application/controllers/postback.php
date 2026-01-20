@@ -141,8 +141,24 @@ class Postback extends CI_Controller
                         $point = $track->amount2;
                     } else {
                         // $point = round($point_net * (100 - $track->offpercent) / 100, 2);
-                        $point = round($point_net * $track->offpercent / 100, 2);
-                        $dataUpdate['amount3'] = $point_net;
+                        // $dataUpdate['amount3'] = $point_net;
+
+                        $point = round((float)$point_net, 2);
+                        $offpercent = (float)$track->offpercent;
+                        if ($offpercent <= 0) {
+                            $dataUpdate['amount3'] = 0;
+                        } else {
+                            // offpercent = phần % bị cắt (vd 40)
+                            // pub_share = 60% = 0.6
+                            $pub_share = (100 - $offpercent) / 100;
+
+                            // an toàn double-check
+                            if ($pub_share > 0) {
+                                $dataUpdate['amount3'] = round($point / $pub_share, 3);
+                            } else {
+                                $dataUpdate['amount3'] = 0;
+                            }
+                        }
                     }
                 }
                 $dataUpdate['amount'] = $point;

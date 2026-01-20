@@ -141,8 +141,11 @@ class Ipreport extends CI_Controller
                 $this->total_rows = $this->db->query($qr)->row()->total;
             } else {
                 $qr = "
-                    SELECT * 
+                    SELECT cpalead_tracklink.*,
+                    cpalead_offer.percent AS offerpercent
                     FROM cpalead_tracklink
+                    LEFT JOIN cpalead_offer 
+                    ON cpalead_offer.id = cpalead_tracklink.offerid
                     WHERE $where AND date BETWEEN  '$from  00:00:00' AND '$to 23:59:59'  
                     ORDER BY date desc
                     LIMIT $offset,$this->per_page

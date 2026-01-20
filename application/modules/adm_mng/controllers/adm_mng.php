@@ -308,36 +308,184 @@ class Adm_mng extends CI_Controller
 
     function index()
     {
-
         redirect(base_url('manager/happening'));
     }
 
-    function happening($offset = 0)
-    {
-        $qr = "
-         SELECT cpalead_tracklink.*, cpalead_users.email
-         FROM cpalead_tracklink    
-         INNER JOIN cpalead_users ON cpalead_tracklink.userid = cpalead_users.id    
-         INNER JOIN cpalead_manager ON cpalead_users.manager = cpalead_manager.id AND (cpalead_manager.id = $this->managerid OR cpalead_manager.parrent = $this->managerid)
-         WHERE cpalead_tracklink.flead=1
-         ORDER BY cpalead_tracklink.id DESC
-         LIMIT $this->per_page OFFSET  $offset   
+    // function happening($offset = 0)
+    // {
+    //     $qr = "
+    //      SELECT cpalead_tracklink.*, cpalead_users.email
+    //      FROM cpalead_tracklink    
+    //      INNER JOIN cpalead_users ON cpalead_tracklink.userid = cpalead_users.id    
+    //      INNER JOIN cpalead_manager ON cpalead_users.manager = cpalead_manager.id AND (cpalead_manager.id = $this->managerid OR cpalead_manager.parrent = $this->managerid)
+    //      WHERE cpalead_tracklink.flead=1
+    //      ORDER BY cpalead_tracklink.id DESC
+    //      LIMIT $this->per_page OFFSET  $offset   
          
-        ";
-        $happening = $this->db->query($qr)->result();
+    //     ";
+    //     $happening = $this->db->query($qr)->result();
 
-        $qr = "
-         SELECT count(cpalead_tracklink.id) as total
-         FROM cpalead_tracklink
-         INNER JOIN cpalead_users ON cpalead_tracklink.userid = cpalead_users.id        
-         INNER JOIN cpalead_manager ON cpalead_users.manager = cpalead_manager.id AND (cpalead_manager.id = $this->managerid OR cpalead_manager.parrent = $this->managerid)
-         WHERE cpalead_tracklink.flead=1      
-        ";
-        $this->total_rows = $this->db->query($qr)->row()->total;
-        $this->uri_segment = 3;
-        $this->base_url_trang = base_url('manager/happening/');
-        $this->phantrang();
-        $content = $this->load->view('manager/content/tracklink_list.php', array('dulieu' => $happening), true);
+    //     $qr = "
+    //      SELECT count(cpalead_tracklink.id) as total
+    //      FROM cpalead_tracklink
+    //      INNER JOIN cpalead_users ON cpalead_tracklink.userid = cpalead_users.id        
+    //      INNER JOIN cpalead_manager ON cpalead_users.manager = cpalead_manager.id AND (cpalead_manager.id = $this->managerid OR cpalead_manager.parrent = $this->managerid)
+    //      WHERE cpalead_tracklink.flead=1      
+    //     ";
+    //     $this->total_rows = $this->db->query($qr)->row()->total;
+    //     $this->uri_segment = 3;
+    //     $this->base_url_trang = base_url('manager/happening/');
+    //     $this->phantrang();
+    //     $content = $this->load->view('manager/content/tracklink_list.php', array('dulieu' => $happening), true);
+    //     $this->load->view('manager/index', array('content' => $content));
+    // }
+
+function initPagination($row, $type = 'all')
+    {
+        $this->load->library('pagination');
+        $config['base_url'] = base_url('admin1/dashboard/show/' . $type);
+        $config['total_rows'] = $row;
+        $config['per_page'] = 20;
+        $config['uri_segment'] = 5;
+
+        $config['first_link'] = '<<';
+        $config['last_link'] = '>>';
+        $config['next_link'] = 'Next';
+        $config['prev_link'] = 'Prev';
+
+        $config['full_tag_open'] = '<ul class="pagination">';
+        $config['full_tag_close'] = '</ul>';
+
+        $config['prev_tag_open'] = '<li>';
+        $config['prev_tag_close'] = '</li>';
+        $config['next_tag_open'] = '<li>';
+        $config['next_tag_close'] = '</li>';
+
+        $config['first_tag_open'] = '<li>';
+        $config['first_tag_close'] = '</li>';
+        $config['last_tag_open'] = '<li>';
+        $config['last_tag_close'] = '</li>';
+
+        $config['num_tag_open'] = '<li>';
+        $config['num_tag_close'] = '</li>';
+
+        $config['cur_tag_open'] = '<li class="active"><a>';
+        $config['cur_tag_close'] = '</a></li>';
+
+        $this->pagination->initialize($config);
+    }
+
+    private function apply_filters($type)
+    {
+        $this->db->from('error_notis');
+
+        if ($type != 'all') {
+            $error_type_map = [
+                'device' => 'Duplicate Device',
+                'cr' => 'CR Require',
+                'ip' => 'Duplicate IP',
+                'brower' => 'Unknow Browser'  // Thêm mapping cho Unknow Browser
+            ];
+            if (isset($error_type_map[$type])) {
+                $this->db->where('error_type', $error_type_map[$type]);
+            }
+        }
+
+        if ($this->session->userdata('error_from')) {
+            $this->db->where('violation_time >=', $this->session->userdata('error_from') . ' 00:00:00');
+        } else {
+            $this->db->where('violation_time >=', date('Y-m-d', strtotime('-7 days')) . ' 00:00:00');
+        }
+
+        if ($this->session->userdata('error_to')) {
+            $this->db->where('violation_time <=', $this->session->userdata('error_to') . ' 23:59:59');
+        } else {
+            $this->db->where('violation_time <=', date('Y-m-d') . ' 23:59:59');
+        }
+
+        if ($this->session->userdata('error_pubid'))
+            $this->db->like('userid', $this->session->userdata('error_pubid'));
+        if ($this->session->userdata('error_oid'))
+            $this->db->like('offerid', $this->session->userdata('error_oid'));
+        if ($this->session->userdata('error_sub2'))
+            $this->db->like('sub2', $this->session->userdata('error_sub2'));
+        if ($this->session->userdata('error_status') && $this->session->userdata('error_status') != 'all')
+            $this->db->where('status', $this->session->userdata('error_status'));
+    }
+
+    private function process_violation_numbering($error_notis)
+    {
+        foreach ($error_notis as &$item) {
+            $details = json_decode($item['details'], true);
+            if (is_array($details)) {
+                $item = array_merge($item, $details);
+            }
+
+            $this->db->select('COUNT(*) as total_count');
+            $this->db->from('error_notis');
+            $this->db->where('offerid', $item['offerid']);
+            $this->db->where('userid', $item['userid']);
+            $this->db->where('status', $item['status']);
+            $this->db->where('error_type', $item['error_type']);
+
+            if (isset($item['sub2']) && !empty($item['sub2'])) {
+                $this->db->where('sub2', $item['sub2']);
+            } else {
+                $this->db->where('(sub2 IS NULL OR sub2 = "")');
+            }
+
+            $total_count = $this->db->get()->row()->total_count;
+
+            if ($total_count <= 1) {
+                $item['violation_count'] = 1;
+                continue;
+            }
+
+            $this->db->select('id');
+            $this->db->from('error_notis');
+            $this->db->where('offerid', $item['offerid']);
+            $this->db->where('userid', $item['userid']);
+            $this->db->where('status', $item['status']);
+            $this->db->where('error_type', $item['error_type']);
+
+            if (isset($item['sub2']) && !empty($item['sub2'])) {
+                $this->db->where('sub2', $item['sub2']);
+            } else {
+                $this->db->where('(sub2 IS NULL OR sub2 = "")');
+            }
+
+            $this->db->order_by('id', 'ASC');
+            $group_records = $this->db->get()->result_array();
+            $violation_mapping = array();
+            $violation_number = 1;
+            foreach ($group_records as $record) {
+                $violation_mapping[$record['id']] = $violation_number;
+                $violation_number++;
+            }
+
+            $item['violation_count'] = $violation_mapping[$item['id']];
+        }
+
+        return $error_notis;
+    }
+
+    function happening()
+    {
+        $type = $this->uri->segment(4) ? $this->uri->segment(4) : "all";
+        $offset = $this->uri->segment(5) ? $this->uri->segment(5) : 0;
+
+        $this->db->select('*');
+        $this->apply_filters($type);
+        $rows = $this->db->count_all_results();
+        $this->initPagination($rows, $type);
+
+        $this->db->select('*');
+        $this->apply_filters($type);
+        $this->db->order_by('id', 'DESC');
+        $error_notis = $this->db->limit($this->pagination->per_page, $offset)->get()->result_array();
+        $error_notis = $this->process_violation_numbering($error_notis);
+
+        $content = $this->load->view('manager/content/tracklink_list.php', array('dulieu' => $error_notis, 'start_count' => $offset + 1, 'current_type' => $type), true);
         $this->load->view('manager/index', array('content' => $content));
     }
 

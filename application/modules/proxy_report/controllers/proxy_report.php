@@ -346,7 +346,7 @@ class Proxy_report extends CI_Controller
         $where_manager = '';
         $manager_join = '';
         $where = ' AND flead =1 ';
-        $where .= " AND ((tl.date < '2025-11-01')OR (tl.date >= '2025-11-01' AND tl.amount3 > 0))";
+        $where .= " AND ((tl.date < '2025-11-01')OR (tl.date >= '2025-11-01' AND tl.amount3 >= 0))";
 
         if (!empty($data['userid'])) {
             $where .= " AND userid =" . (int)$data['userid'];

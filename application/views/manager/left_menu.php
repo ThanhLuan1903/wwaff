@@ -24,12 +24,12 @@
             <span class="hidden-xs hidden-sm">Click Report </span>
          </a>
       </li>
-      <li>
+      <!-- <li>
          <a href="<?php echo base_url($this->config->item('manager') . '/dashboard/show'); ?>">
             <span style=" display:inline-block; width:22px; text-align:center; font-weight:bold;">⚠</span>
             <span class="hidden-xs hidden-sm">Violation Report</span>
          </a>
-      </li>
+      </li> -->
       <li>
          <a href="<?php echo base_url($this->config->item('manager') . '/affiliate'); ?>">
             <span class="glyphicon glyphicon-user"></span>
