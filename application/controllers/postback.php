@@ -65,7 +65,7 @@ class Postback extends CI_Controller
                 $point_net = (float)$this->input->get_post($pb_value_array['commission'][0], true);
             }
 
-            echo $this->postbackAction($tracklink, $point_net, false, $sale_amount);
+            echo $this->postbackAction($tracklink, $point_net, true, $sale_amount);
         }
     }
 
@@ -135,24 +135,33 @@ class Postback extends CI_Controller
                 );
 
                 if ($isFromApiAdv) {
-                    $point = $point_net > 0 ? $point_net : $track->amount3;
+                    $offpercent = (float)$track->offpercent;
+                    $pub_share  = (100 - $offpercent) / 100;
+                    $adv        = round((float)$point_net, 3);
+                    // 1) amount3 = ADV gross
+                    $dataUpdate['amount3'] = $adv;
+
+                    // 2) amount2 = PUB net = ADV * share
+                    if ($offpercent <= 0 || $pub_share <= 0) {
+                        $point = 0;
+                        $dataUpdate['amount2'] = 0;
+                    } else {
+                        $point = round($adv * $pub_share, 2);
+                        $dataUpdate['amount2'] = $point;
+                    }
+                    $dataUpdate['amount'] = $point;
                 } else {
                     if ($track->amount2 > 0) {
                         $point = $track->amount2;
                     } else {
                         // $point = round($point_net * (100 - $track->offpercent) / 100, 2);
                         // $dataUpdate['amount3'] = $point_net;
-
                         $point = round((float)$point_net, 2);
                         $offpercent = (float)$track->offpercent;
                         if ($offpercent <= 0) {
                             $dataUpdate['amount3'] = 0;
                         } else {
-                            // offpercent = phần % bị cắt (vd 40)
-                            // pub_share = 60% = 0.6
                             $pub_share = (100 - $offpercent) / 100;
-
-                            // an toàn double-check
                             if ($pub_share > 0) {
                                 $dataUpdate['amount3'] = round($point / $pub_share, 3);
                             } else {
