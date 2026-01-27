@@ -327,7 +327,7 @@ class Proxy_report extends CI_Controller
                 SUM(t.amount2) as total_amount
             FROM cpalead_tracklink t
             WHERE t.userid = ?
-            AND t.status = 4
+            AND t.status = 3
             AND t.flead = 1
             GROUP BY t.offerid, t.oname
             ORDER BY total_amount DESC
@@ -340,7 +340,10 @@ class Proxy_report extends CI_Controller
 
         $manager = null;
         if (!empty($user->manager)) {
-            $manager = $this->Home_model->get_one('manager', ['id' => (int)$user->manager]);
+            $manager = $this->db->select('username, aim, skype')
+                ->where('id', (int)$user->manager)
+                ->get('manager')
+                ->row(); 
         }
 
         $payload = array(

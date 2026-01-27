@@ -269,25 +269,27 @@
 
         <div class="footer">
             <p class="footer-note">Note: This is an automated notification email. Please do not reply directly to this message.</p>
-            <?php if (!empty($manager)): ?>
+                <?php if (!empty($manager)): ?>
                 <p class="footer-contact">
-                    For assistance, contact your personal manager:
+                    For assistance, contact your personal manager
+                    <?php if (!empty($manager->username)): ?>
+                    (<?= htmlspecialchars($manager->username, ENT_QUOTES, 'UTF-8') ?>)
+                    <?php endif; ?>:
                     <?php
-                        $parts = [];
+                    $parts = [];
 
-                        if (!empty($manager->aim)) {
-                            $parts[] = 'Teams ' . htmlspecialchars($manager->aim, ENT_QUOTES, 'UTF-8');
-                        }
+                    if (!empty($manager->aim)) {
+                        $parts[] = 'Teams ' . htmlspecialchars($manager->aim, ENT_QUOTES, 'UTF-8');
+                    }
 
-                        if (!empty($manager->telegram)) {
-                            $parts[] = 'Telegram ' . htmlspecialchars($manager->telegram, ENT_QUOTES, 'UTF-8');
-                        }
+                    if (!empty($manager->skype)) {
+                        $parts[] = 'Skype ' . htmlspecialchars($manager->skype, ENT_QUOTES, 'UTF-8');
+                    }
 
-                        echo implode(' or ', $parts);
+                    echo $parts ? implode(' or ', $parts) : 'please reply to this email.';
                     ?>
                 </p>
-            <?php endif; ?>
-
+                <?php endif; ?>
 
             <div class="footer-divider"></div>
 
