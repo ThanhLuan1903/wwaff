@@ -187,12 +187,6 @@
             color: #64748b;
             font-size: 13px;
         }
-        .email-header-image {
-            width: 100%;
-            height: 200px;
-            display: block;
-            max-width: 100%;
-        }
     </style>
 </head>
 
@@ -201,8 +195,7 @@
         <div class="header">
             <div class="header-logo">
                 <a href="<?= base_url(); ?>">
-                    <img src="https://i.postimg.cc/htmFx1kX/Screenshot-2026-01-12-212505.png" alt="Wwaff Header"
-                        class="email-header-image">
+                    <img src="https://i.postimg.cc/5yXKJx1Q/logo.pngg" alt="Wwaff Logo">
                 </a>            
             </div>
             <h1 class="header-title">Payment Threshold Notification</h1>

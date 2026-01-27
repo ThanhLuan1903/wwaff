@@ -9,7 +9,7 @@ class MinpayCron
     protected $MAX_TRIES = 3;
 
     /** @var int lock timeout seconds (để tránh kẹt lock nếu process chết) */
-    protected $LOCK_TTL = 300; // 5 phút
+    protected $LOCK_TTL = 60; // 5 phút
 
     /** @var string */
     protected $LOCK_FILE;
