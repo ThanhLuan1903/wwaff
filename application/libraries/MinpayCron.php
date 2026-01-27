@@ -58,7 +58,26 @@ class MinpayCron
                 'Worldwide Affiliate'
             );
 
-            if ($result === 1) {
+            // mặc định fail
+            $ok = false;
+
+            // case 1: lib trả boolean
+            if ($result === true) $ok = true;
+
+            // case 2: lib trả int 1
+            if ($result === 1) $ok = true;
+
+            // case 3: lib trả string "OK"
+            if (is_string($result) && stripos($result, 'ok') !== false) $ok = true;
+
+            // case 4: lib trả array/object có status code (tuỳ lib bạn)
+            if (is_array($result) && isset($result['status']) && in_array((int)$result['status'], [200,201,202])) $ok = true;
+            if (is_object($result) && isset($result->status) && in_array((int)$result->status, [200,201,202])) $ok = true;
+
+            // debug tạm để biết nó trả gì
+            log_message('error', '[MINPAY][MAILJET_RETURN] ' . print_r($result, true));
+
+            if ($ok) {
                 log_message('info', "✓ Minpay email sent to {$job['to']}");
                 $this->out("SENT {$job['to']}");
                 @unlink($file);
