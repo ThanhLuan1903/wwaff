@@ -355,7 +355,11 @@ class Proxy_report extends CI_Controller
                 'available'         => $current,     
                 'approved_offers'   => $approved_offers,
                 'total_conversions' => $total_conversions,
-                'manager' => $manager
+                'manager'           => $manager ? [
+                    'username' => $manager->username,
+                    'aim' => $manager->aim,
+                    'skype' => $manager->skype,
+                ] : null,
             )
         );
 

@@ -270,26 +270,22 @@
         <div class="footer">
             <p class="footer-note">Note: This is an automated notification email. Please do not reply directly to this message.</p>
                 <?php if (!empty($manager)): ?>
-                <p class="footer-contact">
-                    For assistance, contact your personal manager
-                    <?php if (!empty($manager->username)): ?>
-                    (<?= htmlspecialchars($manager->username, ENT_QUOTES, 'UTF-8') ?>)
-                    <?php endif; ?>:
                     <?php
-                    $parts = [];
+                        $m_username = is_array($manager) ? ($manager['username'] ?? '') : ($manager->username ?? '');
+                        $m_aim      = is_array($manager) ? ($manager['aim'] ?? '')      : ($manager->aim ?? '');
+                        $m_skype    = is_array($manager) ? ($manager['skype'] ?? '')    : ($manager->skype ?? '');
 
-                    if (!empty($manager->aim)) {
-                        $parts[] = 'Teams ' . htmlspecialchars($manager->aim, ENT_QUOTES, 'UTF-8');
-                    }
-
-                    if (!empty($manager->skype)) {
-                        $parts[] = 'Skype ' . htmlspecialchars($manager->skype, ENT_QUOTES, 'UTF-8');
-                    }
-
-                    echo $parts ? implode(' or ', $parts) : 'please reply to this email.';
+                        $parts = [];
+                        if ($m_aim !== '')   $parts[] = 'Teams ' . htmlspecialchars($m_aim, ENT_QUOTES, 'UTF-8');
+                        if ($m_skype !== '') $parts[] = 'Skype ' . htmlspecialchars($m_skype, ENT_QUOTES, 'UTF-8');
                     ?>
-                </p>
+
+                    <p class="footer-contact">
+                        For assistance, contact your personal manager<?= $m_username ? ' (' . htmlspecialchars($m_username, ENT_QUOTES, 'UTF-8') . ')' : '' ?>:
+                        <?= $parts ? implode(' or ', $parts) : 'please contact support.'; ?>
+                    </p>
                 <?php endif; ?>
+
 
             <div class="footer-divider"></div>
 
