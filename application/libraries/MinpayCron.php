@@ -2,8 +2,11 @@
 
 class MinpayCron
 {
+    protected $CI;
 
-    public function __construct() {
+    public function __construct()
+    {
+        $this->CI =& get_instance();   // lấy CodeIgniter super object
     }
 
     public function run()
@@ -23,7 +26,10 @@ class MinpayCron
         }
 
         $now = time();
-        $this->load->library('Mailjet');
+
+        $this->CI->load->library('Mailjet'); // ✅ dùng CI
+        // thường library tên Mailjet sẽ tạo $this->mailjet
+        // nên ở đây dùng $this->CI->mailjet
 
         foreach ($files as $file) {
             $raw = @file_get_contents($file);
@@ -42,9 +48,9 @@ class MinpayCron
             }
 
             $email_data = isset($job['data']) ? $job['data'] : array();
-            $message = $this->load->view('members/email_template/minpay_threshold_email', $email_data, TRUE);
+            $message = $this->CI->load->view('members/email_template/minpay_threshold_email', $email_data, TRUE);
 
-            $result = $this->mailjet->send_email(
+            $result = $this->CI->mailjet->send_email(
                 $job['to'],
                 $job['subject'],
                 $message,
