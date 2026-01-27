@@ -284,7 +284,7 @@ class Proxy_report extends CI_Controller
 
         if ($userid <= 0 || $amount_added <= 0) return;
 
-        $user = $this->db->select('available, email, mailling')
+        $user = $this->db->select('available, email, mailling, manager')
             ->where('id', $userid)
             ->get('users')
             ->row();
