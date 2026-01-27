@@ -338,7 +338,10 @@ class Proxy_report extends CI_Controller
             foreach ($rows as $r) $total_conversions += (int)$r['conversion_count'];
         }
 
-        $manager = $this->Home_model->get_one('manager', array('id' => $userid));
+        $manager = null;
+        if (!empty($user->manager)) {
+            $manager = $this->Home_model->get_one('manager', ['id' => (int)$user->manager]);
+        }
 
         $payload = array(
             'send_at' => time() + $this->EMAIL_DELAY_SECONDS,
