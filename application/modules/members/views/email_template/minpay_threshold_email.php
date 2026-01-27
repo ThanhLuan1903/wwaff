@@ -1,18 +1,211 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
     <meta charset="UTF-8">
-    <title>Payment Threshold Notification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+            font-size: 15px;
+            color: #353c46;
+            margin: 0;
+            padding: 0;
+            background-color: #F8FAFC;
+        }
+
+        .email-container {
+            max-width: 700px;
+            margin: 30px auto;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #f5f5f5;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #5bef91 0%, #2d82d6 100%);
+            color: #ffffff;
+            padding: 30px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        .header-logo {
+            width: 200px;
+            max-height: 50px;
+        }
+
+        .header-logo img {
+            height: 45px;
+            vertical-align: middle;
+        }
+
+        .header-icon {
+            font-size: 40px;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .content {
+            padding: 20px 40px;
+        }
+
+        .greeting p {
+            margin: 0;
+        }
+
+        .main-text {
+            line-height: 1.7;
+            margin: 10px 0;
+        }
+
+        .report-table-container {
+            margin: 25px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #ffffff;
+        }
+
+        .report-table thead {
+            background: linear-gradient(135deg, #5bef91 0%, #2d82d6 100%);
+            color: #ffffff;
+        }
+
+        .report-table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            border-bottom: 2px solid #22c55e;
+        }
+
+        .report-table th:last-child,
+        .report-table td:last-child {
+            text-align: right;
+        }
+
+        .report-table tbody tr {
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .report-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .report-table td {
+            padding: 12px;
+            font-size: 14px;
+            color: #475569;
+        }
+
+        .report-table tfoot {
+            background-color: #f8fafc;
+            border-top: 2px solid #22c55e;
+        }
+
+        .report-table tfoot td {
+            padding: 14px 12px;
+            font-weight: bold;
+            font-size: 15px;
+            color: #1e293b;
+        }
+
+        .amount-cell {
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .total-amount {
+            color: #16a34a;
+            font-size: 18px;
+        }
+
+        .signature {
+            margin-top: 25px;
+            line-height: 1.7;
+        }
+
+        .footer {
+            padding: 30px 35px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .footer-note {
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 12px;
+        }
+
+        .footer-contact {
+            margin: 12px 0;
+        }
+
+        .footer-divider {
+            height: 1px;
+            margin: 20px 0;
+        }
+
+        .footer-copyright {
+            text-align: center;
+            color: #53718f;
+            margin-bottom: 8px;
+        }
+
+        .footer-address {
+            text-align: center;
+            color: #53718f;
+        }
+
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .offer-id {
+            color: #64748b;
+            font-size: 13px;
+        }
+        .email-header-image {
+            width: 100%;
+            height: 200px;
+            display: block;
+            max-width: 100%;
+        }
+    </style>
 </head>
 
 <body>
     <div class="email-container">
         <div class="header">
             <div class="header-logo">
-                <img src="https://wedebeek.com/temp/default/home_page/image_home/imgae.gif" alt="Wedebeek Logo">
+                <a href="<?= base_url(); ?>">
+                    <img src="https://i.postimg.cc/htmFx1kX/Screenshot-2026-01-12-212505.png" alt="Wwaff Header"
+                        class="email-header-image">
+                </a>            
             </div>
             <h1 class="header-title">Payment Threshold Notification</h1>
-            <div class="header-icon">🎉</div>
         </div>
 
         <div class="content">
@@ -77,7 +270,7 @@
             <div class="signature">
                 <p>Thank you for your continued partnership.</p>
                 <p><strong>Best regards,</strong><br>
-                    Wedebeek Technology Limited</p>
+                    Worldwide Affiliate</p>
             </div>
         </div>
 

@@ -262,164 +262,98 @@ class Proxy_report extends CI_Controller
 
                         $this->db->trans_complete();
 
-if ($this->db->trans_status() !== FALSE) {
-    // schedule gửi email nếu vừa cán mốc
-    $this->check_and_schedule_threshold_email($Userid, $avaialbe);
-}
+                        if ($this->db->trans_status() !== FALSE) {
+                            $this->check_and_schedule_threshold_email($Userid, $avaialbe);
+                        }
                     }
                 }
             }
         }
     }
 
+    private $MIN_PAY = 200;
+    private $EMAIL_DELAY_SECONDS = 600; 
 
-        // ===== CONFIG =====
-private $MIN_PAY = 10;
-private $EMAIL_DELAY_SECONDS = 60; // 10 phút
+    /**
+     * Check min pay threshold (crossing) và schedule gửi email sau 10 phút
+     */
+    private function check_and_schedule_threshold_email($userid, $amount_added)
+    {
+        $userid = (int)$userid;
+        $amount_added = (float)$amount_added;
 
-/**
- * Check min pay threshold (crossing) và schedule gửi email sau 10 phút (không dùng table).
- */
-private function check_and_schedule_threshold_email($userid, $amount_added)
-{
-    $userid = (int)$userid;
-    $amount_added = (float)$amount_added;
+        if ($userid <= 0 || $amount_added <= 0) return;
 
-    if ($userid <= 0 || $amount_added <= 0) return;
+        $user = $this->db->select('available, email, mailling')
+            ->where('id', $userid)
+            ->get('users')
+            ->row();
 
-    $user = $this->db->select('available, email, mailling')
-        ->where('id', $userid)
-        ->get('users')
-        ->row();
+        if (!$user || empty($user->email)) return;
 
-    if (!$user || empty($user->email)) return;
+        $current = (float)$user->available;
+        $previous = $current - $amount_added;
 
-    $current = (float)$user->available;
-    $previous = $current - $amount_added;
-
-    // chỉ gửi khi "băng qua ngưỡng"
-    if (!($previous < $this->MIN_PAY && $current >= $this->MIN_PAY)) {
-        return;
-    }
-
-    // chống gửi lặp: tạo key theo "lần cán mốc" (vd theo tháng)
-    $dedupe_key = 'minpay_' . $userid . '_' . date('Ym');
-
-    $cache_dir = APPPATH . 'cache/';
-    if (!is_dir($cache_dir)) {
-        @mkdir($cache_dir, 0777, true);
-    }
-
-    $flag_file = $cache_dir . $dedupe_key . '.json';
-
-    // nếu đã schedule rồi thì thôi
-    if (file_exists($flag_file)) {
-        return;
-    }
-
-    // lấy tên
-    $mailling_data = @unserialize($user->mailling);
-    $firstname = isset($mailling_data['firstname']) ? $mailling_data['firstname'] : '';
-    $lastname  = isset($mailling_data['lastname'])  ? $mailling_data['lastname']  : '';
-    $full_name = trim($firstname . ' ' . $lastname);
-    if ($full_name === '') $full_name = $user->email;
-
-    // (optional) lấy report offer giống logic cũ (nếu bảng/field khác thì bạn sửa query)
-    $approved_offers = array();
-    $total_conversions = 0;
-    $approved_offers_query = "
-        SELECT t.offerid, t.oname as offer_name,
-               COUNT(t.id) as conversion_count,
-               SUM(t.amount2) as total_amount
-        FROM cpalead_tracklink t
-        WHERE t.userid = ?
-          AND t.status = 4
-          AND t.flead = 1
-        GROUP BY t.offerid, t.oname
-        ORDER BY total_amount DESC
-    ";
-    $rows = $this->db->query($approved_offers_query, array($userid))->result_array();
-    if ($rows) {
-        $approved_offers = $rows;
-        foreach ($rows as $r) $total_conversions += (int)$r['conversion_count'];
-    }
-
-    $payload = array(
-        'send_at' => time() + $this->EMAIL_DELAY_SECONDS,
-        'to'      => $user->email,
-        'subject' => 'Payment Threshold Reached - Withdrawal Now Available',
-        'data'    => array(
-            'username'          => $full_name,
-            'available'         => $current,          // dùng available của source này
-            'approved_offers'   => $approved_offers,
-            'total_conversions' => $total_conversions
-        )
-    );
-
-    // ghi file schedule
-    @file_put_contents($flag_file, json_encode($payload));
-
-    log_message('info', "Scheduled minpay email for user {$userid} at " . date('Y-m-d H:i:s', $payload['send_at']));
-}
-
-/**
- * Cron gọi hàm này mỗi 1 phút để gửi các email đã tới giờ.
- * Không dùng table, quét file json trong application/cache/
- */
-public function cron_send_scheduled_minpay_emails()
-{
-    // Khuyến nghị chỉ cho CLI chạy
-    if (method_exists($this->input, 'is_cli_request') && !$this->input->is_cli_request()) {
-        show_404();
-        return;
-    }
-
-    $cache_dir = APPPATH . 'cache/';
-    if (!is_dir($cache_dir)) return;
-
-    $files = glob($cache_dir . 'minpay_*.json');
-    if (!$files) return;
-
-    $now = time();
-
-    $this->load->library('Mailjet');
-
-    foreach ($files as $file) {
-        $raw = @file_get_contents($file);
-        if (!$raw) { @unlink($file); continue; }
-
-        $job = json_decode($raw, true);
-        if (!is_array($job) || empty($job['send_at']) || empty($job['to'])) {
-            @unlink($file);
-            continue;
+        if (!($previous < $this->MIN_PAY && $current >= $this->MIN_PAY)) {
+            return;
         }
 
-        if ((int)$job['send_at'] > $now) {
-            continue; // chưa tới giờ
+        // chống gửi lặp: tạo key theo "lần cán mốc" (vd theo tháng)
+        $dedupe_key = 'minpay_' . $userid . '_' . date('Ym');
+
+        $cache_dir = APPPATH . 'cache/';
+        if (!is_dir($cache_dir)) {
+            @mkdir($cache_dir, 0777, true);
         }
 
-        $email_data = isset($job['data']) ? $job['data'] : array();
+        $flag_file = $cache_dir . $dedupe_key . '.json';
 
-        // render view email (mục C)
-        $message = $this->load->view('members/email_template/minpay_threshold_email', $email_data, TRUE);
+        if (file_exists($flag_file)) {
+            return;
+        }
 
-        $result = $this->mailjet->send_email(
-            $job['to'],
-            $job['subject'],
-            $message,
-            'support@wwaff.com',
-            'Worldwide Affiliate'
+        $mailling_data = @unserialize($user->mailling);
+        $firstname = isset($mailling_data['firstname']) ? $mailling_data['firstname'] : '';
+        $lastname  = isset($mailling_data['lastname'])  ? $mailling_data['lastname']  : '';
+        $full_name = trim($firstname . ' ' . $lastname);
+        if ($full_name === '') $full_name = $user->email;
+
+        // (optional) lấy report offer giống logic cũ (nếu bảng/field khác thì bạn sửa query)
+        $approved_offers = array();
+        $total_conversions = 0;
+        $approved_offers_query = "
+            SELECT t.offerid, t.oname as offer_name,
+                COUNT(t.id) as conversion_count,
+                SUM(t.amount2) as total_amount
+            FROM cpalead_tracklink t
+            WHERE t.userid = ?
+            AND t.status = 4
+            AND t.flead = 1
+            GROUP BY t.offerid, t.oname
+            ORDER BY total_amount DESC
+        ";
+        $rows = $this->db->query($approved_offers_query, array($userid))->result_array();
+        if ($rows) {
+            $approved_offers = $rows;
+            foreach ($rows as $r) $total_conversions += (int)$r['conversion_count'];
+        }
+
+        $payload = array(
+            'send_at' => time() + $this->EMAIL_DELAY_SECONDS,
+            'to'      => $user->email,
+            'subject' => 'Payment Threshold Reached - Withdrawal Now Available',
+            'data'    => array(
+                'username'          => $full_name,
+                'available'         => $current,     
+                'approved_offers'   => $approved_offers,
+                'total_conversions' => $total_conversions
+            )
         );
 
-        if ($result === true) {
-            log_message('info', "✓ Minpay email sent to {$job['to']}");
-            @unlink($file); // gửi xong xoá file để không gửi lại
-        } else {
-            log_message('error', "✗ Minpay email failed to {$job['to']} (will retry next cron)");
-            // không xóa file để cron lần sau thử lại
-        }
+        @file_put_contents($flag_file, json_encode($payload));
+
+        log_message('info', "Scheduled minpay email for user {$userid} at " . date('Y-m-d H:i:s', $payload['send_at']));
     }
-}
 
 
     public function index($offset = 0)

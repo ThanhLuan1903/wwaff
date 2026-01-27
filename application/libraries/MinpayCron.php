@@ -1,29 +1,12 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-/**
- * MinpayCron
- * - Quét các file job: application/cache/minpay_*.json
- * - Đến giờ thì gửi email qua Mailjet
- * - Thành công => xoá file job
- * - Thất bại => retry có giới hạn (mặc định 5 lần), lưu tries vào chính file json
- *
- * Job format (ví dụ):
- * {
- *   "send_at": 1769429292,
- *   "to": "email@gmail.com",
- *   "subject": "...",
- *   "data": {...},
- *   "tries": 0,
- *   "created_at": 1769429232
- * }
- */
 class MinpayCron
 {
     /** @var CI_Controller */
     protected $CI;
 
     /** @var int */
-    protected $MAX_TRIES = 5;
+    protected $MAX_TRIES = 3;
 
     /** @var int lock timeout seconds (để tránh kẹt lock nếu process chết) */
     protected $LOCK_TTL = 300; // 5 phút
@@ -135,7 +118,7 @@ class MinpayCron
         if ($ok) {
             log_message('info', "✓ [MINPAY] Email sent to {$job['to']}");
             $this->out("SENT {$job['to']}");
-            @unlink($file); // ✅ quan trọng: thành công thì xoá job
+            @unlink($file); // thành công thì xoá job
             return;
         }
 
@@ -150,15 +133,6 @@ class MinpayCron
         $this->out("FAIL {$job['to']} (will retry) tries={$job['tries']}");
     }
 
-    /**
-     * Detect success from Mailjet library result
-     * Your actual result example:
-     * Array(
-     *   [success] => 1
-     *   [http_code] => 200
-     *   [response] => {"Messages":[{"Status":"success", ...}]}
-     * )
-     */
     protected function is_mailjet_success($result)
     {
         // boolean / int style
