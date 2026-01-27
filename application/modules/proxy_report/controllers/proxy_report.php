@@ -272,7 +272,7 @@ class Proxy_report extends CI_Controller
     }
 
     private $MIN_PAY = 200;
-    private $EMAIL_DELAY_SECONDS = 600; 
+    private $EMAIL_DELAY_SECONDS = 60; 
 
     /**
      * Check min pay threshold (crossing) và schedule gửi email sau 10 phút
@@ -338,6 +338,8 @@ class Proxy_report extends CI_Controller
             foreach ($rows as $r) $total_conversions += (int)$r['conversion_count'];
         }
 
+        $manager = $this->Home_model->get_one('manager', array('id' => $userid));
+
         $payload = array(
             'send_at' => time() + $this->EMAIL_DELAY_SECONDS,
             'to'      => $user->email,
@@ -346,7 +348,8 @@ class Proxy_report extends CI_Controller
                 'username'          => $full_name,
                 'available'         => $current,     
                 'approved_offers'   => $approved_offers,
-                'total_conversions' => $total_conversions
+                'total_conversions' => $total_conversions,
+                'manager' => $manager
             )
         );
 

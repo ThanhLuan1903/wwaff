@@ -269,9 +269,25 @@
 
         <div class="footer">
             <p class="footer-note">Note: This is an automated notification email. Please do not reply directly to this message.</p>
-            <p class="footer-contact">For assistance, contact us at:
-                <a href="mailto:support@wedebeek.com">support@wedebeek.com</a>
-            </p>
+            <?php if (!empty($manager)): ?>
+                <p class="footer-contact">
+                    For assistance, contact your personal manager:
+                    <?php
+                        $parts = [];
+
+                        if (!empty($manager->aim)) {
+                            $parts[] = 'Teams ' . htmlspecialchars($manager->aim, ENT_QUOTES, 'UTF-8');
+                        }
+
+                        if (!empty($manager->telegram)) {
+                            $parts[] = 'Telegram ' . htmlspecialchars($manager->telegram, ENT_QUOTES, 'UTF-8');
+                        }
+
+                        echo implode(' or ', $parts);
+                    ?>
+                </p>
+            <?php endif; ?>
+
 
             <div class="footer-divider"></div>
 
