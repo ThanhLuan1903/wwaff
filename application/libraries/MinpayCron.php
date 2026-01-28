@@ -252,33 +252,113 @@ protected function out($s)
 
 private function render_minpay_email(array $d)
 {
-    $html  = '<!doctype html><html><body style="font-family:Arial">';
-    $html .= '<h2>Hi ' . htmlspecialchars($d['username']) . ',</h2>';
-    $html .= '<p>Chúc mừng bạn đã đạt ngưỡng thanh toán.</p>';
-    $html .= '<p><strong>Số dư hiện tại:</strong> $' . number_format($d['available'], 2) . '</p>';
+    // Helper nhỏ cho escape
+    $e = function ($str) {
+        return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8');
+    };
 
-    if (!empty($d['approved_offers'])) {
-        $html .= '<h3>Approved offers:</h3><ul>';
+    $username  = isset($d['username']) ? $e($d['username']) : 'Publisher';
+    $available = isset($d['available']) ? number_format((float)$d['available'], 2) : '0.00';
+
+    $html = '<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Minpay Notification</title>
+</head>
+<body style="margin:0;padding:0;background:#f5f6f8;font-family:Arial,Helvetica,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f6f8;padding:20px 0;">
+    <tr>
+        <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:6px;overflow:hidden;">
+                
+                <!-- Header -->
+                <tr>
+                    <td style="background:#2c7be5;color:#ffffff;padding:20px;">
+                        <h2 style="margin:0;font-size:20px;">Worldwide Affiliate</h2>
+                    </td>
+                </tr>
+
+                <!-- Body -->
+                <tr>
+                    <td style="padding:24px;color:#333333;">
+                        <p style="margin-top:0;font-size:14px;">Hi <strong>' . $username . '</strong>,</p>
+
+                        <p style="font-size:14px;line-height:1.6;">
+                            Chúc mừng bạn đã <strong>đạt ngưỡng thanh toán</strong>.
+                        </p>
+
+                        <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;">
+                            <tr>
+                                <td style="background:#f0f4ff;padding:14px;border-radius:4px;">
+                                    <strong>Số dư hiện tại:</strong>
+                                    <span style="color:#2c7be5;font-size:16px;">
+                                        $' . $available . '
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>';
+
+    // Approved offers
+    if (!empty($d['approved_offers']) && is_array($d['approved_offers'])) {
+        $html .= '
+                        <h3 style="font-size:15px;margin-top:24px;">Approved offers</h3>
+                        <table width="100%" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-size:13px;">
+                            <tr style="background:#f1f1f1;">
+                                <th align="left" style="border:1px solid #ddd;">Offer</th>
+                                <th align="center" style="border:1px solid #ddd;">Conversions</th>
+                                <th align="right" style="border:1px solid #ddd;">Amount</th>
+                            </tr>';
+
         foreach ($d['approved_offers'] as $o) {
-            $html .= '<li>' . htmlspecialchars($o['offer_name']) .
-                     ' – ' . (int)$o['conversion_count'] .
-                     ' conv – $' . number_format($o['total_amount'], 2) .
-                     '</li>';
+            $html .= '
+                            <tr>
+                                <td style="border:1px solid #ddd;">' . $e($o['offer_name']) . '</td>
+                                <td align="center" style="border:1px solid #ddd;">' . (int)$o['conversion_count'] . '</td>
+                                <td align="right" style="border:1px solid #ddd;">$' . number_format((float)$o['total_amount'], 2) . '</td>
+                            </tr>';
         }
-        $html .= '</ul>';
+
+        $html .= '
+                        </table>';
     }
 
-    if (!empty($d['manager'])) {
-        $html .= '<p><strong>Manager:</strong> ' .
-                 htmlspecialchars($d['manager']->username) . '</p>';
+    // Manager
+    if (!empty($d['manager']) && isset($d['manager']->username)) {
+        $html .= '
+                        <p style="margin-top:20px;font-size:13px;">
+                            <strong>Manager:</strong> ' . $e($d['manager']->username) . '
+                        </p>';
     }
 
-    $html .= '<p>Đăng nhập hệ thống để rút tiền.</p>';
-    $html .= '<p>— Worldwide Affiliate</p>';
-    $html .= '</body></html>';
+    $html .= '
+                        <p style="margin-top:20px;font-size:14px;">
+                            Vui lòng đăng nhập hệ thống để thực hiện <strong>yêu cầu rút tiền</strong>.
+                        </p>
+
+                        <p style="margin-top:30px;font-size:13px;color:#666;">
+                            — Worldwide Affiliate Team
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                    <td style="background:#fafafa;padding:14px;text-align:center;font-size:12px;color:#999;">
+                        This is an automated email. Please do not reply.
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>';
 
     return $html;
 }
+
 
 
 
