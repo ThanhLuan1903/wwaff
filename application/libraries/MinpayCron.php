@@ -2,219 +2,168 @@
 
 class MinpayCron
 {
-    /** @var CI_Controller */
     protected $CI;
 
-    /** @var int */
-    protected $MAX_TRIES = 3;
-
-    /** @var int lock timeout seconds (để tránh kẹt lock nếu process chết) */
-    protected $LOCK_TTL = 60; // 5 phút
-
-    /** @var string */
-    protected $LOCK_FILE;
+    protected $MAX_PER_RUN = 50; // tránh gửi quá nhiều 1 lượt
 
     public function __construct()
     {
         $this->CI =& get_instance();
-        $this->LOCK_FILE = sys_get_temp_dir() . '/minpay_cron.lock';
     }
 
-    /**
-     * Entry point
-     */
     public function run()
     {
-        $this->out("JOB_START " . date('c'));
+        $this->out("JOB_START " . gmdate('c'));
 
-        // lock để tránh cron chạy song song (trùng mail)
-        if (!$this->acquire_lock()) {
-            $this->out("LOCKED (another process is running)");
+        $redis = new Redis();
+        if (!$redis->connect('redis', 6379)) {
+            $this->out("REDIS_CONNECT_FAIL");
             return;
         }
 
-        try {
-            $cache_dir = APPPATH . 'cache/';
-            if (!is_dir($cache_dir)) {
-                $this->out("NO_CACHE_DIR {$cache_dir}");
-                return;
-            }
+        $now = (int)gmdate('U');
 
-            $files = glob($cache_dir . 'minpay_*.json');
-            if (!$files) {
-                $this->out("NO_JOBS");
-                return;
-            }
-
-            $now = time();
-
-            // load mailer
-            $this->CI->load->library('Mailjet');
-
-            foreach ($files as $file) {
-                $this->process_file($file, $now);
-            }
-
-        } finally {
-            $this->release_lock();
-            $this->out("JOB_END " . date('c'));
+        // lấy các job_key đã tới hạn
+        $job_keys = $redis->zRangeByScore('minpay:due', 0, $now, array('limit' => array(0, $this->MAX_PER_RUN)));
+        if (empty($job_keys)) {
+            $this->out("NO_DUE_JOBS now={$now}");
+            return;
         }
+
+        $this->CI->load->library('Mailjet');
+
+        foreach ($job_keys as $job_key) {
+
+            // chống race: dùng WATCH/MULTI nhẹ
+            $redis->watch($job_key);
+            $job = $redis->hGetAll($job_key);
+
+            if (empty($job) || empty($job['userid'])) {
+                // job hỏng -> remove khỏi zset
+                $redis->multi()
+                    ->zRem('minpay:due', $job_key)
+                    ->del($job_key)
+                    ->exec();
+                $redis->unwatch();
+                $this->out("BAD_JOB {$job_key} removed");
+                continue;
+            }
+
+            $userid = (int)$job['userid'];
+            $due_at = isset($job['due_at']) ? (int)$job['due_at'] : 0;
+
+            if ($due_at > $now) {
+                $redis->unwatch();
+                continue;
+            }
+
+            // >>> LẤY DATA MỚI NHẤT TỪ DB (fresh) <<<
+            $email_payload = $this->build_fresh_email_payload($userid);
+            if (!$email_payload) {
+                // user không tồn tại/không email -> drop job
+                $redis->multi()
+                    ->zRem('minpay:due', $job_key)
+                    ->del($job_key)
+                    ->exec();
+                $redis->unwatch();
+                $this->out("DROP userid={$userid} no payload");
+                continue;
+            }
+
+            // gửi
+            $message = $this->CI->load->view('members/email_template/minpay_threshold_email', $email_payload['data'], true);
+
+            $result = $this->CI->mailjet->send_email(
+                $email_payload['to'],
+                $email_payload['subject'],
+                $message,
+                'support@wwaff.com',
+                'Worldwide Affiliate'
+            );
+
+            $ok = ($result === true || $result === 1);
+
+            if ($ok) {
+                // gửi ok -> remove job khỏi redis
+                $redis->multi()
+                    ->zRem('minpay:due', $job_key)
+                    ->del($job_key)
+                    ->exec();
+                $redis->unwatch();
+
+                log_message('info', "✓ [MINPAY] Email sent userid={$userid} to={$email_payload['to']}");
+                $this->out("SENT userid={$userid}");
+            } else {
+                // fail -> không remove, để cron sau retry
+                $redis->unwatch();
+                log_message('error', "✗ [MINPAY] Email failed userid={$userid} to={$email_payload['to']}");
+                $this->out("FAIL userid={$userid}");
+            }
+        }
+
+        $this->out("JOB_END " . gmdate('c'));
     }
 
-    /**
-     * Process one job file
-     */
-    protected function process_file($file, $now)
+    private function build_fresh_email_payload($userid)
     {
-        $raw = @file_get_contents($file);
-        if ($raw === false || $raw === '') {
-            @unlink($file);
-            $this->out("BAD_FILE {$file} (deleted)");
-            return;
+        $user = $this->CI->db->select('id, available, email, mailling, manager')
+            ->where('id', (int)$userid)
+            ->get('users')
+            ->row();
+
+        if (!$user || empty($user->email)) return false;
+
+        // ⚠️ Option: chỉ gửi nếu hiện tại vẫn >= MIN_PAY (nếu rút mất rồi thì thôi)
+        // Nếu bạn muốn "đã kích hoạt thì gửi" bỏ check này.
+        $min_pay = 200;
+        if ((float)$user->available < $min_pay) {
+            // không còn đủ điều kiện rút -> skip & drop job
+            return false;
         }
 
-        $job = json_decode($raw, true);
-        if (!is_array($job) || empty($job['send_at']) || empty($job['to'])) {
-            @unlink($file);
-            $this->out("INVALID_JOB {$file} (deleted)");
-            return;
+        $mailling_data = @unserialize($user->mailling);
+        $firstname = isset($mailling_data['firstname']) ? $mailling_data['firstname'] : '';
+        $lastname  = isset($mailling_data['lastname'])  ? $mailling_data['lastname']  : '';
+        $full_name = trim($firstname . ' ' . $lastname);
+        if ($full_name === '') $full_name = $user->email;
+
+        // conversions mới nhất (bạn muốn "fresh")
+        $approved_offers_query = "
+            SELECT t.offerid, t.oname as offer_name,
+                COUNT(t.id) as conversion_count,
+                SUM(t.amount2) as total_amount
+            FROM cpalead_tracklink t
+            WHERE t.userid = ?
+            AND t.status = 3
+            AND t.flead = 1
+            GROUP BY t.offerid, t.oname
+            ORDER BY total_amount DESC
+        ";
+        $rows = $this->CI->db->query($approved_offers_query, array((int)$userid))->result_array();
+
+        $total_conversions = 0;
+        if ($rows) foreach ($rows as $r) $total_conversions += (int)$r['conversion_count'];
+
+        $manager = null;
+        if (!empty($user->manager)) {
+            $manager = $this->CI->db->select('username, aim, skype')
+                ->where('id', (int)$user->manager)
+                ->get('manager')
+                ->row();
         }
 
-        // normalize
-        $job['tries'] = isset($job['tries']) ? (int)$job['tries'] : 0;
-
-        // quá số lần retry -> drop
-        if ($job['tries'] >= $this->MAX_TRIES) {
-            log_message('error', "✗ [MINPAY] Dropped after {$this->MAX_TRIES} tries: {$job['to']} file={$file}");
-            @unlink($file);
-            $this->out("DROP {$job['to']} after {$this->MAX_TRIES} tries (deleted)");
-            return;
-        }
-
-        // chưa tới giờ
-        if ((int)$job['send_at'] > $now) {
-            $this->out("WAIT {$job['to']} send_at={$job['send_at']} now={$now}");
-            return;
-        }
-
-        // build email content
-        $email_data = isset($job['data']) && is_array($job['data']) ? $job['data'] : array();
-        $message = $this->CI->load->view('members/email_template/minpay_threshold_email', $email_data, true);
-
-        // send
-        $result = $this->CI->mailjet->send_email(
-            $job['to'],
-            isset($job['subject']) ? $job['subject'] : 'Payment Threshold Reached',
-            $message,
-            'support@wwaff.com',
-            'Worldwide Affiliate'
+        return array(
+            'to'      => $user->email,
+            'subject' => 'Payment Threshold Reached - Withdrawal Now Available',
+            'data'    => array(
+                'username'          => $full_name,
+                'available'         => (float)$user->available,
+                'approved_offers'   => $rows ? $rows : array(),
+                'total_conversions' => $total_conversions,
+                'manager'           => $manager
+            )
         );
-
-        // debug (đừng để error level, nhìn log đỏ mệt)
-        log_message('debug', '[MINPAY][MAILJET_RETURN] ' . print_r($result, true));
-
-        $ok = $this->is_mailjet_success($result);
-
-        if ($ok) {
-            log_message('info', "✓ [MINPAY] Email sent to {$job['to']}");
-            $this->out("SENT {$job['to']}");
-            @unlink($file); // thành công thì xoá job
-            return;
-        }
-
-        // fail -> tăng tries và lưu lại để retry
-        $job['tries'] = $job['tries'] + 1;
-        $job['last_try_at'] = time();
-
-        // lưu lại file job (atomic write)
-        $this->write_json_atomic($file, $job);
-
-        log_message('error', "✗ [MINPAY] Email failed to {$job['to']} (will retry) tries={$job['tries']} file={$file}");
-        $this->out("FAIL {$job['to']} (will retry) tries={$job['tries']}");
     }
 
-    protected function is_mailjet_success($result)
-    {
-        // boolean / int style
-        if ($result === true || $result === 1) return true;
-
-        // string style
-        if (is_string($result)) {
-            if (stripos($result, 'success') !== false) return true;
-            if (stripos($result, 'ok') !== false) return true;
-            return false;
-        }
-
-        // array style (your case)
-        if (is_array($result)) {
-            if (!empty($result['success']) && (int)$result['success'] === 1) return true;
-            if (!empty($result['http_code']) && in_array((int)$result['http_code'], array(200, 201, 202), true)) return true;
-
-            if (!empty($result['response'])) {
-                $r = json_decode($result['response'], true);
-                if (is_array($r) && !empty($r['Messages'][0]['Status']) && $r['Messages'][0]['Status'] === 'success') {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        // object style
-        if (is_object($result)) {
-            if (isset($result->success) && (int)$result->success === 1) return true;
-            if (isset($result->http_code) && in_array((int)$result->http_code, array(200, 201, 202), true)) return true;
-
-            if (isset($result->response)) {
-                $r = json_decode($result->response, true);
-                if (is_array($r) && !empty($r['Messages'][0]['Status']) && $r['Messages'][0]['Status'] === 'success') {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        return false;
-    }
-
-    /**
-     * Atomic write JSON file to avoid half-written job
-     */
-    protected function write_json_atomic($path, array $data)
-    {
-        $tmp = $path . '.tmp';
-        @file_put_contents($tmp, json_encode($data));
-        @rename($tmp, $path);
-    }
-
-    /**
-     * Simple stdout
-     */
-    protected function out($s)
-    {
-        echo $s . PHP_EOL;
-    }
-
-    /**
-     * Lock helpers
-     */
-    protected function acquire_lock()
-    {
-        // nếu lock tồn tại và còn hạn -> không chạy
-        if (file_exists($this->LOCK_FILE)) {
-            $mtime = @filemtime($this->LOCK_FILE);
-            if ($mtime && (time() - $mtime) < $this->LOCK_TTL) {
-                return false;
-            }
-            // lock cũ (process chết) -> xoá
-            @unlink($this->LOCK_FILE);
-        }
-
-        // tạo lock
-        return @file_put_contents($this->LOCK_FILE, (string)getmypid()) !== false;
-    }
-
-    protected function release_lock()
-    {
-        @unlink($this->LOCK_FILE);
-    }
+    protected function out($s) { echo $s . PHP_EOL; }
 }

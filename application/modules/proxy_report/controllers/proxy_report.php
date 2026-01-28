@@ -263,7 +263,7 @@ class Proxy_report extends CI_Controller
                         $this->db->trans_complete();
 
                         if ($this->db->trans_status() !== FALSE) {
-                            $this->check_and_schedule_threshold_email($Userid, $avaialbe);
+                            $this->check_and_enqueue_minpay_email($Userid, $avaialbe);
                         }
                     }
                 }
@@ -274,95 +274,58 @@ class Proxy_report extends CI_Controller
     private $MIN_PAY = 200;
     private $EMAIL_DELAY_SECONDS = 60; 
 
-    /**
-     * Check min pay threshold (crossing) và schedule gửi email sau 10 phút
-     */
-    private function check_and_schedule_threshold_email($userid, $amount_added)
-    {
-        $userid = (int)$userid;
-        $amount_added = (float)$amount_added;
+    private function check_and_enqueue_minpay_email($userid, $amount_added)
+{
+    $userid = (int)$userid;
+    $amount_added = (float)$amount_added;
+    if ($userid <= 0 || $amount_added <= 0) return;
 
-        if ($userid <= 0 || $amount_added <= 0) return;
+    $user = $this->db->select('available')
+        ->where('id', $userid)
+        ->get('users')
+        ->row();
+    if (!$user) return;
 
-        $user = $this->db->select('available, email, mailling, manager')
-            ->where('id', $userid)
-            ->get('users')
-            ->row();
+    $current  = (float)$user->available;
+    $previous = $current - $amount_added;
 
-        if (!$user || empty($user->email)) return;
+    // chỉ khi vừa băng qua ngưỡng
+    if (!($previous < $this->MIN_PAY && $current >= $this->MIN_PAY)) return;
 
-        $current = (float)$user->available;
-        $previous = $current - $amount_added;
+    // Redis
+    $redis = new Redis();
+    if (!$redis->connect('redis', 6379)) return;
 
-        if (!($previous < $this->MIN_PAY && $current >= $this->MIN_PAY)) {
-            return;
-        }
+    // Dedupe: 1 lần / tháng (giống bạn đang dùng)
+    $dedupe_key = 'minpay:dedupe:' . $userid . ':' . date('Ym');
+    if ($redis->exists($dedupe_key)) return;
 
-        // chống gửi lặp: tạo key theo "lần cán mốc" (vd theo tháng)
-        $dedupe_key = 'minpay_' . $userid . '_' . date('Ym');
+    // due time (UTC epoch)
+    $due_at = (int)gmdate('U') + (int)$this->EMAIL_DELAY_SECONDS;
 
-        $cache_dir = APPPATH . 'cache/';
-        if (!is_dir($cache_dir)) {
-            @mkdir($cache_dir, 0777, true);
-        }
+    // Job key
+    $job_key = 'minpay:job:' . $userid . ':' . date('Ym');
 
-        $flag_file = $cache_dir . $dedupe_key . '.json';
+    // Lưu job (chỉ userid + due_at)
+    $redis->hMSet($job_key, array(
+        'userid' => $userid,
+        'due_at' => $due_at,
+        'ym'     => date('Ym'),
+        'created_at' => (int)gmdate('U')
+    ));
 
-        if (file_exists($flag_file)) {
-            return;
-        }
+    // set TTL để tự dọn (vd 45 ngày)
+    $redis->expire($job_key, 45 * 24 * 3600);
 
-        $mailling_data = @unserialize($user->mailling);
-        $firstname = isset($mailling_data['firstname']) ? $mailling_data['firstname'] : '';
-        $lastname  = isset($mailling_data['lastname'])  ? $mailling_data['lastname']  : '';
-        $full_name = trim($firstname . ' ' . $lastname);
-        if ($full_name === '') $full_name = $user->email;
+    // đưa vào sorted set theo due_at để cron lấy job đến hạn
+    $redis->zAdd('minpay:due', $due_at, $job_key);
 
-        // (optional) lấy report offer giống logic cũ (nếu bảng/field khác thì bạn sửa query)
-        $approved_offers = array();
-        $total_conversions = 0;
-        $approved_offers_query = "
-            SELECT t.offerid, t.oname as offer_name,
-                COUNT(t.id) as conversion_count,
-                SUM(t.amount2) as total_amount
-            FROM cpalead_tracklink t
-            WHERE t.userid = ?
-            AND t.status = 3
-            AND t.flead = 1
-            GROUP BY t.offerid, t.oname
-            ORDER BY total_amount DESC
-        ";
-        $rows = $this->db->query($approved_offers_query, array($userid))->result_array();
-        if ($rows) {
-            $approved_offers = $rows;
-            foreach ($rows as $r) $total_conversions += (int)$r['conversion_count'];
-        }
+    // dedupe TTL 45 ngày
+    $redis->set($dedupe_key, 1, 45 * 24 * 3600);
 
-        $manager = null;
-        if (!empty($user->manager)) {
-            $manager = $this->db->select('username, aim, skype')
-                ->where('id', (int)$user->manager)
-                ->get('manager')
-                ->row(); 
-        }
+    log_message('info', "[MINPAY] Enqueued redis job userid={$userid} due_at={$due_at}");
+}
 
-        $payload = array(
-            'send_at' => time() + $this->EMAIL_DELAY_SECONDS,
-            'to'      => $user->email,
-            'subject' => 'Payment Threshold Reached - Withdrawal Now Available',
-            'data'    => array(
-                'username'          => $full_name,
-                'available'         => $current,     
-                'approved_offers'   => $approved_offers,
-                'total_conversions' => $total_conversions,
-                'manager'           => $manager
-            )
-        );
-
-        @file_put_contents($flag_file, json_encode($payload));
-
-        log_message('info', "Scheduled minpay email for user {$userid} at " . date('Y-m-d H:i:s', $payload['send_at']));
-    }
 
 
     public function index($offset = 0)
