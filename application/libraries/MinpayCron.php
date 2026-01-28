@@ -96,13 +96,17 @@ log_message(
 
 
 
-$viewPath = APPPATH . 'modules/members/views/email_template/minpay_threshold_email.php';
+// $viewPath = APPPATH . 'modules/members/views/email_template/minpay_threshold_email.php';
 
-$message = $this->CI->load->view(
-    $viewPath,
-    $email_payload['data'],
-    true
-);
+// $message = $this->CI->load->view(
+//     $viewPath,
+//     $email_payload['data'],
+//     true
+// );
+
+
+$message = $this->render_minpay_email($email_payload['data']);
+log_message('info', 'MINPAY_TEMPLATE_LEN len=' . strlen($message));
 
 
 // $message = $this->CI->load->view('members/email_template/minpay_threshold_email', $email_payload['data'], true);
@@ -243,4 +247,40 @@ protected function out($s)
     // chỉ log, không echo để tránh headers already sent
     log_message('info', '[MINPAY_OUT] ' . $s);
 }
+
+
+
+private function render_minpay_email(array $d)
+{
+    $html  = '<!doctype html><html><body style="font-family:Arial">';
+    $html .= '<h2>Hi ' . htmlspecialchars($d['username']) . ',</h2>';
+    $html .= '<p>Chúc mừng bạn đã đạt ngưỡng thanh toán.</p>';
+    $html .= '<p><strong>Số dư hiện tại:</strong> $' . number_format($d['available'], 2) . '</p>';
+
+    if (!empty($d['approved_offers'])) {
+        $html .= '<h3>Approved offers:</h3><ul>';
+        foreach ($d['approved_offers'] as $o) {
+            $html .= '<li>' . htmlspecialchars($o['offer_name']) .
+                     ' – ' . (int)$o['conversion_count'] .
+                     ' conv – $' . number_format($o['total_amount'], 2) .
+                     '</li>';
+        }
+        $html .= '</ul>';
+    }
+
+    if (!empty($d['manager'])) {
+        $html .= '<p><strong>Manager:</strong> ' .
+                 htmlspecialchars($d['manager']->username) . '</p>';
+    }
+
+    $html .= '<p>Đăng nhập hệ thống để rút tiền.</p>';
+    $html .= '<p>— Worldwide Affiliate</p>';
+    $html .= '</body></html>';
+
+    return $html;
 }
+
+
+
+}
+
