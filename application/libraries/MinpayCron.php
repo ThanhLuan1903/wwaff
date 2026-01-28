@@ -521,8 +521,12 @@ class MinpayCron
                     provided instructions.
                 </p>
 
+                <?php
+                  $login_link = function_exists('base_url') ? base_url('v2/sign/in') : '/v2/sign/in';
+                ?>
+
                 <div class="login-button-wrapper">
-                    <a href="<?php echo $esc(rtrim($base_url, '/')) . '/v2/sign/in'; ?>"
+                    <a href="<?php echo $login_link; ?>"
                     class="login-button"
                     target="_blank">
                         Login to your account
