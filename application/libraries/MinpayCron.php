@@ -4,7 +4,7 @@ class MinpayCron
 {
     protected $CI;
 
-    protected $MAX_PER_RUN = 50; // tránh gửi quá nhiều 1 lượt
+    protected $MAX_PER_RUN = 50; 
 
     public function __construct()
     {
@@ -13,8 +13,6 @@ class MinpayCron
 
     public function run()
     {
-        log_message('info', 'MINPAY_CRON_STARTMINPAY_CRON_STARTMINPAY_CRON_STARTMINPAY_CRON_STARTMINPAY_CRON_STARTMINPAY_CRON_STARTMINPAY_CRON_STARTMINPAY_CRON_STARTMINPAY_CRON_STARTMINPAY_CRON_START');
-
         $this->out("JOB_START " . gmdate('c'));
 
         $redis = new Redis();
@@ -24,12 +22,9 @@ class MinpayCron
             return;
         }
 
-        log_message('info', 'MINPAY_REDIS_CONNECTED MINPAY_REDIS_CONNECTEDMINPAY_REDIS_CONNECTED');
-
 
         $now = (int)gmdate('U');
 
-        // lấy các job_key đã tới hạn
         $job_keys = $redis->zRangeByScore('minpay:due', 0, $now, array('limit' => array(0, $this->MAX_PER_RUN)));
         if (empty($job_keys)) {
             $this->out("NO_DUE_JOBS now={$now}");
@@ -37,23 +32,12 @@ class MinpayCron
         }
 
 
-        log_message('info', 'MINPAY_DUE_JOBS_COUNT=' . count($job_keys) . ' now=' . $now);
-
-
         $this->CI->load->library('Mailjet');
 
         foreach ($job_keys as $job_key) {
-
-
-    log_message('info', "MINPAY_JOB_START job_key={$job_key}");
-
-            // chống race: dùng WATCH/MULTI nhẹ
             $redis->watch($job_key);
             $job = $redis->hGetAll($job_key);
-log_message('info', 'MINPAY_JOB_REDIS_PAYLOAD ' . json_encode($job));
-
             if (empty($job) || empty($job['userid'])) {
-                // job hỏng -> remove khỏi zset
                 $redis->multi()
                     ->zRem('minpay:due', $job_key)
                     ->del($job_key)
@@ -70,14 +54,9 @@ log_message('info', 'MINPAY_JOB_REDIS_PAYLOAD ' . json_encode($job));
                 $redis->unwatch();
                 continue;
             }
-log_message('info', "MINPAY_BUILD_PAYLOAD userid={$userid}");
 
-            // >>> LẤY DATA MỚI NHẤT TỪ DB (fresh) <<<
             $email_payload = $this->build_fresh_email_payload($userid);
             if (!$email_payload) {
-                // user không tồn tại/không email -> drop job
-                    log_message('error', "MINPAY_DROP_NO_PAYLOAD userid={$userid}");
-
                 $redis->multi()
                     ->zRem('minpay:due', $job_key)
                     ->del($job_key)
@@ -86,99 +65,69 @@ log_message('info', "MINPAY_BUILD_PAYLOAD userid={$userid}");
                 $this->out("DROP userid={$userid} no payload");
                 continue;
             }
-            
-log_message('info', "MINPAY_SEND_MAIL userid={$userid} to={$email_payload['to']} subject=" . $email_payload['subject']);
-
-log_message(
-    'info',
-    "MINPAY_EMAIL_DATA\n" . print_r($email_payload['data'], true)
-);
 
 
+            $message = $this->render_minpay_email($email_payload['data']);
 
-// $viewPath = APPPATH . 'modules/members/views/email_template/minpay_threshold_email.php';
-
-// $message = $this->CI->load->view(
-//     $viewPath,
-//     $email_payload['data'],
-//     true
-// );
-
-
-$message = $this->render_minpay_email($email_payload['data']);
-log_message('info', 'MINPAY_TEMPLATE_LEN len=' . strlen($message));
+            $ok = $this->guimail(
+                $email_payload['to'],
+                $email_payload['subject'],
+                $message,
+                'support@wwaff.com',
+                'Worldwide Affiliate'
+            );
 
 
-// $message = $this->CI->load->view('members/email_template/minpay_threshold_email', $email_payload['data'], true);
-log_message('info', "MINPAY_TEMPLATE_LEN userid={$userid} len=" . strlen($message));
+            if ($ok) {
+                $tx = $redis->multi()
+                    ->zRem('minpay:due', $job_key)
+                    ->del($job_key)
+                    ->exec();
+                $redis->unwatch();
 
-$ok = $this->guimail(
-    $email_payload['to'],
-    $email_payload['subject'],
-    $message,
-    'support@wwaff.com',
-    'Worldwide Affiliate'
-);
-
-log_message('info', "MINPAY_GUIMAIL_OK userid={$userid} ok=" . (int)$ok);
-
-if ($ok) {
-    $tx = $redis->multi()
-        ->zRem('minpay:due', $job_key)
-        ->del($job_key)
-        ->exec();
-    $redis->unwatch();
-
-    log_message('info', "MINPAY_REMOVED userid={$userid} job_key={$job_key} tx=" . json_encode($tx));
-    $this->out("SENT userid={$userid}");
-} else {
-    $redis->unwatch();
-    log_message('error', "MINPAY_FAIL userid={$userid} job_key={$job_key}");
-    $this->out("FAIL userid={$userid}");
-}
+                log_message('info', "MINPAY_REMOVED userid={$userid} job_key={$job_key} tx=" . json_encode($tx));
+                $this->out("SENT userid={$userid}");
+            } else {
+                $redis->unwatch();
+                log_message('error', "MINPAY_FAIL userid={$userid} job_key={$job_key}");
+                $this->out("FAIL userid={$userid}");
+            }
 
         }
 
         $this->out("JOB_END " . gmdate('c'));
     }
 
-private function guimail($toemail = '', $tieude = '', $noidung = '', $fromEmail = '', $fromName = '')
-{
-    log_message('info', "MINPAY_GUIMAIL_ENTER to={$toemail}");
-
-    if (!$toemail || !filter_var($toemail, FILTER_VALIDATE_EMAIL)) {
-        log_message('error', "MINPAY_GUIMAIL_BAD_EMAIL to={$toemail}");
-        return 0;
-    }
-
-    if (!$fromEmail) $fromEmail = 'support@wwaff.com';
-    if (!$fromName)  $fromName  = 'Worldwide Affiliate';
-
-    $this->CI->load->library('Mailjet');
-
-    try {
-        $rs = $this->CI->mailjet->send_email($toemail, $tieude, $noidung, $fromEmail, $fromName);
-        // rs của bạn là array: ['success'=>bool,'http_code'=>int,'response'=>string]
-        log_message('info', 'MINPAY_GUIMAIL_RAW ' . json_encode($rs));
-    } catch (Throwable $e) {
-        log_message('error', 'MINPAY_GUIMAIL_EXCEPTION ' . $e->getMessage());
-        return 0;
-    }
-
-    // ✅ check đúng theo cấu trúc lib Mailjet hiện tại
-    if (is_array($rs)) {
-        $ok = !empty($rs['success']);
-        if (!$ok) {
-            $http = isset($rs['http_code']) ? $rs['http_code'] : 'NA';
-            $resp = isset($rs['response']) && is_string($rs['response']) ? substr($rs['response'], 0, 300) : '';
-            log_message('error', "MINPAY_GUIMAIL_FAIL http={$http} resp={$resp}");
+    private function guimail($toemail = '', $tieude = '', $noidung = '', $fromEmail = '', $fromName = '')
+    {
+        if (!$toemail || !filter_var($toemail, FILTER_VALIDATE_EMAIL)) {
+            return 0;
         }
-        return $ok ? 1 : 0;
-    }
 
-    // fallback nếu lib trả kiểu khác
-    return ($rs === true || $rs === 1) ? 1 : 0;
-}
+        if (!$fromEmail) $fromEmail = 'support@wwaff.com';
+        if (!$fromName)  $fromName  = 'Worldwide Affiliate';
+
+        $this->CI->load->library('Mailjet');
+
+        try {
+            $rs = $this->CI->mailjet->send_email($toemail, $tieude, $noidung, $fromEmail, $fromName);
+        } catch (Throwable $e) {
+            log_message('error', 'MINPAY_GUIMAIL_EXCEPTION ' . $e->getMessage());
+            return 0;
+        }
+
+        if (is_array($rs)) {
+            $ok = !empty($rs['success']);
+            if (!$ok) {
+                $http = isset($rs['http_code']) ? $rs['http_code'] : 'NA';
+                $resp = isset($rs['response']) && is_string($rs['response']) ? substr($rs['response'], 0, 300) : '';
+                log_message('error', "MINPAY_GUIMAIL_FAIL http={$http} resp={$resp}");
+            }
+            return $ok ? 1 : 0;
+        }
+
+        return ($rs === true || $rs === 1) ? 1 : 0;
+    }
 
 
     private function build_fresh_email_payload($userid)
@@ -190,11 +139,8 @@ private function guimail($toemail = '', $tieude = '', $noidung = '', $fromEmail 
 
         if (!$user || empty($user->email)) return false;
 
-        // ⚠️ Option: chỉ gửi nếu hiện tại vẫn >= MIN_PAY (nếu rút mất rồi thì thôi)
-        // Nếu bạn muốn "đã kích hoạt thì gửi" bỏ check này.
         $min_pay = 200;
         if ((float)$user->available < $min_pay) {
-            // không còn đủ điều kiện rút -> skip & drop job
             return false;
         }
 
@@ -204,7 +150,6 @@ private function guimail($toemail = '', $tieude = '', $noidung = '', $fromEmail 
         $full_name = trim($firstname . ' ' . $lastname);
         if ($full_name === '') $full_name = $user->email;
 
-        // conversions mới nhất (bạn muốn "fresh")
         $approved_offers_query = "
             SELECT t.offerid, t.oname as offer_name,
                 COUNT(t.id) as conversion_count,
@@ -242,125 +187,344 @@ private function guimail($toemail = '', $tieude = '', $noidung = '', $fromEmail 
         );
     }
 
-protected function out($s)
-{
-    // chỉ log, không echo để tránh headers already sent
-    log_message('info', '[MINPAY_OUT] ' . $s);
-}
+    protected function out($s)
+    {
+        log_message('info', '[MINPAY_OUT] ' . $s);
+    }
 
 
 
-private function render_minpay_email(array $d)
-{
-    // Helper nhỏ cho escape
-    $e = function ($str) {
-        return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8');
-    };
-
-    $username  = isset($d['username']) ? $e($d['username']) : 'Publisher';
-    $available = isset($d['available']) ? number_format((float)$d['available'], 2) : '0.00';
-
-    $html = '<!doctype html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Minpay Notification</title>
-</head>
-<body style="margin:0;padding:0;background:#f5f6f8;font-family:Arial,Helvetica,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f6f8;padding:20px 0;">
-    <tr>
-        <td align="center">
-            <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:6px;overflow:hidden;">
+    private function render_minpay_email(array $d)
+    {
+        // Extract data with defaults
+        $username = isset($d['username']) ? htmlspecialchars($d['username'], ENT_QUOTES, 'UTF-8') : '';
+        $available = isset($d['available']) ? (float)$d['available'] : 0;
+        $approved_offers = isset($d['approved_offers']) ? $d['approved_offers'] : [];
+        $total_conversions = isset($d['total_conversions']) ? (int)$d['total_conversions'] : 0;
+        $manager = isset($d['manager']) ? $d['manager'] : null;
+        $current_year = date('Y');
+        
+        // Build offers table rows
+        $offers_html = '';
+        if (!empty($approved_offers)) {
+            foreach ($approved_offers as $offer) {
+                $offer_id = isset($offer['offerid']) ? htmlspecialchars($offer['offerid'], ENT_QUOTES, 'UTF-8') : '';
+                $offer_name = isset($offer['offer_name']) ? htmlspecialchars($offer['offer_name'], ENT_QUOTES, 'UTF-8') : '';
+                $conversion_count = isset($offer['conversion_count']) ? (int)$offer['conversion_count'] : 0;
+                $total_amount = isset($offer['total_amount']) ? (float)$offer['total_amount'] : 0;
                 
-                <!-- Header -->
-                <tr>
-                    <td style="background:#2c7be5;color:#ffffff;padding:20px;">
-                        <h2 style="margin:0;font-size:20px;">Worldwide Affiliate</h2>
-                    </td>
-                </tr>
-
-                <!-- Body -->
-                <tr>
-                    <td style="padding:24px;color:#333333;">
-                        <p style="margin-top:0;font-size:14px;">Hi <strong>' . $username . '</strong>,</p>
-
-                        <p style="font-size:14px;line-height:1.6;">
-                            Chúc mừng bạn đã <strong>đạt ngưỡng thanh toán</strong>.
-                        </p>
-
-                        <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;">
-                            <tr>
-                                <td style="background:#f0f4ff;padding:14px;border-radius:4px;">
-                                    <strong>Số dư hiện tại:</strong>
-                                    <span style="color:#2c7be5;font-size:16px;">
-                                        $' . $available . '
-                                    </span>
-                                </td>
-                            </tr>
-                        </table>';
-
-    // Approved offers
-    if (!empty($d['approved_offers']) && is_array($d['approved_offers'])) {
-        $html .= '
-                        <h3 style="font-size:15px;margin-top:24px;">Approved offers</h3>
-                        <table width="100%" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-size:13px;">
-                            <tr style="background:#f1f1f1;">
-                                <th align="left" style="border:1px solid #ddd;">Offer</th>
-                                <th align="center" style="border:1px solid #ddd;">Conversions</th>
-                                <th align="right" style="border:1px solid #ddd;">Amount</th>
-                            </tr>';
-
-        foreach ($d['approved_offers'] as $o) {
-            $html .= '
-                            <tr>
-                                <td style="border:1px solid #ddd;">' . $e($o['offer_name']) . '</td>
-                                <td align="center" style="border:1px solid #ddd;">' . (int)$o['conversion_count'] . '</td>
-                                <td align="right" style="border:1px solid #ddd;">$' . number_format((float)$o['total_amount'], 2) . '</td>
-                            </tr>';
+                $offers_html .= '<tr>';
+                $offers_html .= '<td class="offer-id">#' . $offer_id . '</td>';
+                $offers_html .= '<td>' . $offer_name . '</td>';
+                $offers_html .= '<td style="text-align: center;">' . number_format($conversion_count) . '</td>';
+                $offers_html .= '<td class="amount-cell">$' . number_format($total_amount, 2) . '</td>';
+                $offers_html .= '</tr>';
+            }
+        } else {
+            $offers_html .= '<tr>';
+            $offers_html .= '<td colspan="4" style="text-align: center; padding: 20px; color: #94a3b8;">No approved conversions found</td>';
+            $offers_html .= '</tr>';
         }
+        
+        // Build manager contact info
+        $manager_html = '';
+        if (!empty($manager)) {
+            $m_username = is_array($manager) ? ($manager['username'] ?? '') : ($manager->username ?? '');
+            $m_aim = is_array($manager) ? ($manager['aim'] ?? '') : ($manager->aim ?? '');
+            $m_skype = is_array($manager) ? ($manager['skype'] ?? '') : ($manager->skype ?? '');
+            
+            $parts = [];
+            if ($m_aim !== '') {
+                $parts[] = 'Teams ' . htmlspecialchars($m_aim, ENT_QUOTES, 'UTF-8');
+            }
+            if ($m_skype !== '') {
+                $parts[] = 'Skype ' . htmlspecialchars($m_skype, ENT_QUOTES, 'UTF-8');
+            }
+            
+            $contact_info = $parts ? implode(' or ', $parts) : 'please contact support.';
+            $manager_name = $m_username ? ' (' . htmlspecialchars($m_username, ENT_QUOTES, 'UTF-8') . ')' : '';
+            
+            $manager_html = '<p class="footer-contact">For assistance, contact your personal manager' . $manager_name . ': ' . $contact_info . '</p>';
+        }
+        
+        // Build complete HTML
+        $html = <<<HTML
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body {
+                        font-family: Arial, Helvetica, sans-serif;
+                        line-height: 1.6;
+                        font-size: 15px;
+                        color: #353c46;
+                        margin: 0;
+                        padding: 0;
+                        background-color: #F8FAFC;
+                    }
 
-        $html .= '
-                        </table>';
-    }
+                    .email-container {
+                        max-width: 700px;
+                        margin: 30px auto;
+                        border-radius: 8px;
+                        overflow: hidden;
+                        border: 1px solid #f5f5f5;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    }
 
-    // Manager
-    if (!empty($d['manager']) && isset($d['manager']->username)) {
-        $html .= '
-                        <p style="margin-top:20px;font-size:13px;">
-                            <strong>Manager:</strong> ' . $e($d['manager']->username) . '
-                        </p>';
-    }
+                    .header {
+                        background: linear-gradient(135deg, #5bef91 0%, #2d82d6 100%);
+                        color: #ffffff;
+                        padding: 30px;
+                        text-align: center;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        flex-wrap: nowrap;
+                    }
 
-    $html .= '
-                        <p style="margin-top:20px;font-size:14px;">
-                            Vui lòng đăng nhập hệ thống để thực hiện <strong>yêu cầu rút tiền</strong>.
+                    .header-logo {
+                        width: 200px;
+                        max-height: 50px;
+                    }
+
+                    .header-logo img {
+                        height: 45px;
+                        vertical-align: middle;
+                    }
+
+                    .header-title {
+                        font-size: 24px;
+                        font-weight: 600;
+                        margin: 0;
+                    }
+
+                    .content {
+                        padding: 20px 40px;
+                        background-color: #ffffff;
+                    }
+
+                    .greeting p {
+                        margin: 0;
+                    }
+
+                    .main-text {
+                        line-height: 1.7;
+                        margin: 10px 0;
+                    }
+
+                    .report-table-container {
+                        margin: 25px 0;
+                        border-radius: 8px;
+                        overflow: hidden;
+                        border: 1px solid #e2e8f0;
+                    }
+
+                    .report-table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        background-color: #ffffff;
+                    }
+
+                    .report-table thead {
+                        background: linear-gradient(135deg, #5bef91 0%, #2d82d6 100%);
+                        color: #ffffff;
+                    }
+
+                    .report-table th {
+                        padding: 12px;
+                        text-align: left;
+                        font-weight: 600;
+                        font-size: 14px;
+                        border-bottom: 2px solid #22c55e;
+                    }
+
+                    .report-table th:last-child,
+                    .report-table td:last-child {
+                        text-align: right;
+                    }
+
+                    .report-table tbody tr {
+                        border-bottom: 1px solid #f1f5f9;
+                    }
+
+                    .report-table tbody tr:hover {
+                        background-color: #f8fafc;
+                    }
+
+                    .report-table td {
+                        padding: 12px;
+                        font-size: 14px;
+                        color: #475569;
+                    }
+
+                    .report-table tfoot {
+                        background-color: #f8fafc;
+                        border-top: 2px solid #22c55e;
+                    }
+
+                    .report-table tfoot td {
+                        padding: 14px 12px;
+                        font-weight: bold;
+                        font-size: 15px;
+                        color: #1e293b;
+                    }
+
+                    .amount-cell {
+                        color: #22c55e;
+                        font-weight: 600;
+                    }
+
+                    .total-amount {
+                        color: #16a34a;
+                        font-size: 18px;
+                    }
+
+                    .signature {
+                        margin-top: 25px;
+                        line-height: 1.7;
+                    }
+
+                    .footer {
+                        padding: 30px 35px;
+                        background-color: #ffffff;
+                        border-top: 1px solid #e2e8f0;
+                        font-size: 13px;
+                        color: #64748b;
+                        line-height: 1.6;
+                    }
+
+                    .footer-note {
+                        font-weight: 600;
+                        color: #475569;
+                        margin-bottom: 12px;
+                    }
+
+                    .footer-contact {
+                        margin: 12px 0;
+                    }
+
+                    .footer-divider {
+                        height: 1px;
+                        background-color: #e2e8f0;
+                        margin: 20px 0;
+                    }
+
+                    .footer-copyright {
+                        text-align: center;
+                        color: #53718f;
+                        margin-bottom: 8px;
+                    }
+
+                    .footer-address {
+                        text-align: center;
+                        color: #53718f;
+                    }
+
+                    a {
+                        color: #0066cc;
+                        text-decoration: none;
+                    }
+
+                    a:hover {
+                        text-decoration: underline;
+                    }
+
+                    .offer-id {
+                        color: #64748b;
+                        font-size: 13px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <div class="header-logo">
+                            <a href="#">
+                                <img src="https://i.postimg.cc/5yXKJx1Q/logo.png" alt="Wwaff Logo">
+                            </a>            
+                        </div>
+                        <h1 class="header-title">Payment Threshold Notification</h1>
+                    </div>
+
+                    <div class="content">
+                        <div class="greeting">
+                            <p>Dear <strong>{$username}</strong>,</p>
+                        </div>
+
+                        <p class="main-text">
+                            We would like to inform you that, according to the latest financial report, your
+                            account balance has successfully reached the minimum payment threshold of <strong>\$200.00</strong>.
                         </p>
 
-                        <p style="margin-top:30px;font-size:13px;color:#666;">
-                            — Worldwide Affiliate Team
+                        <div class="report-table-container">
+                            <table class="report-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Offer Name</th>
+                                        <th style="text-align: center;">Conversions</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {$offers_html}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="2">Total</td>
+                                        <td style="text-align: center;">{$total_conversions}</td>
+                                        <td class="total-amount">\${$available_formatted}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <p class="main-text">
+                            With the current balance, your account is now eligible for withdrawal in accordance
+                            with our payment policy. Please log in to your account and submit a withdrawal request by following the
+                            provided instructions.
                         </p>
-                    </td>
-                </tr>
 
-                <!-- Footer -->
-                <tr>
-                    <td style="background:#fafafa;padding:14px;text-align:center;font-size:12px;color:#999;">
-                        This is an automated email. Please do not reply.
-                    </td>
-                </tr>
+                        <p class="main-text">
+                            If you have any questions regarding your financial report or the withdrawal process,
+                            please feel free to contact us for further assistance.
+                        </p>
 
-            </table>
-        </td>
-    </tr>
-</table>
-</body>
-</html>';
+                        <div class="signature">
+                            <p>Thank you for your continued partnership.</p>
+                            <p><strong>Best regards,</strong><br>
+                                Worldwide Affiliate</p>
+                        </div>
+                    </div>
 
-    return $html;
-}
+                    <div class="footer">
+                        <p class="footer-note">Note: This is an automated notification email. Please do not reply directly to this message.</p>
+                        {$manager_html}
+                        <div class="footer-divider"></div>
+                        <p class="footer-copyright">
+                            © {$current_year} Wedebeek Technology Limited. All rights reserved.
+                        </p>
+                        <p class="footer-address">41 Khue My Dong 7, Khue My, Ngu Hanh Son, Da Nang, Viet Nam, 50511</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            HTML;
 
-
-
+                // Replace placeholders with actual values
+                $available_formatted = number_format($available, 2);
+                $html = str_replace('{$username}', $username, $html);
+                $html = str_replace('{$offers_html}', $offers_html, $html);
+                $html = str_replace('{$total_conversions}', number_format($total_conversions), $html);
+                $html = str_replace('{$available_formatted}', $available_formatted, $html);
+                $html = str_replace('{$manager_html}', $manager_html, $html);
+                $html = str_replace('{$current_year}', $current_year, $html);
+                
+                return $html;
+            }
 
 }
 

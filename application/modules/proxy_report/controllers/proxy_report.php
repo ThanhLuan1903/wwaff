@@ -275,56 +275,53 @@ class Proxy_report extends CI_Controller
     private $EMAIL_DELAY_SECONDS = 300; 
 
     private function check_and_enqueue_minpay_email($userid, $amount_added)
-{
-    $userid = (int)$userid;
-    $amount_added = (float)$amount_added;
-    if ($userid <= 0 || $amount_added <= 0) return;
+    {
+        $userid = (int)$userid;
+        $amount_added = (float)$amount_added;
+        if ($userid <= 0 || $amount_added <= 0) return;
 
-    $user = $this->db->select('available')
-        ->where('id', $userid)
-        ->get('users')
-        ->row();
-    if (!$user) return;
+        $user = $this->db->select('available')
+            ->where('id', $userid)
+            ->get('users')
+            ->row();
+        if (!$user) return;
 
-    $current  = (float)$user->available;
-    $previous = $current - $amount_added;
+        $current  = (float)$user->available;
+        $previous = $current - $amount_added;
 
-    // chỉ khi vừa băng qua ngưỡng
-    if (!($previous < $this->MIN_PAY && $current >= $this->MIN_PAY)) return;
+        if (!($previous < $this->MIN_PAY && $current >= $this->MIN_PAY)) return;
 
-    // Redis
-    $redis = new Redis();
-    if (!$redis->connect('redis', 6379)) return;
+        // Redis
+        $redis = new Redis();
+        if (!$redis->connect('redis', 6379)) return;
 
-    // Dedupe: 1 lần / tháng (giống bạn đang dùng)
-    $dedupe_key = 'minpay:dedupe:' . $userid . ':' . date('Ym');
-    if ($redis->exists($dedupe_key)) return;
+        $dedupe_key = 'minpay:dedupe:' . $userid . ':' . date('Ym');
+        if ($redis->exists($dedupe_key)) return;
 
-    // due time (UTC epoch)
-    $due_at = (int)gmdate('U') + (int)$this->EMAIL_DELAY_SECONDS;
+        // due time (UTC epoch)
+        $due_at = (int)gmdate('U') + (int)$this->EMAIL_DELAY_SECONDS;
 
-    // Job key
-    $job_key = 'minpay:job:' . $userid . ':' . date('Ym');
+        // Job key
+        $job_key = 'minpay:job:' . $userid . ':' . date('Ym');
 
-    // Lưu job (chỉ userid + due_at)
-    $redis->hMSet($job_key, array(
-        'userid' => $userid,
-        'due_at' => $due_at,
-        'ym'     => date('Ym'),
-        'created_at' => (int)gmdate('U')
-    ));
+        // save job (only chỉ userid + due_at)
+        $redis->hMSet($job_key, array(
+            'userid' => $userid,
+            'due_at' => $due_at,
+            'ym'     => date('Ym'),
+            'created_at' => (int)gmdate('U')
+        ));
 
-    // set TTL để tự dọn (vd 45 ngày)
-    $redis->expire($job_key, 45 * 24 * 3600);
+        // set TTL để tự dọn (vd 10 ngày)
+        $redis->expire($job_key, 10 * 24 * 3600);
 
-    // đưa vào sorted set theo due_at để cron lấy job đến hạn
-    $redis->zAdd('minpay:due', $due_at, $job_key);
+        // đưa vào sorted set theo due_at để cron lấy job đến hạn
+        $redis->zAdd('minpay:due', $due_at, $job_key);
 
-    // dedupe TTL 45 ngày
-    $redis->set($dedupe_key, 1, 45 * 24 * 3600);
-
-    log_message('info', "[MINPAY] Enqueued redis job userid={$userid} due_at={$due_at}");
-}
+        // dedupe TTL 10 ngày
+        $redis->set($dedupe_key, 1, 10 * 24 * 3600);
+        log_message('info', "[MINPAY] Enqueued redis job userid={$userid} due_at={$due_at}");
+    }
 
 
 
