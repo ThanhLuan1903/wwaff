@@ -85,7 +85,9 @@ log_message('info', "MINPAY_BUILD_PAYLOAD userid={$userid}");
                 $redis->unwatch();
                 $this->out("DROP userid={$userid} no payload");
                 continue;
-            }log_message('info', "MINPAY_SEND_MAIL userid={$userid} to={$email_payload['to']} subject=" . $email_payload['subject']);
+            }
+            
+log_message('info', "MINPAY_SEND_MAIL userid={$userid} to={$email_payload['to']} subject=" . $email_payload['subject']);
 
 log_message(
     'info',
@@ -236,5 +238,9 @@ private function guimail($toemail = '', $tieude = '', $noidung = '', $fromEmail 
         );
     }
 
-    protected function out($s) { echo $s . PHP_EOL; }
+protected function out($s)
+{
+    // chỉ log, không echo để tránh headers already sent
+    log_message('info', '[MINPAY_OUT] ' . $s);
+}
 }
