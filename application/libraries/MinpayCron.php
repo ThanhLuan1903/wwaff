@@ -87,7 +87,23 @@ log_message('info', "MINPAY_BUILD_PAYLOAD userid={$userid}");
                 continue;
             }log_message('info', "MINPAY_SEND_MAIL userid={$userid} to={$email_payload['to']} subject=" . $email_payload['subject']);
 
-$message = $this->CI->load->view('members/email_template/minpay_threshold_email', $email_payload['data'], true);
+log_message(
+    'info',
+    "MINPAY_EMAIL_DATA\n" . print_r($email_payload['data'], true)
+);
+
+
+
+$viewPath = APPPATH . 'modules/members/views/email_template/minpay_threshold_email.php';
+
+$message = $this->CI->load->view(
+    $viewPath,
+    $email_payload['data'],
+    true
+);
+
+
+// $message = $this->CI->load->view('members/email_template/minpay_threshold_email', $email_payload['data'], true);
 log_message('info', "MINPAY_TEMPLATE_LEN userid={$userid} len=" . strlen($message));
 
 $ok = $this->guimail(
