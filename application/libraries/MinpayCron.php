@@ -13,13 +13,19 @@ class MinpayCron
 
     public function run()
     {
+        log_message('info', 'MINPAY_CRON_STARTMINPAY_CRON_STARTMINPAY_CRON_STARTMINPAY_CRON_STARTMINPAY_CRON_STARTMINPAY_CRON_STARTMINPAY_CRON_STARTMINPAY_CRON_STARTMINPAY_CRON_STARTMINPAY_CRON_START');
+
         $this->out("JOB_START " . gmdate('c'));
 
         $redis = new Redis();
         if (!$redis->connect('redis', 6379)) {
+            log_message('error', 'MINPAY_REDIS_CONNECT_FAILMINPAY_REDIS_CONNECT_FAILMINPAY_REDIS_CONNECT_FAILMINPAY_REDIS_CONNECT_FAILMINPAY_REDIS_CONNECT_FAILMINPAY_REDIS_CONNECT_FAIL ');
             $this->out("REDIS_CONNECT_FAIL");
             return;
         }
+
+        log_message('info', 'MINPAY_REDIS_CONNECTED MINPAY_REDIS_CONNECTEDMINPAY_REDIS_CONNECTED');
+
 
         $now = (int)gmdate('U');
 
@@ -30,13 +36,21 @@ class MinpayCron
             return;
         }
 
+
+        log_message('info', 'MINPAY_DUE_JOBS_COUNT=' . count($job_keys) . ' now=' . $now);
+
+
         $this->CI->load->library('Mailjet');
 
         foreach ($job_keys as $job_key) {
 
+
+    log_message('info', "MINPAY_JOB_START job_key={$job_key}");
+
             // chống race: dùng WATCH/MULTI nhẹ
             $redis->watch($job_key);
             $job = $redis->hGetAll($job_key);
+log_message('info', 'MINPAY_JOB_REDIS_PAYLOAD ' . json_encode($job));
 
             if (empty($job) || empty($job['userid'])) {
                 // job hỏng -> remove khỏi zset
@@ -56,11 +70,14 @@ class MinpayCron
                 $redis->unwatch();
                 continue;
             }
+log_message('info', "MINPAY_BUILD_PAYLOAD userid={$userid}");
 
             // >>> LẤY DATA MỚI NHẤT TỪ DB (fresh) <<<
             $email_payload = $this->build_fresh_email_payload($userid);
             if (!$email_payload) {
                 // user không tồn tại/không email -> drop job
+                    log_message('error', "MINPAY_DROP_NO_PAYLOAD userid={$userid}");
+
                 $redis->multi()
                     ->zRem('minpay:due', $job_key)
                     ->del($job_key)
@@ -69,6 +86,7 @@ class MinpayCron
                 $this->out("DROP userid={$userid} no payload");
                 continue;
             }
+log_message('info', "MINPAY_SEND_MAIL userid={$userid} to={$email_payload['to']}");
 
             // gửi
             $message = $this->CI->load->view('members/email_template/minpay_threshold_email', $email_payload['data'], true);
@@ -80,6 +98,9 @@ class MinpayCron
                 'support@wwaff.com',
                 'Worldwide Affiliate'
             );
+
+            log_message('info', 'MINPAY_MAILJET_RAW_RESULT ' . var_export($result, true));
+
 
             $ok = ($result === true || $result === 1);
 
