@@ -85,45 +85,79 @@ log_message('info', "MINPAY_BUILD_PAYLOAD userid={$userid}");
                 $redis->unwatch();
                 $this->out("DROP userid={$userid} no payload");
                 continue;
-            }
-log_message('info', "MINPAY_SEND_MAIL userid={$userid} to={$email_payload['to']}");
+            }log_message('info', "MINPAY_SEND_MAIL userid={$userid} to={$email_payload['to']} subject=" . $email_payload['subject']);
 
-            // gửi
-            $message = $this->CI->load->view('members/email_template/minpay_threshold_email', $email_payload['data'], true);
+$message = $this->CI->load->view('members/email_template/minpay_threshold_email', $email_payload['data'], true);
+log_message('info', "MINPAY_TEMPLATE_LEN userid={$userid} len=" . strlen($message));
 
-            $result = $this->CI->mailjet->send_email(
-                $email_payload['to'],
-                $email_payload['subject'],
-                $message,
-                'support@wwaff.com',
-                'Worldwide Affiliate'
-            );
+$ok = $this->guimail(
+    $email_payload['to'],
+    $email_payload['subject'],
+    $message,
+    'support@wwaff.com',
+    'Worldwide Affiliate'
+);
 
-            log_message('info', 'MINPAY_MAILJET_RAW_RESULT ' . var_export($result, true));
+log_message('info', "MINPAY_GUIMAIL_OK userid={$userid} ok=" . (int)$ok);
 
+if ($ok) {
+    $tx = $redis->multi()
+        ->zRem('minpay:due', $job_key)
+        ->del($job_key)
+        ->exec();
+    $redis->unwatch();
 
-            $ok = ($result === true || $result === 1);
+    log_message('info', "MINPAY_REMOVED userid={$userid} job_key={$job_key} tx=" . json_encode($tx));
+    $this->out("SENT userid={$userid}");
+} else {
+    $redis->unwatch();
+    log_message('error', "MINPAY_FAIL userid={$userid} job_key={$job_key}");
+    $this->out("FAIL userid={$userid}");
+}
 
-            if ($ok) {
-                // gửi ok -> remove job khỏi redis
-                $redis->multi()
-                    ->zRem('minpay:due', $job_key)
-                    ->del($job_key)
-                    ->exec();
-                $redis->unwatch();
-
-                log_message('info', "✓ [MINPAY] Email sent userid={$userid} to={$email_payload['to']}");
-                $this->out("SENT userid={$userid}");
-            } else {
-                // fail -> không remove, để cron sau retry
-                $redis->unwatch();
-                log_message('error', "✗ [MINPAY] Email failed userid={$userid} to={$email_payload['to']}");
-                $this->out("FAIL userid={$userid}");
-            }
         }
 
         $this->out("JOB_END " . gmdate('c'));
     }
+
+private function guimail($toemail = '', $tieude = '', $noidung = '', $fromEmail = '', $fromName = '')
+{
+    log_message('info', "MINPAY_GUIMAIL_ENTER to={$toemail}");
+
+    if (!$toemail || !filter_var($toemail, FILTER_VALIDATE_EMAIL)) {
+        log_message('error', "MINPAY_GUIMAIL_BAD_EMAIL to={$toemail}");
+        return 0;
+    }
+
+    if (!$fromEmail) $fromEmail = 'support@wwaff.com';
+    if (!$fromName)  $fromName  = 'Worldwide Affiliate';
+
+    $this->CI->load->library('Mailjet');
+
+    try {
+        $rs = $this->CI->mailjet->send_email($toemail, $tieude, $noidung, $fromEmail, $fromName);
+        // rs của bạn là array: ['success'=>bool,'http_code'=>int,'response'=>string]
+        log_message('info', 'MINPAY_GUIMAIL_RAW ' . json_encode($rs));
+    } catch (Throwable $e) {
+        log_message('error', 'MINPAY_GUIMAIL_EXCEPTION ' . $e->getMessage());
+        return 0;
+    }
+
+    // ✅ check đúng theo cấu trúc lib Mailjet hiện tại
+    if (is_array($rs)) {
+        $ok = !empty($rs['success']);
+        if (!$ok) {
+            $http = isset($rs['http_code']) ? $rs['http_code'] : 'NA';
+            $resp = isset($rs['response']) && is_string($rs['response']) ? substr($rs['response'], 0, 300) : '';
+            log_message('error', "MINPAY_GUIMAIL_FAIL http={$http} resp={$resp}");
+        }
+        return $ok ? 1 : 0;
+    }
+
+    // fallback nếu lib trả kiểu khác
+    return ($rs === true || $rs === 1) ? 1 : 0;
+}
+
 
     private function build_fresh_email_payload($userid)
     {
