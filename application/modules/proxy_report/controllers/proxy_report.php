@@ -271,7 +271,7 @@ class Proxy_report extends CI_Controller
         }
     }
 
-    private $EMAIL_DELAY_SECONDS = 300; 
+    private $EMAIL_DELAY_SECONDS = 180; 
 
     private function check_and_enqueue_minpay_email($userid, $amount_added)
     {

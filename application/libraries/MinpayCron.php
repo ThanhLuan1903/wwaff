@@ -522,7 +522,8 @@ class MinpayCron
                 </p>
 
                 <?php
-                  $login_link = function_exists('base_url') ? base_url('v2/sign/in') : '/v2/sign/in';
+                $base = trim((string) $this->CI->config->item('base_url'));
+                $login_link = rtrim($base, '/') . '/v2/sign/in';
                 ?>
 
                 <div class="login-button-wrapper">
