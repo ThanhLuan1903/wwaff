@@ -271,11 +271,12 @@ class Proxy_report extends CI_Controller
         }
     }
 
-    private $MIN_PAY = 200;
     private $EMAIL_DELAY_SECONDS = 300; 
 
     private function check_and_enqueue_minpay_email($userid, $amount_added)
     {
+        $pub_config = unserialize(file_get_contents('setting_file/publisher.txt'));
+        $minpay = (int)$pub_config['minpay'];
         $userid = (int)$userid;
         $amount_added = (float)$amount_added;
         if ($userid <= 0 || $amount_added <= 0) return;
@@ -289,7 +290,7 @@ class Proxy_report extends CI_Controller
         $current  = (float)$user->available;
         $previous = $current - $amount_added;
 
-        if (!($previous < $this->MIN_PAY && $current >= $this->MIN_PAY)) return;
+        if (!($previous < $minpay && $current >= $minpay )) return;
 
         // Redis
         $redis = new Redis();

@@ -34,7 +34,6 @@
                <?php $mcategory['0']->title= 'none';?>  
                 <?php 
                     if(!empty($dulieu)){
-                        //ger mangr name
                             $marrmg[0] = '';
                             foreach($dulieu as $dt1){
                                 $marrmg[$dt1->id] = $dt1->name;
@@ -85,7 +84,7 @@
                     <tr>
                         <th>Id</th>
                         <th>Images</th>
-                        <th>name</th>
+                        <th>Name</th>
                         <th>Username</th>
                         <th>Email</th>
                         <th>Phone</th>
@@ -105,7 +104,7 @@
                     <tr>
                         <th>Id</th>
                         <th>Images</th>
-                        <th>name</th>
+                        <th>Name</th>
                         <th>Username</th>
                         <th>Email</th>
                         <th>Phone</th>
@@ -125,7 +124,7 @@
                     <tr>
                         <th>Id</th>
                         <th>Images</th>
-                        <th>name</th>
+                        <th>Name</th>
                         <th>Username</th>
                         <th>Manager</th>
                         <th>Email</th>
@@ -140,10 +139,6 @@
                 </tbody>
             </table>
             <div class="row">
-                <!--div class="col-md-12">
-                    Showing 1 to 10 of 32 entries
-                </div--->
-                
                 <div class="col-md-6">
                     <div style="margin:20px 0;float:left" class="form-group form-inline filter">
                         <select title="<?php echo $this->uri->segment(3);?>" name="filter_cat" size="1" class="form-control input-sm">
@@ -175,5 +170,4 @@
             </div>
         </div>
     </div>
-    <!--/span-->
 </div>
