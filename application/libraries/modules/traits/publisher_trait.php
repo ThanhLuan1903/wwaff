@@ -5,7 +5,7 @@ trait PublisherTrait
 {
   public $per_page = 15;
 
-  function get_offers()
+  function get_offers_2()
   {
     $uid = $this->member->id;
     $ct = $this->session->userdata('oCountry');
@@ -548,4 +548,164 @@ trait PublisherTrait
       return TRUE;
     }
   }
+
+  function get_top_offers($uid, $ct_Like, $cat_Like, $oName_Like, $where, $disoff)
+  {
+    $uid = (int)$uid;
+
+    $qr = "SELECT o.* , 'Approved' as status
+          FROM cpalead_offer o
+          LEFT JOIN cpalead_advertiser_offer_status s ON s.offer_id = o.id
+          WHERE o.`show`='1' $where $ct_Like $cat_Like $oName_Like $disoff
+            AND o.smartoff=0 AND o.smartlink=0
+            AND s.status = 'Approve'
+          ORDER BY o.`lead` DESC
+          LIMIT 0,10";
+
+    $q = $this->db->query($qr);
+    return $q ? $q->result() : null;
+  }
+
+
+
+  function get_new_offers_10($uid, $ct_Like, $cat_Like, $oName_Like, $where, $disoff)
+  {
+    $uid = (int)$uid;
+
+    $qr = "SELECT o.*,
+              CASE o.request
+                WHEN 1 THEN (
+                  SELECT r.status
+                  FROM cpalead_request r
+                  WHERE r.offerid = o.id AND r.userid = $uid
+                  LIMIT 1
+                )
+                ELSE 'Approved'
+              END AS status,
+              s.status AS product_status
+          FROM cpalead_offer o
+          LEFT JOIN cpalead_advertiser_offer_status s ON s.offer_id = o.id
+          WHERE o.`show`='1' $where $ct_Like $cat_Like $oName_Like $disoff
+            AND o.smartoff=0 AND o.smartlink=0
+            AND s.status = 'Approve'
+          ORDER BY o.id DESC
+          LIMIT 0,10";
+
+    $q = $this->db->query($qr);
+    return $q ? $q->result() : null;
+  }
+
+  function get_offers_by_categories($uid, $userCats, $ct_Like, $oName_Like, $where, $disoff)
+  {
+    $sections = array();
+    if (!$userCats || !is_array($userCats)) return $sections;
+
+    foreach ($userCats as $catId) {
+      $catId = (int)$catId;
+      if ($catId <= 0) continue;
+
+      $catLike = "AND (o.offercat LIKE '%o".$catId."o%')";
+
+      $qr = "SELECT o.* , 'Approved' as status
+            FROM cpalead_offer o
+            LEFT JOIN cpalead_advertiser_offer_status s ON s.offer_id = o.id
+            WHERE o.`show`='1' $where $ct_Like $catLike $oName_Like $disoff
+              AND o.smartoff=0 AND o.smartlink=0
+              AND s.status = 'Approve'
+            ORDER BY o.`lead` DESC
+            LIMIT 0,10";
+
+      $q = $this->db->query($qr);
+      $rows = $q ? $q->result() : null;
+
+      if ($rows && count($rows) > 0) $sections[$catId] = $rows;
+    }
+
+    return $sections;
+  }
+
+  function get_offercat_names($catIds)
+  {
+    $map = array();
+    if (empty($catIds) || !is_array($catIds)) return $map;
+
+    $ids = array();
+    foreach ($catIds as $id) {
+      $id = (int)$id;
+      if ($id > 0) $ids[] = $id;
+    }
+    $ids = array_values(array_unique($ids));
+    if (empty($ids)) return $map;
+
+    $in = implode(',', $ids);
+    $qr = "SELECT id, offercat
+          FROM cpalead_offercat
+          WHERE id IN ($in)";
+
+    $q = $this->db->query($qr);
+    $rows = $q ? $q->result() : array();
+
+    foreach ($rows as $r) {
+      $map[(int)$r->id] = $r->offercat;
+    }
+    return $map;
+  }
+
+
+  function get_offers()
+  {
+    $uid = (int)$this->member->id;
+
+    $ct = $this->session->userdata('oCountry');
+    $opaymterm = $this->session->userdata('opaymterm');
+    $oName = $this->session->userdata('oName');
+
+    // Parse categories from profile pub
+    $userCats = array();
+    if (!empty($this->member->product_categories)) {
+      $tmp = explode(',', $this->member->product_categories);
+      foreach ($tmp as $v) {
+        $v = (int)trim($v);
+        if ($v > 0) $userCats[] = $v;
+      }
+      $userCats = array_values(array_unique($userCats));
+    }
+
+    $where = '';
+    if ($opaymterm) {
+      $mp = '(' . implode(',', array_map('intval', $opaymterm)) . ')';
+      $where .= " AND paymterm in $mp ";
+    }
+
+    $oName_Like = '';
+    if ($oName) {
+      $oName = $this->db->escape_like_str($oName);
+      $oName_Like .= " AND title LIKE '%$oName%' ";
+    }
+
+    $ct_Like = '';
+    if ($ct) {
+      $tmp = array();
+      foreach ($ct as $c) {
+        $c = $this->db->escape_like_str($c);
+        $tmp[] = "country LIKE '%o".$c."o%'";
+      }
+      $ct_Like = "AND (" . implode(' OR ', $tmp) . ")";
+    }
+
+    // IMPORTANT: dùng alias o.*
+    $disoff = " AND o.id NOT IN (
+        SELECT DISTINCT offerid
+        FROM cpalead_disoffer
+        WHERE usersid = $uid
+    ) ";
+
+    $topoffers   = $this->get_top_offers($uid, $ct_Like, '', $oName_Like, $where, $disoff);
+    $newoffers   = $this->get_new_offers_10($uid, $ct_Like, '', $oName_Like, $where, $disoff);
+    $catSections = $this->get_offers_by_categories($uid, $userCats, $ct_Like, $oName_Like, $where, $disoff);
+    $catNames = $this->get_offercat_names($userCats);
+
+    return compact('topoffers', 'newoffers', 'catSections', 'catNames');
+  }
+  
 }

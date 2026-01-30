@@ -1,3 +1,120 @@
+<style>
+   .aff-hero{
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,.08);
+      box-shadow: 0 10px 30px rgba(0,0,0,.08);
+      margin: 12px 0 18px;
+      position: relative;
+      background: #0b1220;
+   }
+
+   .aff-hero:before{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(90deg, rgba(11,18,32,.92) 0%, rgba(11,18,32,.78) 45%, rgba(11,18,32,.25) 100%);
+      z-index:1;
+   }
+
+   .aff-hero-inner{
+      position:relative;
+      z-index:2;
+      padding: 28px 26px;
+      min-height: 460px;
+      display:flex;
+      align-items:center;
+   }
+
+   .aff-hero-title{
+      color:#fff;
+      font-weight: 800;
+      letter-spacing: .2px;
+      margin: 0 0 14px;
+      line-height: 1.2;
+      font-size: 28px;
+   }
+
+   .aff-hero-sub{
+      color: rgba(255,255,255,.75);
+      margin: 0 0 18px;
+      font-size: 14px;
+   }
+
+   .aff-search{
+      max-width: 720px;
+   }
+
+   .aff-input-group{
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 12px;
+      padding: 8px;
+      display:flex;
+      gap: 8px;
+      backdrop-filter: blur(6px);
+   }
+
+   .aff-input{
+      flex: 1;
+      height: 46px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.94);
+      padding: 0 14px;
+      outline: none;
+      font-weight: 600;
+   }
+
+   .aff-input:focus{
+      border-color: #FFDF00;
+      box-shadow: 0 0 0 4px rgba(255,223,0,.18);
+   }
+
+   .aff-btn{
+      height: 46px;
+      border-radius: 10px;
+      padding: 0 16px;
+      font-weight: 800;
+      border: 1px solid #FFDF00;
+      background: #FFDF00;
+      color: #111;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      transition: transform .15s ease, filter .15s ease;
+      white-space: nowrap;
+   }
+
+   .aff-btn:hover{
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+   }
+
+   .aff-btn svg{ width:18px; height:18px; }
+
+   .aff-chips{
+      margin-top: 12px;
+      display:flex; flex-wrap:wrap;
+      gap: 8px;
+   }
+   .aff-chip{
+      font-size: 12px;
+      color: rgba(255,255,255,.86);
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.10);
+      padding: 6px 10px;
+      border-radius: 999px;
+   }
+
+   @media (max-width: 992px){
+      .aff-hero-inner{ padding: 22px 18px; min-height: 200px; }
+      .aff-hero-title{ font-size: 22px; }
+   }
+   @media (max-width: 576px){
+      .aff-input-group{ flex-direction: column; }
+      .aff-btn{ width: 100%; justify-content:center; }
+   }
+</style>
 <?php
 $pub_config = unserialize(file_get_contents('setting_file/publisher.txt'));
 ?>
@@ -127,31 +244,44 @@ $pub_config = unserialize(file_get_contents('setting_file/publisher.txt'));
 
 </div>
 <!-- Search -->
-<form method="POST" action="<?php echo base_url('v2/publishers'); ?>">
-   <div class="col-12 d-flex header">
+<form method="POST" action="<?php echo base_url('v2/offers/search'); ?>">
+  <div class="aff-hero" style="background-image: url('https://i.postimg.cc/mDJ2thjN/skin.png'); background-size:cover; background-position:center;">
+    <div class="aff-hero-inner">
+      <div class="aff-search">
+        <h3 class="aff-hero-title">Find the perfect freelance services for your business</h3>
+        <p class="aff-hero-sub">Search by offer name, vertical, brand, or keyword.</p>
 
-      <div class="col-md-10 col-lg-8 col-xl-5 banner-input" style="margin-left:100px">
-         <h3 style="font-family: cursive;">Find the perfect freelance services for your business </h3>
-         <div class="card" style="border-radius: 0.5em;background: transparent">
-            <div class="card-body p-2">
-               <div class="input-group">
-                  <input type="search" name="oName" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
-                  <button type="submit" style="color:gray;border-color:gray" class="btn btn-outline-primary"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-search" style="color:gray" viewBox="0 0 16 16">
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
-                     </svg></button>
+        <div class="aff-input-group">
+          <input
+            type="search"
+            name="oName"
+            class="aff-input"
+            placeholder="Search offers…"
+            aria-label="Search offers"
+          />
+          <button type="submit" class="aff-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+            </svg>
+            Search
+          </button>
+        </div>
 
-               </div>
-            </div>
-         </div>
+        <!-- optional chips -->
+        <div class="aff-chips">
+          <span class="aff-chip">🔥 Top CPS</span>
+          <span class="aff-chip">🌍 Worldwide</span>
+          <span class="aff-chip">⚡ Fast approval</span>
+          <span class="aff-chip">💰 High payout</span>
+        </div>
       </div>
-
-   </div>
+    </div>
+  </div>
 </form>
 
 <!-- Sale Rewards Ranking -->
 <?php include dirname(__FILE__) . '/../components/reward_ranking.php'; ?>
 <!-- Product categories -->
-<?php include dirname(__FILE__) . '/../components/partners.php'; ?>
 <div class="col-12 d-flex">
    <!--  new offer -->
    <div class="card col-6 mt-3 d-inline-block">
@@ -323,6 +453,8 @@ $pub_config = unserialize(file_get_contents('setting_file/publisher.txt'));
       </div>
    </div>
 </div>
+<!-- Partners -->
+<?php include dirname(__FILE__) . '/../components/partners.php'; ?>
 
 <div class="toast fade alert-info" role="alert" aria-live="assertive" aria-atomic="true" id="thongBao">
    <div class="toast-body">

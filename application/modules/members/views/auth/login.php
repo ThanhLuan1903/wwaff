@@ -142,20 +142,16 @@
 
     .field {
         margin-top: 10px;
-        /* bỏ position:relative vì label không còn absolute */
     }
 
     .field label {
         position: static;
-        /* quan trọng */
         transform: none;
-        /* quan trọng */
         display: block;
         margin: 0 0 6px;
         padding: 0;
         background: transparent;
         pointer-events: auto;
-        /* label click được */
         font-size: 14px;
         font-weight: 600;
         color: #374151;

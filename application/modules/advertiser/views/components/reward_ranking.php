@@ -1,45 +1,86 @@
 <style>
-  .money {
-    white-space: nowrap;
-    font-size: 1.5rem;
-    line-height: 2.1875rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    background: linear-gradient(180deg, #fffbae, #eaa50d);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
+.money {
+  white-space: nowrap;
+  font-size: 1.5rem;
+  line-height: 2.1875rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, #fff6c3 0%, #f5b700 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 
-  .sum {
-    color: #fae584;
-    font-size: 1rem;
-    line-height: 1.375rem;
-    white-space: nowrap;
-    padding-right: 5px;
-  }
+.sum {
+  color: #fff2b0;
+  font-size: 1rem;
+  line-height: 1.375rem;
+  white-space: nowrap;
+  padding-right: 5px;
+}
 
-  .top-king {
-    min-height: 655px;
-    background: linear-gradient(135deg, #c0392b 0%, #f9d423 100%);
-    position: relative;
-  }
+.top-king {
+  min-height: 655px;
+  position: relative;
+  border-radius: 20px;
+  background: linear-gradient(
+    180deg,
+    #b45309 0%,
+    #d97706 45%,
+    #facc15 100%
+  );
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
 
-  .custom-bg-ranking {
-    position: absolute;
-    color: white;
-    font-size: 19px;
-    font-weight: bold;
-    height: 100%;
-    width: 100%;
-    height: 100%;
-    top: 15px;
-    left: 39px;
-    font-style: italic;
-  }
+.top-king h3,
+.top-king h4 {
+  color: #fffbea;
+  font-weight: 700;
+}
+
+.table.rewards {
+  margin-top: 15px;
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.table.rewards thead th {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  font-weight: 600;
+  color: #fffdf4;
+}
+
+.table.rewards tbody tr {
+  transition: background 0.2s ease;
+}
+
+.table.rewards tbody tr:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.table.rewards td,
+.table.rewards th {
+  color: #fffbea;
+  vertical-align: middle;
+}
+
+.custom-bg-ranking {
+  position: absolute;
+  top: 6px;
+  left: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  font-style: normal; 
+  color: #3b2f00;
+}
+
+.time-remind {
+  font-weight: 600;
+}
 </style>
 <section class="pt-4">
-  <div class="row">
-    <div class="col-6">
+  <div class="row g-4">
+    <div class="col-12 col-lg-6 mb-4">
       <div class="card shadow-sm bg-white" style="border-radius: 25px;">
         <div class="card-body top-king ">
           <div class="card-title">
@@ -85,7 +126,7 @@
 
       </div>
     </div>
-    <div class="col-6">
+    <div class="col-12 col-lg-6 mb-4">
       <div class="card shadow-sm bg-white" style="border-radius: 25px;">
         <div class="card-body top-king">
           <div class="card-title">

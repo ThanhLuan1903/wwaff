@@ -1,3 +1,241 @@
+<style>
+  .section-head{
+    display:flex; 
+    align-items:center; 
+    justify-content:space-between;
+    margin: 10px 0 10px;
+  }
+  .section-title{
+    font-weight:800; 
+    letter-spacing:.3px;
+    display: inline-block; 
+    padding:10px 16px;
+    border-radius:8px 8px 0px 0px;
+    border: 1px solid rgba(0,0,0,.08);
+    background:#fff;
+    position:relative;
+  }
+  .section-title:after{
+    content:""; 
+    position:absolute; 
+    left:0; bottom:-2px; 
+    height:3px; 
+    width:100%;
+    background: linear-gradient(90deg, #f3b61d, #FFDF00);
+    border-radius:0 0 8px 8px;
+  }
+  .track-wrap{
+    overflow:hidden;
+    border-radius:10px;
+  }
+
+   .track{
+      display:flex; gap:14px;
+      width:max-content;
+      animation: scrollX var(--marquee-duration, 42s) linear infinite;
+      will-change: transform;
+   }
+   .track-wrap:hover .track{ animation-play-state: paused; }
+
+   @keyframes scrollX{
+      0%{ transform: translateX(0); }
+      100%{ transform: translateX(calc(-1 * var(--marquee-distance, 40%))); }
+   }
+
+   .track.no-animate{
+      animation: none !important;
+      transform: none !important;
+   }
+
+  .p-card{
+    width: 320px;
+    background:#fff;
+    border-radius:10px;
+    border:1px solid rgba(0,0,0,.08);
+    overflow:hidden;
+   }
+  .p-thumb{
+    height:160px; background:#f3f4f6;
+   }
+  .p-thumb img{
+    width:100%; height:100%; object-fit:cover;
+    display:block;
+   }
+  .p-body{
+      padding:10px !important;
+      flex-direction:column;
+   }
+
+   .p-action{
+      margin-top:auto;             
+      display:flex;
+      flex-direction:row;
+      align-items:center;           
+      gap:10px;                    
+      padding-bottom:6px; 
+      justify-content:space-between;         
+   }
+
+   .p-sub{
+      color:#6b7280;
+      font-size:13px;
+      margin:0;                  
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+      text-align:center;
+   }
+
+   .p-btn{
+      width: 120px;                 
+      flex:0 0 120px;           
+      text-align:center;
+      border: 1px solid #ffdf00;
+      color: #FFDF00;
+      background: #fff;
+      border-radius:8px;
+      padding: 8px 10px;
+      font-weight:700;
+      text-decoration:none;
+      transition: transform 0.2s ease, background 0.2s ease;
+   }
+   .p-btn:hover{
+      border: none;
+      background: #FFDF00;
+      color: #000;
+      transform: scale(1.1);
+   }
+
+   .p-title {
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;     
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+   }
+
+</style>
+<style>
+   .aff-hero{
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,.08);
+      box-shadow: 0 10px 30px rgba(0,0,0,.08);
+      margin: 12px 0 18px;
+      position: relative;
+      background: #0b1220;
+   }
+
+   .aff-hero:before{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(90deg, rgba(11,18,32,.92) 0%, rgba(11,18,32,.78) 45%, rgba(11,18,32,.25) 100%);
+      z-index:1;
+   }
+
+   .aff-hero-inner{
+      position:relative;
+      z-index:2;
+      padding: 28px 26px;
+      min-height: 460px;
+      display:flex;
+      align-items:center;
+   }
+
+   .aff-hero-title{
+      color:#fff;
+      font-weight: 800;
+      letter-spacing: .2px;
+      margin: 0 0 14px;
+      line-height: 1.2;
+      font-size: 28px;
+   }
+
+   .aff-hero-sub{
+      color: rgba(255,255,255,.75);
+      margin: 0 0 18px;
+      font-size: 14px;
+   }
+
+   .aff-search{
+      max-width: 720px;
+   }
+
+   .aff-input-group{
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 12px;
+      padding: 8px;
+      display:flex;
+      gap: 8px;
+      backdrop-filter: blur(6px);
+   }
+
+   .aff-input{
+      flex: 1;
+      height: 46px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.94);
+      padding: 0 14px;
+      outline: none;
+      font-weight: 600;
+   }
+
+   .aff-input:focus{
+      border-color: #FFDF00;
+      box-shadow: 0 0 0 4px rgba(255,223,0,.18);
+   }
+
+   .aff-btn{
+      height: 46px;
+      border-radius: 10px;
+      padding: 0 16px;
+      font-weight: 800;
+      border: 1px solid #FFDF00;
+      background: #FFDF00;
+      color: #111;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      transition: transform .15s ease, filter .15s ease;
+      white-space: nowrap;
+   }
+
+   .aff-btn:hover{
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+   }
+
+   .aff-btn svg{ width:18px; height:18px; }
+
+   .aff-chips{
+      margin-top: 12px;
+      display:flex; flex-wrap:wrap;
+      gap: 8px;
+   }
+   .aff-chip{
+      font-size: 12px;
+      color: rgba(255,255,255,.86);
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.10);
+      padding: 6px 10px;
+      border-radius: 999px;
+   }
+
+   @media (max-width: 992px){
+      .aff-hero-inner{ padding: 22px 18px; min-height: 200px; }
+      .aff-hero-title{ font-size: 22px; }
+   }
+   @media (max-width: 576px){
+      .aff-input-group{ flex-direction: column; }
+      .aff-btn{ width: 100%; justify-content:center; }
+      }
+</style>
+
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top: 2.5rem;">
    <div class="modal-dialog modal-xl">
       <div class="modal-content mb-5">
@@ -121,220 +359,222 @@
    </div>
 
 </div>
-<!-- Search -->
+
 <form method="POST" action="<?php echo base_url('v2/offers/search'); ?>">
-   <div class="col-12 d-flex header">
+  <div class="aff-hero" style="background-image: url('https://i.postimg.cc/mDJ2thjN/skin.png'); background-size:cover; background-position:center;">
+    <div class="aff-hero-inner">
+      <div class="aff-search">
+        <h3 class="aff-hero-title">Find the perfect freelance services for your business</h3>
+        <p class="aff-hero-sub">Search by offer name, vertical, brand, or keyword.</p>
 
-      <div class="col-md-10 col-lg-8 col-xl-5 banner-input" style="margin-left:100px">
-         <h3 style="font-family: cursive;">Find the perfect freelance services for your business </h3>
-         <div class="card" style="border-radius: 0.5em;background: transparent">
-            <div class="card-body p-2">
-               <div class="input-group">
-                  <input type="search" name="oName" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
-                  <button type="submit" style="color:gray;border-color:gray" class="btn btn-outline-primary"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-search" style="color:gray" viewBox="0 0 16 16">
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
-                     </svg></button>
+        <div class="aff-input-group">
+          <input
+            type="search"
+            name="oName"
+            class="aff-input"
+            placeholder="Search offers…"
+            aria-label="Search offers"
+          />
+          <button type="submit" class="aff-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+            </svg>
+            Search
+          </button>
+        </div>
 
-               </div>
-            </div>
-         </div>
+        <div class="aff-chips">
+          <span class="aff-chip">🔥 Top CPS</span>
+          <span class="aff-chip">🌍 Worldwide</span>
+          <span class="aff-chip">⚡ Fast approval</span>
+          <span class="aff-chip">💰 High payout</span>
+        </div>
       </div>
-
-   </div>
+    </div>
+  </div>
 </form>
 
 <?php include __DIR__ . '/../components/reward_ranking.php'; ?>
+
+<?php
+function render_slider($title, $offers) {
+  if (!$offers) return;
+  $title = trim((string)$title);
+?>
+  <div class="mb-4">
+    <?php if ($title !== ''): ?>
+      <div class="section-head">
+        <div class="section-title"><?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?></div>
+      </div>
+    <?php endif; ?>
+
+    <div class="track-wrap">
+      <div class="track js-marquee" data-count="<?php echo (int)count($offers); ?>">
+        <?php foreach($offers as $offer): ?>
+          <div class="p-card">
+            <div class="p-thumb">
+              <img src="<?php echo $offer->img; ?>" alt="<?php echo $offer->title ?>">
+            </div>
+            <div class="p-body">
+               <div class="p-title">
+                  (<?php echo $offer->id; ?>) <?php echo $offer->title; ?>
+               </div>
+
+               <div class="p-action">
+                  <div class="p-sub">
+                     <?php echo $offer->convert_on; ?>
+                  </div>
+                  <a href="javascript:void(0)"
+                     class="p-btn"
+                     data-bs-toggle="modal"
+                     data-bs-target="#sliderOfferModal<?php echo (int)$offer->id; ?>">
+                     Get link
+                  </a>
+               </div>
+            </div>
+          </div>
+        <?php endforeach; ?>
+
+        <?php foreach($offers as $offer): ?>
+          <div class="p-card">
+            <div class="p-thumb">
+              <img src="<?php echo $offer->img; ?>" alt="<?php echo $offer->title ?>">
+            </div>
+            <div class="p-body">
+               <div class="p-title">
+                  (<?php echo $offer->id; ?>) <?php echo $offer->title; ?>
+               </div>
+
+               <div class="p-action">
+                  <div class="p-sub">
+                     <?php echo $offer->convert_on; ?>
+                  </div>
+                  <a href="javascript:void(0)"
+                     class="p-btn"
+                     data-bs-toggle="modal"
+                     data-bs-target="#sliderOfferModal<?php echo (int)$offer->id; ?>">
+                     Get link
+                  </a>
+               </div>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      </div>
+    </div>
+  </div>
+<?php } ?>
+
+<!-- hanle show list product -->
+<?php
+$sliderModalOffers = array();
+
+if (!empty($topoffers)) {
+  foreach ($topoffers as $o) {
+    $sliderModalOffers[(int)$o->id] = $o;
+  }
+}
+
+if (!empty($newoffers)) {
+  foreach ($newoffers as $o) {
+    $sliderModalOffers[(int)$o->id] = $o;
+  }
+}
+
+if (!empty($catSections)) {
+  foreach ($catSections as $catId => $offers) {
+    if (!$offers) continue;
+    foreach ($offers as $o) {
+      $sliderModalOffers[(int)$o->id] = $o;
+    }
+  }
+}
+?>
+
+<?php
+render_slider('Top Products', $topoffers);
+render_slider('New Products', $newoffers);
+?>
+
+<?php if (!empty($catSections)): ?>
+  <div class="mb-4">
+    <div class="section-head">
+      <div class="section-title">Your Category</div>
+    </div>
+
+    <ul class="nav nav-tabs" id="catTabs" role="tablist" style="margin-bottom:12px;">
+      <?php $i = 0; foreach ($catSections as $catId => $offers): ?>
+        <?php if (empty($offers)) continue; ?>
+        <?php
+          $i++;
+          $active = ($i === 1) ? 'active' : '';
+          $selected = ($i === 1) ? 'true' : 'false';
+          $tabId = 'cat-tab-' . (int)$catId;
+          $paneId = 'cat-pane-' . (int)$catId;
+
+          $tabName = !empty($catNames[(int)$catId]) ? $catNames[(int)$catId] : ('Category #' . (int)$catId);
+        ?>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link <?php echo $active; ?>"
+                  id="<?php echo $tabId; ?>"
+                  data-bs-toggle="tab"
+                  data-bs-target="#<?php echo $paneId; ?>"
+                  type="button"
+                  role="tab"
+                  aria-controls="<?php echo $paneId; ?>"
+                  aria-selected="<?php echo $selected; ?>">
+            <?php echo htmlspecialchars($tabName, ENT_QUOTES, 'UTF-8'); ?>
+          </button>
+        </li>
+      <?php endforeach; ?>
+    </ul>
+
+    <div class="tab-content" id="catTabsContent">
+      <?php $j = 0; foreach ($catSections as $catId => $offers): ?>
+        <?php if (empty($offers)) continue; ?>
+        <?php
+          $j++;
+          $activePane = ($j === 1) ? 'show active' : '';
+          $paneId = 'cat-pane-' . (int)$catId;
+        ?>
+        <div class="tab-pane fade <?php echo $activePane; ?>"
+             id="<?php echo $paneId; ?>"
+             role="tabpanel"
+             aria-labelledby="<?php echo 'cat-tab-' . (int)$catId; ?>">
+
+          <?php
+            render_slider('', $offers);
+          ?>
+
+        </div>
+      <?php endforeach; ?>
+    </div>
+  </div>
+<?php endif; ?>
+
+
+<?php if (!empty($sliderModalOffers)): ?>
+  <?php foreach ($sliderModalOffers as $offer): ?>
+    <div class="modal fade"
+         id="sliderOfferModal<?php echo (int)$offer->id; ?>"
+         tabindex="-1"
+         aria-labelledby="sliderOfferModalLabel<?php echo (int)$offer->id; ?>"
+         aria-hidden="true"
+         style="margin-top: 2.8rem;">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content mb-5">
+          <div class="m-3">
+            <?php include dirname(__FILE__) . '/../offers/campaign_view.php'; ?>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <?php endforeach; ?>
+<?php endif; ?>
+<!-- end handle show list product -->
 <?php include __DIR__ . '/../components/partners.php'; ?>
-<div class="col-12 d-flex">
-   <div class="card col-6 mt-3 d-inline-block">
-      <div class="card-header text-uppercase">
-         NEW PRODUCTS
-      </div>
-      <div class="card-body">
-         <!-- new offer contents-->
-         <div class="card_newoffer " style="padding:0">
-            <div class="card_newoffer_ct d-block" style="height:780px;overflow-y:scroll">
-               <?php
-               if ($newoffers): $count = 0;
-                  foreach ($newoffers as $offer):
-                     $p = '';
-                     $count++;
-                     $point_geo     = unserialize($offer->point_geos);
-                     $applyButton   = $offer->status != 'Pending' ? '<button type="submit" class="btn btn-outline-primary btn-sm">Apply</button>' : '<a class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#newProductModal' . $offer->id . '">' . $offer->status . '</a>';
-                     $detailButton  = $offer->status != 'Pending' ? '<a class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#newProductModal' . $offer->id . '" >Details</a>' : '';
-                     $getLinkButton = '<a class="btn btn-primary btn-sm color_blue_nice" data-bs-toggle="modal" data-bs-target="#newProductModal' . $offer->id . '">Get link</a>';
-
-                     if ($point_geo) {
-                        $dem = 0;
-                        foreach ($point_geo as $key => $value) {
-                           if ($value > 0) {
-                              $tmp         = $value;
-                              $calc_result = $tmp - $tmp * 0.15;
-                              $dem++;
-                              if ($dem == 1) {
-                                 $phay = '';
-                              } else {
-                                 $phay = ', ';
-                              }
-                              $p .= $phay . $key . ': $' . $calc_result;
-                           }
-                        }
-                     }
-               ?>
-                     <div class="card_noffer_item">
-                        <p style="padding-right:10px;"><?= $count ?></p>
-                        <div class="card_noffer_img">
-                           <img src="<?= $offer->img ?>">
-                        </div>
-                        <div class="card_noffer_title_box">
-                           <p class="card_noffer_title">
-                              <span class="card_noffer_title_txt">(<?= $offer->id ?>)</span>
-                              <?= $offer->title ?>
-                           </p>
-                           <p class="card_noffer_points" style="display: inline-block;
-		                                          overflow: hidden;
-		                                          text-overflow: ellipsis;
-		                                          max-height: 35px;
-		                                          "><span><?= $p ?></span></p>
-                        </div>
-                        <div class="card_noffer_content_hv card_noffer_contents">
-                           <div class="card_noffer_content_wr">
-                              <div class="card_noffer_content_slide">
-                                 <p><strong>Conversion Flow:</strong> <strong> </strong> <?= $offer->convert_on ?></p>
-                                 <p><strong>Allowed Traffic Sources:</strong> <?= $offer->traffic_source ?></p>
-                                 <p><strong>Restricted Traffic Sources:</strong> <?= $offer->restriced_traffics ?></p>
-                                 <p><strong>Description:&nbsp;&nbsp;</strong><?= $offer->description ?></p>
-                                 <p><strong>Browser</strong>: All&nbsp;</p>
-                              </div>
-                              <div>
-                                 <form method="POST" action="<? echo base_url('v2/offers/request/' . $offer->id) ?>">
-                                    <input hidden name="request" value="" />
-                                    <?php if ($offer->request == 0): echo $getLinkButton; ?>
-
-                                    <?php elseif ($offer->request == 1): ?>
-                                       <?php if ($offer->status == 'Pending'): ?>
-                                          <a class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#newProductModal<?= $offer->id ?>">Pending</a>
-                                       <?php elseif ($offer->status == 'Deny'): ?>
-                                          <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#newProductModal<?= $offer->id ?>">Rejected</a>
-                                       <?php else: ?>
-                                          <button type="submit" class="btn btn-outline-primary btn-sm">Apply</button>
-                                          <?= $detailButton ?>
-                                       <?php endif; ?>
-                                    <?php endif ?>
-                                 </form>
-                              </div>
-                              <div class="mt-3">
-
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                     <!-- Modal -->
-                     <div class="modal fade" id="newProductModal<?= $offer->id ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top: 2.8rem;">
-                        <div class="modal-dialog modal-xl">
-                           <div class="modal-content mb-5">
-                              <div class="m-3">
-                                 <?php include dirname(__FILE__) . '/../offers/campaign_view.php'; ?>
-                              </div>
-                              <div class="modal-footer">
-                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-               <?php endforeach;
-               endif; ?>
-            </div>
-         </div>
-      </div>
-   </div>
-   <!-- new offer -->
-
-
-   <!-- active offer -->
-   <div class="card col-6 mt-3 d-inline-block">
-      <div class="card-header text-uppercase">
-         YOUR ACTIVE PRODUCTS
-      </div>
-
-      <div class="card-body">
-         <!-- new offer contents-->
-         <div class="card_newoffer " style="padding:0">
-            <div class="card_newoffer_ct d-block" style="height:780px;overflow-y:scroll">
-               <?php if ($activities): $count = 1; ?>
-                  <?php foreach ($activities as $offer):
-                     $p         = '';
-                     $count     = $count++;
-                     $point_geo = unserialize($offer->point_geos);
-                     if ($point_geo) {
-                        $dem = 0;
-                        foreach ($point_geo as $key => $value) {
-
-                           if ($value > 0) {
-                              $dem++;
-                              if ($dem == 1) {
-                                 $phay = '';
-                              } else {
-                                 $phay = ', ';
-                              }
-                              $p .= $phay . $key . ': $' . $value;
-                           }
-                        }
-                     }
-
-                  ?>
-                     <div class="card_noffer_item">
-                        <p class="" style="padding-right:10px;"><?= $count ?> </p>
-                        <div class="card_noffer_img">
-                           <img src="<?= $offer->img ?>">
-                        </div>
-                        <div class="card_noffer_title_box">
-                           <p class="card_noffer_title">
-                              <span class="card_noffer_title_txt">(<?= $offer->id ?>)</span>
-                              <?= $offer->title ?>
-                           </p>
-                           <p class="card_noffer_points"><span><?= $p ?></span></p>
-                        </div>
-                        <div class="card_noffer_content_hv card_noffer_contents">
-                           <div class="card_noffer_content_wr">
-                              <div class="card_noffer_content_slide">
-                                 <p><strong>Conversion Flow:</strong> <strong> </strong><?= $offer->convert_on ?></p>
-                                 <p><strong>Allowed Traffic Sources:</strong> <?= $offer->traffic_source ?></p>
-                                 <p><strong>Restricted Traffic Sources:</strong><?= $offer->restriced_traffics ?></p>
-                                 <p><strong>Description:&nbsp;&nbsp;</strong><?= $offer->description ?></p>
-                                 <p><strong>Browser</strong>: All&nbsp;</p>
-                              </div>
-                              <div>
-                                 <a class="btn btn-primary btn-sm show-detail color_blue_nice" data-bs-toggle="modal" data-bs-target="#exampleModal<?= $offer->id ?>">Get link</a>
-                              </div>
-                              <div class="mt-3">
-
-                              </div>
-                           </div>
-                           <!-- Modal -->
-                           <div class="modal fade" id="exampleModal<?= $offer->id ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top: 2.8rem;">
-                              <div class="modal-dialog modal-xl">
-                                 <div class="modal-content mb-5">
-                                    <div class="m-3">
-                                       <?php include dirname(__FILE__) . '/../offers/campaign_view.php'; ?>
-                                    </div>
-                                    <div class="modal-footer">
-                                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    </div>
-                                 </div>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                     <?php $count = $count + 1; ?>
-                  <?php endforeach; ?>
-               <?php endif; ?>
-
-            </div>
-         </div>
-      </div>
-   </div>
-</div>
 
 <div class="toast fade alert-info" role="alert" aria-live="assertive" aria-atomic="true" id="thongBao">
    <div class="toast-body">
@@ -433,4 +673,68 @@ if ($chart) {
    }
 
    var myChart = new Chart(ctx, config);
+</script>
+<script>
+(function(){
+  var SPEED = 50;
+
+  function setup(track){
+    if (!track) return;
+
+    var count = parseInt(track.getAttribute('data-count') || '0', 10);
+
+    if (count <= 4){
+      track.classList.add('no-animate');
+      track.style.removeProperty('--marquee-distance');
+      track.style.removeProperty('--marquee-duration');
+      return;
+    } else {
+      track.classList.remove('no-animate');
+    }
+
+    var half = track.scrollWidth / 2;
+    if (!half || half <= 0){
+      return;
+    }
+
+    var duration = Math.max(10, Math.round(half / SPEED));
+    track.style.setProperty('--marquee-distance', half + 'px');
+    track.style.setProperty('--marquee-duration', duration + 's');
+  }
+
+  function setupAllVisible(){
+    var tracks = document.querySelectorAll('.js-marquee');
+    for (var i=0;i<tracks.length;i++){
+      var rect = tracks[i].getBoundingClientRect();
+      if (rect.width > 0) setup(tracks[i]);
+    }
+  }
+
+  function setupInPane(pane){
+    if (!pane) return;
+    var tracks = pane.querySelectorAll('.js-marquee');
+    for (var i=0;i<tracks.length;i++) setup(tracks[i]);
+  }
+
+  function init(){
+    setupAllVisible();
+
+    document.addEventListener('shown.bs.tab', function(e){
+      var targetSel = e.target && e.target.getAttribute('data-bs-target');
+      if (!targetSel) return;
+      var pane = document.querySelector(targetSel);
+      setupInPane(pane);
+    });
+
+    window.addEventListener('resize', function(){
+      setupAllVisible();
+    });
+  }
+
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
 </script>
