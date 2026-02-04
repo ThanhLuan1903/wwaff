@@ -173,5 +173,7 @@ $route['cron-jobs/calculator/payments/pending'] = 'api/payment/pending_offer';
 $route['cron-jobs/calculator/ranking'] = 'api/calculator/calc_pub_ranking';
 
 
+$route['admin/route/tracking_test'] = 'adm_adc/advertiser/tracking_test';
+
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

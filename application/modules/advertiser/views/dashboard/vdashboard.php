@@ -244,7 +244,7 @@ $pub_config = unserialize(file_get_contents('setting_file/publisher.txt'));
 
 </div>
 <!-- Search -->
-<form method="POST" action="<?php echo base_url('v2/offers/search'); ?>">
+<form method="POST" action="<?php echo base_url('v2/publishers'); ?>">
   <div class="aff-hero" style="background-image: url('https://i.postimg.cc/mDJ2thjN/skin.png'); background-size:cover; background-position:center;">
     <div class="aff-hero-inner">
       <div class="aff-search">

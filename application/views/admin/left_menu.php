@@ -173,6 +173,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="<?php echo base_url($this->config->item('admin') . '/route/tracking_test'); ?>">
+                        <span class="glyphicon glyphicon-list-alt"></span>
+                        <span class="hidden-xs hidden-sm">Tracking Test</span>
+                    </a>
+                </li>
+                <li>
                     <a href="<?php echo base_url($this->config->item('admin') . '/route/paymterm/list'); ?>">
                         <span class="glyphicon glyphicon-usd"></span>
                         <span class="hidden-xs hidden-sm">Payment term</span>
