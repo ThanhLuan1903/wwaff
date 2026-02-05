@@ -332,70 +332,69 @@ class Advertiser extends CI_Controller
 
 
 
-function tracking_test()
-{
-    // ===== Load data từ DB =====
-    $countries = $this->Home_model->get_data('country', array('show' => 1));
-    $devices   = $this->Home_model->get_data('device', array('show' => 1));
+  function tracking_test()
+  {
+      // ===== HARD-CODED CONFIG (match UI select) =====
+      $allowedCountries = array(
+          'VN' => 'VIETNAM',
+          'US' => 'UNITED STATES',
+          'GB' => 'UNITED KINGDOM',
+          'ES' => 'SPAIN',
+      );
 
-    // ===== Filter DEVICE: chỉ cho desktop/browser =====
-    $allowedDevices = array(); // id => name
+      $allowedDevices = array(
+          '1' => 'Desktop',
+          '2' => 'Android',
+          '3' => 'iPhone',
+          '4' => 'iPad',
+      );
 
-    foreach ($devices as $d) {
-        $name = strtolower($d->device);
+      // ===== Default data for view =====
+      $data = array(
+          'link'      => '',
+          'country'   => 'VN',   // default
+          'device'    => '1',    // default Desktop
+          'result'    => array(),
+          'error_msg' => '',
+      );
 
-        if (in_array($name, array('windows', 'macos', 'linux', 'desktop'))) {
-            $allowedDevices[$d->id] = $d->device;
-        }
-    }
+      // ===== Handle submit =====
+      if ($this->input->post()) {
 
-    // ===== Default data =====
-    $data = array(
-        'link'      => '',
-        'country'   => '',
-        'device'    => '',
-        'countries' => $countries,
-        'devices'   => $allowedDevices,
-        'result'    => array(),
-        'error_msg' => ''
-    );
+          $link    = trim($this->input->post('link', true));
+          $country = strtoupper(trim($this->input->post('country', true)));
+          $device  = trim($this->input->post('device', true));
 
-    // ===== Handle submit =====
-    if ($this->input->post()) {
+          // giữ lại value để re-render UI
+          $data['link']    = $link;
+          $data['country'] = $country;
+          $data['device']  = $device;
 
-        $link    = trim($this->input->post('link'));
-        $country = strtoupper(trim($this->input->post('country', true))); // VD: VN
-        $device  = trim($this->input->post('device'));              // device id
+          // ===== Validate =====
+          if ($link === '') {
+              $data['error_msg'] = 'Affiliate link is required';
+          }
+          else if (!isset($allowedCountries[$country])) {
+              $data['error_msg'] = 'Country not supported';
+          }
+          else if (!isset($allowedDevices[$device])) {
+              $data['error_msg'] = 'Device not supported';
+          }
+          else {
+              // ===== Run tracer =====
+              $this->load->library('link_tracer');
+              $data['result'] = $this->link_tracer->trace(
+                  $link,
+                  $country,
+                  (int)$device
+              );
+          }
+      }
 
-        $data['link']    = $link;
-        $data['country'] = $country;
-        $data['device']  = $device;
-
-        $allowedCountries = array('VN','US','GB','ES');
-
-        // 1️⃣ Validate link
-        if ($link == '') {
-            $data['error_msg'] = 'Link is required';
-        }
-        // 2️⃣ Validate country (chỉ VN)
-        else if (!in_array($country, $allowedCountries, true)) {
-            $data['error_msg'] = 'Country not supported in test';
-        }
-        // 3️⃣ Validate device (chỉ desktop/browser)
-        else if (!isset($allowedDevices[$device])) {
-            $data['error_msg'] = 'Invalid device';
-        }
-        // 4️⃣ OK → trace
-        else {
-            $this->load->library('link_tracer');
-            $data['result'] = $this->link_tracer->trace($link, $country);
-        }
-    }
-
-    $content = $this->load->view('admin/content/tracking_test', $data, true);
-    $this->load->view('admin/index', array('content' => $content));
-}
-
+      // ===== Render =====
+      $content = $this->load->view('admin/content/tracking_test', $data, true);
+      $this->load->view('admin/index', array('content' => $content));
+  }
 
   private function build_where($filter)
   {

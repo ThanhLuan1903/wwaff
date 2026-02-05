@@ -43,7 +43,7 @@ class Link_tracer {
         return $out;
     }
 
-    // Map host theo country (bạn tự chỉnh theo dashboard)
+    // Map host by country
     protected function get_proxy_by_country($country)
     {
         $country = strtoupper(trim((string)$country));
@@ -81,6 +81,30 @@ class Link_tracer {
         if ($country === 'ES') return 'es-ES,es;q=0.9,en;q=0.8';
         if ($country === 'US') return 'en-US,en;q=0.9';
         return 'en-US,en;q=0.9';
+    }
+
+    protected function user_agent_by_device($device)
+    {
+        switch ((int)$device) {
+            // 1️⃣ Desktop
+            case 1:
+                return 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+
+            // 2️⃣ Android
+            case 2:
+                return 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36';
+
+            // 3️⃣ iPhone
+            case 3:
+                return 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
+
+            // 4️⃣ iPad
+            case 4:
+                return 'Mozilla/5.0 (iPad; CPU OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
+
+            default:
+                return 'Mozilla/5.0';
+        }
     }
 
     // ✅ PROBE: kiểm tra proxy đang ra IP + country nào (để bạn biết geo có đổi thật không)
@@ -144,11 +168,11 @@ class Link_tracer {
 
     protected function status_title($code) { $map = array( 0 => 'Connection failed / Timeout / Blocked', 200 => '200 OK – Success', 201 => '201 Created', 202 => '202 Accepted', 204 => '204 No Content', 301 => '301 Moved Permanently', 302 => '302 Found (Temporary Redirect)', 303 => '303 See Other', 307 => '307 Temporary Redirect', 308 => '308 Permanent Redirect', 400 => '400 Bad Request', 401 => '401 Unauthorized', 403 => '403 Forbidden – Access denied', 404 => '404 Not Found', 405 => '405 Method Not Allowed', 408 => '408 Request Timeout', 410 => '410 Gone', 429 => '429 Too Many Requests', 500 => '500 Internal Server Error', 502 => '502 Bad Gateway', 503 => '503 Service Unavailable', 504 => '504 Gateway Timeout', ); return isset($map[$code]) ? $map[$code] : $code . ' Unknown Status'; }
 
-    public function trace($startUrl, $country = 'VN', $maxHops = 15, $timeout = 15)
+    public function trace($startUrl, $country = 'VN', $device = 1, $maxHops = 15, $timeout = 15)
     {
         $country = strtoupper(trim((string)$country));
+        $userAgent = $this->user_agent_by_device($device);
 
-        $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
         $proxy = $this->get_proxy_by_country($country);
 
         // ✅ cookie jar per country (giữ session giữa các hop)
@@ -194,12 +218,22 @@ class Link_tracer {
                 CURLOPT_COOKIEFILE     => $cookieFile,
             ));
 
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            $headers = array(
                 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                 'Accept-Language: ' . $this->accept_language_by_country($country),
                 'Connection: keep-alive',
-                'Upgrade-Insecure-Requests: 1',
-            ));
+            );
+
+            // Mobile devices
+            if (in_array((int)$device, array(2,3,4))) {
+                $headers[] = 'Sec-CH-UA-Mobile: ?1';
+                $headers[] = 'Viewport-Width: 390';
+            } else {
+                $headers[] = 'Sec-CH-UA-Mobile: ?0';
+            }
+
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
 
             if ($proxy) {
                 curl_setopt($ch, CURLOPT_PROXY, $proxy['host'] . ':' . $proxy['port']);
@@ -240,6 +274,7 @@ class Link_tracer {
                 'type'         => $proxy ? 'http+proxy' : 'http',
                 'proxy'        => $proxy ? ($proxy['host'] . ':' . $proxy['port']) : null,
                 'geo'          => $country,
+                'device' => (int)$device,
             );
 
             if ($status >= 300 && $status < 400) {
@@ -264,6 +299,7 @@ class Link_tracer {
                     'type'         => 'meta-refresh',
                     'proxy'        => $proxy ? ($proxy['host'] . ':' . $proxy['port']) : null,
                     'geo'          => $country,
+                    'device' => (int)$device,
                 );
                 continue;
             }
