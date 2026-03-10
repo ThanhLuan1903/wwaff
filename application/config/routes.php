@@ -43,7 +43,7 @@ $route['v2/profile/locale'] = 'members/profile';
 $route['v2/profile/payment'] = 'members/profile';
 $route['v2/profile/post_payment'] = 'members/post_payment';
 $route['v2/profile/resetApi'] = 'members/resetApi';
-
+$route['3.0/offers'] = 'adv_offer_api/offers';
 // Notification Center
 $route['v2/notifications'] = 'notifications/notifications/index';
 $route['v2/notifications/mark-as-read'] = 'notifications/notifications/mark_as_read';

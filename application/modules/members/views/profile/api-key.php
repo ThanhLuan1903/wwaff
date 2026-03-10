@@ -16,7 +16,19 @@
             </button>
          </div>
       </form>
-      <br>
+      <br>   
+      <div style="margin-top:15px; width: 100%">
+         <div><b>Offer API URL</b></div>
+
+         <input
+            type="text"
+            class="_1Yox25pgA6Bt9-R0uIDpcS _2U8LClDsGTjhEIQtswl0q7 _2WJImvbnE8I3_hccXYSMQ css-4s204c"
+            value="<?php echo base_url('3.0/offers?API-Key=' . $this->member->api_key); ?>"
+            readonly
+            id="OfferApiUrl"
+            style="width:100%; overflow-x:auto;"
+         >
+      </div>
       <a href="<?php echo base_url('api');?>">Api Document</a>      
     
    </div>
